@@ -11,6 +11,182 @@ conference:
   total_presentations: 542
   extraction_date: "2025-01-13"
 
+# Available tracks/types for filtering
+available_tracks:
+  - name: "⚡ Lightning Talks"
+    display_text: "⚡ Lightning Talks"
+    list_url: "https://kccncna2025.sched.com/list/type/%E2%9A%A1+Lightning+Talks"
+    overview_url: "https://kccncna2025.sched.com/overview/type/%E2%9A%A1%20Lightning%20Talks"
+    has_emoji: true
+    
+  - name: "📚 Tutorials"
+    display_text: "📚 Tutorials"
+    list_url: "https://kccncna2025.sched.com/list/type/%F0%9F%93%9A+Tutorials"
+    overview_url: "https://kccncna2025.sched.com/overview/type/%F0%9F%93%9A%20Tutorials"
+    has_emoji: true
+    
+  - name: "🪧 Poster Sessions"
+    display_text: "🪧 Poster Sessions"
+    list_url: "https://kccncna2025.sched.com/list/type/%F0%9F%AA%A7+Poster+Sessions"
+    overview_url: "https://kccncna2025.sched.com/overview/type/%F0%9F%AA%A7%20Poster%20Sessions"
+    has_emoji: true
+    
+  - name: "🚨 ContribFest"
+    display_text: "🚨 ContribFest"
+    list_url: "https://kccncna2025.sched.com/list/type/%F0%9F%9A%A8+ContribFest"
+    overview_url: "https://kccncna2025.sched.com/overview/type/%F0%9F%9A%A8%20ContribFest"
+    has_emoji: true
+    
+  - name: "AI + ML"
+    display_text: "AI + ML"
+    list_url: "https://kccncna2025.sched.com/list/type/AI+%2B+ML"
+    overview_url: "https://kccncna2025.sched.com/overview/type/AI%20%2B%20ML"
+    has_emoji: false
+    
+  - name: "Application Development"
+    display_text: "Application Development"
+    list_url: "https://kccncna2025.sched.com/list/type/Application+Development"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Application%20Development"
+    has_emoji: false
+    
+  - name: "Breaks"
+    display_text: "Breaks"
+    list_url: "https://kccncna2025.sched.com/list/type/Breaks"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Breaks"
+    has_emoji: false
+    
+  - name: "Cloud Native Experience"
+    display_text: "Cloud Native Experience"
+    list_url: "https://kccncna2025.sched.com/list/type/Cloud+Native+Experience"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Cloud%20Native%20Experience"
+    has_emoji: false
+    
+  - name: "Cloud Native Novice"
+    display_text: "Cloud Native Novice"
+    list_url: "https://kccncna2025.sched.com/list/type/Cloud+Native+Novice"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Cloud%20Native%20Novice"
+    has_emoji: false
+    
+  - name: "Cloud Native Startup"
+    display_text: "Cloud Native Startup"
+    list_url: "https://kccncna2025.sched.com/list/type/Cloud+Native+Startup"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Cloud%20Native%20Startup"
+    has_emoji: false
+    
+  - name: "CNCF-hosted Co-located Events"
+    display_text: "CNCF-hosted Co-located Events"
+    list_url: "https://kccncna2025.sched.com/list/type/CNCF-hosted+Co-located+Events"
+    overview_url: "https://kccncna2025.sched.com/overview/type/CNCF-hosted%20Co-located%20Events"
+    has_emoji: false
+    
+  - name: "Connectivity"
+    display_text: "Connectivity"
+    list_url: "https://kccncna2025.sched.com/list/type/Connectivity"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Connectivity"
+    has_emoji: false
+    
+  - name: "Data Processing + Storage"
+    display_text: "Data Processing + Storage"
+    list_url: "https://kccncna2025.sched.com/list/type/Data+Processing+%2B+Storage"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Data%20Processing%20%2B%20Storage"
+    has_emoji: false
+    
+  - name: "Emerging + Advanced"
+    display_text: "Emerging + Advanced"
+    list_url: "https://kccncna2025.sched.com/list/type/Emerging+%2B+Advanced"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Emerging%20%2B%20Advanced"
+    has_emoji: false
+    
+  - name: "Experiences"
+    display_text: "Experiences"
+    list_url: "https://kccncna2025.sched.com/list/type/Experiences"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Experiences"
+    has_emoji: false
+    has_subtypes: true
+    
+  - name: "Inclusion + Accessibility"
+    display_text: "Inclusion + Accessibility"
+    list_url: "https://kccncna2025.sched.com/list/type/Inclusion+%2B+Accessibility"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Inclusion%20%2B%20Accessibility"
+    has_emoji: false
+    
+  - name: "Keynote Sessions"
+    display_text: "Keynote Sessions"
+    list_url: "https://kccncna2025.sched.com/list/type/Keynote+Sessions"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Keynote%20Sessions"
+    has_emoji: false
+    
+  - name: "Maintainer Track"
+    display_text: "Maintainer Track"
+    list_url: "https://kccncna2025.sched.com/list/type/Maintainer+Track"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Maintainer%20Track"
+    has_emoji: false
+    
+  - name: "Observability"
+    display_text: "Observability"
+    list_url: "https://kccncna2025.sched.com/list/type/Observability"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Observability"
+    has_emoji: false
+    
+  - name: "Operations + Performance"
+    display_text: "Operations + Performance"
+    list_url: "https://kccncna2025.sched.com/list/type/Operations+%2B+Performance"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Operations%20%2B%20Performance"
+    has_emoji: false
+    
+  - name: "Platform Engineering"
+    display_text: "Platform Engineering"
+    list_url: "https://kccncna2025.sched.com/list/type/Platform+Engineering"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Platform%20Engineering"
+    has_emoji: false
+    
+  - name: "Project Opportunities"
+    display_text: "Project Opportunities"
+    list_url: "https://kccncna2025.sched.com/list/type/Project+Opportunities"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Project%20Opportunities"
+    has_emoji: false
+    
+  - name: "Registration"
+    display_text: "Registration"
+    list_url: "https://kccncna2025.sched.com/list/type/Registration"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Registration"
+    has_emoji: false
+    
+  - name: "Security"
+    display_text: "Security"
+    list_url: "https://kccncna2025.sched.com/list/type/Security"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Security"
+    has_emoji: false
+    
+  - name: "Solutions Showcase"
+    display_text: "Solutions Showcase"
+    list_url: "https://kccncna2025.sched.com/list/type/Solutions+Showcase"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Solutions%20Showcase"
+    has_emoji: false
+    
+  - name: "Sponsor-hosted Co-located Event"
+    display_text: "Sponsor-hosted Co-located Event"
+    list_url: "https://kccncna2025.sched.com/list/type/Sponsor-hosted+Co-located+Event"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Sponsor-hosted%20Co-located%20Event"
+    has_emoji: false
+
+# Track filtering configuration
+track_filtering:
+  enabled: true
+  default_action: "include_all"  # or "exclude_all"
+  user_selectable: true
+  exclude_by_default:
+    - "Breaks"
+    - "Registration" 
+    - "Solutions Showcase"
+  include_by_default:
+    - "AI + ML"
+    - "Application Development"
+    - "Cloud Native Experience"
+    - "Keynote Sessions"
+    - "Platform Engineering"
+    - "Security"
+
 presentations:
   - id: "27FVb"
     title: "Simplifying Advanced AI Model Serving on Kubernetes Using Helm Charts"

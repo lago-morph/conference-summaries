@@ -9,38 +9,40 @@ This document specifies the requirements for the Agentic Conference Data Extract
 ```mermaid
 graph TD
     A[Unstructured Conference Info] --> B[Conference Discovery Agent]
-    B --> C[Extraction Scripts]
-    C --> D[Diagnostic Monitor Agent]
+    B --> C[Extraction Scripts - Basic Data]
     C --> CC[Conference Classifier Agent]
+    C --> D[Extraction QA Agent]
     D --> E{Scripts Working?}
     E -->|Yes| F[YouTube Transcript Scripts]
     E -->|No| G[Troubleshooting Agent]
     G --> H{Can Fix?}
     H -->|Yes| C
     H -->|No| I[GitHub Issue Reporter Agent]
-    F --> J[Transcript Formatter Agent]
-    CC --> K[Agent Priming & Selection]
-    J --> L[Dense Knowledge Encoder Agent]
-    K --> M[Summarizer Agent]
-    L --> M
-    M --> N[Quality Assurance Agent]
-    N --> O{Quality OK?}
-    O -->|Yes| P[Final Output]
-    O -->|No| Q{Too Many Issues?}
-    Q -->|No| R[Flag & Continue]
-    Q -->|Yes| S[Stop Process]
-    R --> I
+    
+    CC --> K[Agent Priming & Selection Criteria]
+    F --> J[Wait for Classification]
+    K --> J
+    J --> L[Transcript Formatter Agent]
+    L --> M[Dense Knowledge Encoder Agent]
+    M --> N[Summarizer Agent]
+    N --> O[Processing QA Agent]
+    O --> P{Quality OK?}
+    P -->|Yes| Q[Final Output]
+    P -->|No| R{Too Many Issues?}
+    R -->|No| S[Flag & Continue]
+    R -->|Yes| T[Stop Process]
     S --> I
+    T --> I
     
     style B fill:#e1f5fe
     style D fill:#fff3e0
     style CC fill:#e1f5fe
     style G fill:#fff3e0
     style I fill:#ffebee
-    style J fill:#e8f5e8
     style L fill:#e8f5e8
     style M fill:#e8f5e8
-    style N fill:#f3e5f5
+    style N fill:#e8f5e8
+    style O fill:#f3e5f5
 ```
 
 ## A/B Testing Framework
@@ -73,16 +75,18 @@ graph LR
 
 ## Glossary
 
+- **A/B_Testing_System**: Separate system component that compares pipeline outputs using completed data as baseline "A" and alternative configurations as "B" for specific processing steps
 - **CNCF**: Cloud Native Computing Foundation, the target conference organization
 - **Conference_Classifier_Agent**: AI agent that analyzes presentation titles, authors, and tracks to identify conference technology focus areas and generate selection criteria for deep processing
 - **Conference_Discovery_Agent**: AI agent that interprets unstructured conference information and finds Sched.com URLs
 - **Configuration_Manager**: YAML configuration file system that specifies processing parameters, model assignments, and selection criteria for all system components
 - **Dense_Knowledge_Encoder_Agent**: AI agent that creates compressed summaries optimized for RAG database storage and semantic search
 - **Diagnostic_Monitor_Agent**: AI agent that monitors script performance and detects extraction failures
+- **Extraction_QA_Agent**: AI agent that monitors extraction script performance using algorithmic criteria (file sizes, log analysis) with lightweight pass/fail/warn assessment per presentation
 - **Extraction_Scripts**: Automated programs that perform heavy data extraction from Sched.com websites
 - **GitHub_Issue_Reporter_Agent**: AI agent that files detailed bug reports when issues cannot be resolved
 - **Model_Configuration_System**: Framework for assigning different AI models to agents for A/B testing
-- **Quality_Assurance_Agent**: AI agent that validates consistency and quality across all agent outputs
+- **Processing_QA_Agent**: AI agent that validates consistency and quality of content processing outputs (formatting, summarization, dense encoding) using adaptive confidence scoring
 - **Quality_Evaluator**: Component that compares outputs from different models and measures quality differences
 - **Sched.com**: The conference management platform hosting the target conferences
 - **Summarizer_Agent**: AI agent that creates human-readable presentation summaries with configurable effort levels (light or deep processing)
@@ -160,7 +164,7 @@ graph LR
 
 #### Acceptance Criteria
 
-1. WHEN presentation videos are identified, THE YouTube_Transcript_Scripts SHALL extract available text transcripts using YouTube APIs
+1. WHEN presentation videos are identified, THE YouTube_Transcript_Scripts SHALL extract available text transcripts using yt_dlp
 2. WHEN transcripts are not available, THE YouTube_Transcript_Scripts SHALL attempt to use automated speech recognition if configured
 3. WHEN processing transcripts, THE YouTube_Transcript_Scripts SHALL preserve timing information and speaker identification where available
 4. WHEN transcript extraction fails, THE YouTube_Transcript_Scripts SHALL log the failure and continue with remaining videos
@@ -236,23 +240,23 @@ graph LR
 
 #### Acceptance Criteria
 
-1. WHEN starting with new agents or conferences, THE Quality_Assurance_Agent SHALL perform comprehensive checking with high sampling rates
-2. WHEN building confidence in agent performance, THE Quality_Assurance_Agent SHALL gradually reduce checking frequency while maintaining quality standards
-3. WHEN quality issues are detected, THE Quality_Assurance_Agent SHALL increase checking rates for affected agents and flag problems with detailed context
-4. WHEN confidence scores indicate reliability, THE Quality_Assurance_Agent SHALL optimize checking to focus on high-risk scenarios while reducing overall QA costs
-5. THE Quality_Assurance_Agent SHALL maintain configurable confidence scoring that adapts to agent performance, conference complexity, and historical quality patterns
+1. WHEN processing content, THE Processing_QA_Agent SHALL perform adaptive quality assurance on Transcript Formatter Agent, Summarizer Agent, and Dense Knowledge Encoder Agent outputs using confidence scoring
+2. WHEN monitoring extraction, THE Extraction_QA_Agent SHALL use algorithmic criteria to assess extraction scripts by analyzing file sizes and log files for errors and warnings
+3. WHEN evaluating presentations, THE Extraction_QA_Agent SHALL apply lightweight pass/fail/warn criteria per presentation, sending failures to Troubleshooting Agent and warnings for detailed review
+4. WHEN building confidence in agent performance, THE Processing_QA_Agent SHALL gradually reduce checking frequency while maintaining quality standards
+5. WHEN quality issues are detected, BOTH QA agents SHALL increase checking rates for affected components and flag problems with detailed context
 
 ### Requirement 13
 
-**User Story:** As a system optimizer, I want A/B testing capabilities for different AI models, so that I can optimize cost and performance by using the most appropriate model for each task.
+**User Story:** As a system optimizer, I want A/B testing capabilities for specific pipeline steps, so that I can measure the impact of substituting different approaches or models for individual processing stages.
 
 #### Acceptance Criteria
 
-1. WHEN configuring the system, THE Model_Configuration_System SHALL allow assignment of different AI models to each agent role
-2. WHEN running A/B tests, THE Model_Configuration_System SHALL process the same source data through different model configurations
-3. WHEN comparing outputs, THE Quality_Evaluator SHALL measure differences in quality, speed, and cost between model configurations
-4. WHEN A/B testing completes, THE Quality_Evaluator SHALL generate recommendations for optimal model assignments
-5. THE Model_Configuration_System SHALL support reproducible testing by maintaining version control of model configurations and test data
+1. WHEN conducting A/B tests, THE A/B_Testing_System SHALL use completed pipeline data as baseline "A" and process random samples through alternative "B" configurations
+2. WHEN testing specific steps, THE A/B_Testing_System SHALL support testing individual pipeline stages (e.g., formatter, summarizer, dense encoder) with alternative model or parameter configurations
+3. WHEN comparing outputs, THE A/B_Testing_System SHALL use a high-effort evaluation agent to determine quality differences and measure improvement metrics
+4. WHEN A/B testing completes, THE A/B_Testing_System SHALL generate impact assessments showing the effect of proposed substitutions
+5. THE A/B_Testing_System SHALL operate as a separate component using random sampling (e.g., 10 talks) rather than processing entire conferences
 
 ### Requirement 14
 
@@ -271,52 +275,49 @@ graph LR
 ```mermaid
 graph TD
     A[Batch Input Configuration] --> B[Conference Discovery Agent]
-    B --> C[Extraction Scripts]
+    B --> C[Extraction Scripts - Basic Data]
     
+    C --> CC[Conference Classifier Agent]
     C --> D{Processing Effort Level}
     D -->|Zero - Extract Only| E[YouTube Transcript Scripts Only]
-    D -->|Light/Deep| F[Conference Classifier Agent]
-    D -->|Light/Deep| G[YouTube Transcript Scripts]
+    D -->|Light/Deep| F[YouTube Transcript Scripts]
     
     E --> H[Raw Data + Zero Effort Tags]
     H --> I[Stop - Extraction Complete]
     
-    F --> J[Technology Focus Areas + Priming]
-    G --> K[Raw Transcripts]
+    CC --> J[Technology Focus Areas + Priming]
+    F --> K[Raw Transcripts]
     
-    J --> L[Wait for Classification]
-    K --> L
-    L --> M[Summarizer Agent - Light Effort - ALL Talks]
+    J --> L[Selection Criteria Generation]
+    J --> M[Wait for Classification Complete]
+    K --> M
     
-    J --> N[Selection Criteria Generation]
-    M --> O[Light Summaries + Keywords]
+    M --> N{Deep Processing Needed?}
+    L --> N
     
-    N --> P{Deep Processing Needed?}
-    O --> P
+    N -->|Yes - Auto Keywords| O[Transcript Formatter Agent]
+    N -->|Yes - Manual Flag| O
+    N -->|No - Light Only| P[Summarizer Agent - Light Effort]
     
-    P -->|Yes - Auto Keywords| Q[Transcript Formatter Agent]
-    P -->|Yes - Manual Flag| Q
-    P -->|No| R[Light Summary Only]
+    O --> Q[Dense Knowledge Encoder Agent]
+    O --> R[Summarizer Agent - Deep Effort]
     
-    Q --> S[Dense Knowledge Encoder Agent]
-    S --> T[Summarizer Agent - Deep Effort]
+    P --> S[Processing QA Agent]
+    Q --> S
+    R --> S
     
-    R --> U[Adaptive QA Agent]
-    T --> U
-    
-    U --> V[State Persistence]
-    V --> W[Final Output with Cost Tags]
+    S --> T[State Persistence]
+    T --> U[Final Output with Cost Tags]
     
     style D fill:#fff9c4
     style E fill:#e3f2fd
-    style F fill:#e1f5fe
+    style CC fill:#e1f5fe
     style J fill:#e8f5e8
-    style M fill:#fff3e0
+    style O fill:#ffebee
     style Q fill:#ffebee
-    style S fill:#ffebee
-    style T fill:#ffebee
-    style U fill:#f3e5f5
-    style V fill:#f0f0f0
+    style R fill:#ffebee
+    style S fill:#f3e5f5
+    style T fill:#f0f0f0
 ```
 
 ## Detailed Agent Interaction Flow
@@ -464,18 +465,19 @@ graph TD
 
 ## Model Configuration Matrix
 
-The system supports different AI models for each agent type, enabling cost and performance optimization:
+The system supports different AI model capability levels for each agent type, enabling cost and performance optimization:
 
-| Agent Type | Fast/Cheap Model | Balanced Model | Sophisticated Model |
-|------------|------------------|----------------|-------------------|
-| Conference Discovery | GPT-4o-mini | GPT-4o | GPT-4o |
-| Diagnostic Monitor | GPT-4o-mini | GPT-4o-mini | GPT-4o |
-| Troubleshooting | GPT-4o-mini | GPT-4o | GPT-4o |
-| GitHub Issue Reporter | GPT-4o-mini | GPT-4o-mini | GPT-4o-mini |
-| Transcript Formatter | GPT-4o-mini | GPT-4o | Claude-3.5-Sonnet |
-| Dense Knowledge Encoder | GPT-4o | GPT-4o | Claude-3.5-Sonnet |
-| Summarizer | GPT-4o-mini | GPT-4o | Claude-3.5-Sonnet |
-| Quality Assurance | GPT-4o | GPT-4o | Claude-3.5-Sonnet |
+| Agent Type | Typical Range | Rationale |
+|------------|---------------|-----------|
+| Conference Discovery | Fast/Cheap | Simple interpretation task, high frequency usage |
+| Diagnostic Monitor | Fast/Cheap | Lightweight monitoring, continuous operation |
+| Troubleshooting | Fast/Cheap → Balanced | Problem analysis complexity varies |
+| GitHub Issue Reporter | Sophisticated | Infrequent use, requires ideal context capture |
+| Transcript Formatter | Balanced → Sophisticated | Content quality important for downstream processing |
+| Dense Knowledge Encoder | Balanced → Sophisticated | Critical for RAG database quality |
+| Summarizer | Fast/Cheap → Sophisticated | Varies by effort level configuration |
+| Processing QA Agent | Balanced → Sophisticated | Quality assessment requires reasoning capability |
+| Extraction QA Agent | Fast/Cheap → Balanced | Algorithmic analysis with some reasoning |
 
 ## Success Metrics
 

@@ -16,21 +16,23 @@
 - **Effort tagging**: All outputs tagged with processing cost for tracking and optimization
 
 ### Quality Assurance Philosophy
-- **Adaptive confidence**: QA frequency adjusts based on agent reliability over time
+- **Dual QA approach**: Separate Processing QA Agent for content analysis and Extraction QA Agent for script monitoring
+- **Adaptive confidence**: Processing QA frequency adjusts based on agent reliability over time
+- **Algorithmic extraction QA**: File size and log analysis with lightweight pass/fail/warn criteria
 - **Context sensitivity**: Increased checking for new agents, conferences, or after quality issues
 - **Sampling approach**: Focus QA resources on high-risk scenarios rather than comprehensive checking
 - **Learning system**: Confidence scores evolve based on performance history
 
-### QA Confidence Scoring System
-The Quality Assurance Agent maintains confidence scores that adapt checking frequency:
+### Processing QA Confidence Scoring System
+The Processing QA Agent maintains confidence scores that adapt checking frequency for content processing agents:
 
 ```yaml
-qa_confidence_system:
+processing_qa_confidence_system:
   agent_confidence_scores:
-    light_summarizer: 0.92      # High confidence, low check rate
     transcript_formatter: 0.78   # Medium confidence, moderate check rate
     dense_encoder: 0.65         # Lower confidence, higher check rate
-    deep_summarizer: 0.88       # High confidence, low check rate
+    summarizer_light: 0.92      # High confidence, low check rate
+    summarizer_deep: 0.88       # High confidence, low check rate
   
   check_rate_calculation:
     base_rate: 0.10             # 10% baseline checking
@@ -131,9 +133,11 @@ processing_state:
 ## Agent Priming Strategy
 
 ### Conference Classification Timing
-- **Execution**: Runs after basic extraction completes, parallel with transcript extraction
-- **Dependency**: All AI processing agents wait for classification completion
+- **Execution**: Runs immediately after basic presentation list extraction (titles, speakers, companies, tracks)
+- **Input Requirements**: Only needs presentation metadata, not transcript content
+- **Dependency**: ALL content-based processing agents wait for classification completion and priming
 - **Bypass**: Skipped entirely in extraction-only mode (effort level 0)
+- **Critical Rule**: No transcript formatting, summarization, or dense encoding until priming is available
 
 ### Conference Classification Output
 - **Technology domains**: Primary focus areas (e.g., "Kubernetes", "Platform Engineering", "AI/ML Operations")

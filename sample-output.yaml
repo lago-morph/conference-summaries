@@ -22,6 +22,9 @@ presentations:
     date: "Tuesday November 11, 2025"
     time: "12:00pm - 12:30pm EST"
     location: "Building B | Level 4 | B401-402"
+    track: "AI + ML"
+    track_url: "https://kccncna2025.sched.com/type/AI+%2B+ML"
+    experience_level: "Intermediate"
     detail_url: "https://kccncna2025.sched.com/event/27FVb/simplifying-advanced-ai-model-serving-on-kubernetes-using-helm-charts-ajay-vohra-amazon-tianlu-caron-zhang-apple"
     video_links:
       - platform: "youtube"
@@ -48,6 +51,9 @@ presentations:
     date: "Tuesday November 11, 2025"
     time: "2:30pm - 3:00pm EST"
     location: "Building B | Level 3 | B308-309"
+    track: "Cloud Native Experience"
+    track_url: "https://kccncna2025.sched.com/type/Cloud+Native+Experience"
+    experience_level: "Any"
     detail_url: "https://kccncna2025.sched.com/event/27FVz/the-myth-of-portability-why-your-cloud-native-app-is-married-to-your-provider-corey-quinn-the-duckbill-group"
     video_links:
       - platform: "youtube"

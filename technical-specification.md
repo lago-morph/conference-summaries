@@ -105,6 +105,12 @@ a[href*=".pptx"]
 .speaker
 .presenter
 [class*="speaker"]
+
+/* Track/Type information */
+.sched-event-type a[href*="type/"]
+
+/* Experience level */
+.tip-custom-fields a[href*="/company/"]
 ```
 
 ### Data Extraction Patterns
@@ -133,6 +139,9 @@ presentations:
     date: "Tuesday November 11, 2025"
     time: "12:00pm - 12:30pm EST"
     location: "Building B | Level 4 | B401-402"
+    track: "AI + ML"
+    track_url: "https://kccncna2025.sched.com/type/AI+%2B+ML"
+    experience_level: "Intermediate"
     detail_url: "https://kccncna2025.sched.com/event/27FVb/..."
     video_links:
       - platform: "youtube"
@@ -205,9 +214,21 @@ def extract_presentation_details(presentation_url):
     # Extract session details
     time_info = soup.select_one('[class*="time"]')
     
+    # Extract track/type information
+    track_link = soup.select_one('.sched-event-type a[href*="type/"]')
+    track = track_link.get_text().strip() if track_link else None
+    track_url = urljoin(presentation_url, track_link['href']) if track_link else None
+    
+    # Extract experience level
+    experience_link = soup.select_one('.tip-custom-fields a[href*="/company/"]')
+    experience_level = experience_link.get_text().strip() if experience_link else None
+    
     return {
         'video_links': video_links,
         'presentation_files': files,
+        'track': track,
+        'track_url': track_url,
+        'experience_level': experience_level,
         'session_details': time_info.get_text().strip() if time_info else None
     }
 ```

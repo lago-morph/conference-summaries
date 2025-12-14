@@ -111,6 +111,28 @@ async function analyzeIndividualPresentation(eventUrl, presentationName) {
       }
     });
     
+    // Look for track/type information
+    console.log('\n--- Track/Type Information ---');
+    const trackLink = $('.sched-event-type a[href*="type/"]');
+    if (trackLink.length > 0) {
+      const track = trackLink.text().trim();
+      const trackUrl = trackLink.attr('href');
+      console.log(`Track: ${track}`);
+      console.log(`Track URL: ${trackUrl.startsWith('http') ? trackUrl : 'https://kccncna2025.sched.com/' + trackUrl}`);
+    } else {
+      console.log('No track information found');
+    }
+    
+    // Look for experience level
+    console.log('\n--- Experience Level ---');
+    const experienceLink = $('.tip-custom-fields a[href*="/company/"]');
+    if (experienceLink.length > 0) {
+      const experienceLevel = experienceLink.text().trim();
+      console.log(`Experience Level: ${experienceLevel}`);
+    } else {
+      console.log('No experience level found');
+    }
+    
     // Look for all links to understand what's available
     console.log('\n--- All Links Analysis ---');
     const allLinks = $('a[href]');

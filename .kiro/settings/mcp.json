@@ -2,9 +2,13 @@
   "mcpServers": {
     "web-search": {
       "command": "node",
-      "args": ["C:\\Users\\JonathonManton\\Documents\\src\\conference-summaries\\web-search\\build\\index.js"],
+      "args": [
+        "C:\\Users\\JonathonManton\\Documents\\src\\conference-summaries\\web-search\\build-fixed\\index-fixed.js"
+      ],
       "disabled": false,
-      "autoApprove": []
+      "autoApprove": [
+        "search"
+      ]
     }
   }
 }

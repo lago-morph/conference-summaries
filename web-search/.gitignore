@@ -1,0 +1,15 @@
+# Ignore the original .git directory to avoid nested repos
+.git/
+
+# Node modules (will be reinstalled)
+node_modules/
+
+# Build artifacts that can be regenerated
+build/
+
+# Debug files
+google-response.html
+
+# OS files
+.DS_Store
+Thumbs.db

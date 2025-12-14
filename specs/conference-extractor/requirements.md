@@ -11,6 +11,7 @@ graph TD
     A[Unstructured Conference Info] --> B[Conference Discovery Agent]
     B --> C[Extraction Scripts]
     C --> D[Diagnostic Monitor Agent]
+    C --> CC[Conference Classifier Agent]
     D --> E{Scripts Working?}
     E -->|Yes| F[YouTube Transcript Scripts]
     E -->|No| G[Troubleshooting Agent]
@@ -18,25 +19,28 @@ graph TD
     H -->|Yes| C
     H -->|No| I[GitHub Issue Reporter Agent]
     F --> J[Transcript Formatter Agent]
-    J --> K[Dense Knowledge Encoder Agent]
-    K --> L[Summarizer Agent]
-    L --> M[Quality Assurance Agent]
-    M --> N{Quality OK?}
-    N -->|Yes| O[Final Output]
-    N -->|No| P{Too Many Issues?}
-    P -->|No| Q[Flag & Continue]
-    P -->|Yes| R[Stop Process]
-    Q --> I
+    CC --> K[Agent Priming & Selection]
+    J --> L[Dense Knowledge Encoder Agent]
+    K --> M[Summarizer Agent]
+    L --> M
+    M --> N[Quality Assurance Agent]
+    N --> O{Quality OK?}
+    O -->|Yes| P[Final Output]
+    O -->|No| Q{Too Many Issues?}
+    Q -->|No| R[Flag & Continue]
+    Q -->|Yes| S[Stop Process]
     R --> I
+    S --> I
     
     style B fill:#e1f5fe
     style D fill:#fff3e0
+    style CC fill:#e1f5fe
     style G fill:#fff3e0
     style I fill:#ffebee
     style J fill:#e8f5e8
-    style K fill:#e8f5e8
     style L fill:#e8f5e8
-    style M fill:#f3e5f5
+    style M fill:#e8f5e8
+    style N fill:#f3e5f5
 ```
 
 ## A/B Testing Framework
@@ -69,22 +73,26 @@ graph LR
 
 ## Glossary
 
-- **Conference_Discovery_Agent**: AI agent that interprets unstructured conference information and finds Sched.com URLs
-- **Extraction_Scripts**: Automated programs that perform heavy data extraction from Sched.com websites
-- **Diagnostic_Monitor_Agent**: AI agent that monitors script performance and detects extraction failures
-- **Troubleshooting_Agent**: AI agent that analyzes failures and provides new parameters to fix script issues
-- **GitHub_Issue_Reporter_Agent**: AI agent that files detailed bug reports when issues cannot be resolved
-- **YouTube_Transcript_Scripts**: Automated programs that extract text transcripts from YouTube videos
-- **Transcript_Formatter_Agent**: AI agent that formats raw transcripts with timestamps for human readability
-- **Dense_Knowledge_Encoder_Agent**: AI agent that creates compressed summaries for RAG database storage
-- **Summarizer_Agent**: AI agent that creates human-readable presentation summaries for decision-making
-- **Quality_Assurance_Agent**: AI agent that validates consistency and quality across all agent outputs
-- **Model_Configuration_System**: Framework for assigning different AI models to agents for A/B testing
-- **Quality_Evaluator**: Component that compares outputs from different models and measures quality differences
 - **CNCF**: Cloud Native Computing Foundation, the target conference organization
+- **Conference_Classifier_Agent**: AI agent that analyzes presentation titles, authors, and tracks to identify conference technology focus areas and generate selection criteria for deep processing
+- **Conference_Discovery_Agent**: AI agent that interprets unstructured conference information and finds Sched.com URLs
+- **Configuration_Manager**: YAML configuration file system that specifies processing parameters, model assignments, and selection criteria for all system components
+- **Dense_Knowledge_Encoder_Agent**: AI agent that creates compressed summaries optimized for RAG database storage and semantic search
+- **Diagnostic_Monitor_Agent**: AI agent that monitors script performance and detects extraction failures
+- **Extraction_Scripts**: Automated programs that perform heavy data extraction from Sched.com websites
+- **GitHub_Issue_Reporter_Agent**: AI agent that files detailed bug reports when issues cannot be resolved
+- **Model_Configuration_System**: Framework for assigning different AI models to agents for A/B testing
+- **Quality_Assurance_Agent**: AI agent that validates consistency and quality across all agent outputs
+- **Quality_Evaluator**: Component that compares outputs from different models and measures quality differences
 - **Sched.com**: The conference management platform hosting the target conferences
+- **Summarizer_Agent**: AI agent that creates human-readable presentation summaries with configurable effort levels (light or deep processing)
+- **Transcript_Formatter_Agent**: AI agent that formats raw transcripts with timestamps for human readability
+- **Troubleshooting_Agent**: AI agent that analyzes failures and provides new parameters to fix script issues
+- **YouTube_Transcript_Scripts**: Automated programs that extract text transcripts from YouTube videos
 
 ## Requirements
+
+## Core Extraction Pipeline
 
 ### Requirement 1
 
@@ -158,6 +166,8 @@ graph LR
 4. WHEN transcript extraction fails, THE YouTube_Transcript_Scripts SHALL log the failure and continue with remaining videos
 5. THE YouTube_Transcript_Scripts SHALL handle rate limiting and API quotas appropriately for batch processing
 
+## AI Processing Pipeline
+
 ### Requirement 7
 
 **User Story:** As a content consumer, I want AI-formatted transcripts with proper timestamps and structure, so that I can easily read and reference specific sections of presentations.
@@ -188,13 +198,39 @@ graph LR
 
 #### Acceptance Criteria
 
-1. WHEN processing all presentations, THE Light_Summarizer_Agent SHALL create basic summaries using cost-effective models for every presentation
-2. WHEN generating light summaries, THE Light_Summarizer_Agent SHALL extract key topics, speaker information, and basic takeaways with keyword identification
-3. WHEN processing selected presentations, THE Deep_Summarizer_Agent SHALL create comprehensive summaries with detailed analysis using sophisticated models
+1. WHEN processing all presentations, THE Summarizer_Agent SHALL create basic summaries using cost-effective models and light effort configuration for every presentation
+2. WHEN generating light summaries, THE Summarizer_Agent SHALL extract key topics, speaker information, and basic takeaways with keyword identification
+3. WHEN processing selected presentations, THE Summarizer_Agent SHALL create comprehensive summaries with detailed analysis using sophisticated models and deep effort configuration
 4. WHEN creating tiered summaries, THE system SHALL tag each output with effort indicators showing processing cost and model sophistication used
-5. THE Summarizer_Agents SHALL generate summaries in markdown format for human readability and support iterative re-processing of presentations from light to deep summaries
+5. THE Summarizer_Agent SHALL generate summaries in markdown format for human readability and support iterative re-processing of presentations from light to deep effort levels
 
 ### Requirement 10
+
+**User Story:** As a content strategist, I want automatic identification of conference technology focus areas, so that all processing agents can be primed with relevant domain expertise for better analysis quality.
+
+#### Acceptance Criteria
+
+1. WHEN presentation titles are extracted, THE Conference_Classifier_Agent SHALL analyze the complete set of titles to identify primary technology focus areas
+2. WHEN classifying conference scope, THE Conference_Classifier_Agent SHALL generate technology domain tags and expertise areas that inform subsequent agent processing
+3. WHEN processing completes, THE Conference_Classifier_Agent SHALL provide selection criteria and keywords for identifying high-priority presentations for deep processing
+4. WHEN classification results are available, THE Conference_Classifier_Agent SHALL prime other agents with domain-specific context to improve analysis quality
+5. THE Conference_Classifier_Agent SHALL complete analysis before transcript formatting, summarization, or dense encoding begins to ensure consistent domain expertise
+
+### Requirement 11
+
+**User Story:** As a quality optimizer, I want all AI processing to benefit from conference-specific priming, so that even lightweight models perform optimally with domain-appropriate context.
+
+#### Acceptance Criteria
+
+1. WHEN the Conference_Classifier_Agent completes analysis, THE system SHALL generate domain-specific priming prompts for all subsequent AI agents
+2. WHEN processing presentations, THE Summarizer_Agent SHALL wait for classification results and use conference-specific priming to improve output quality
+3. WHEN priming agents, THE system SHALL provide technology context, common terminology, and domain expertise relevant to the specific conference
+4. WHEN using lightweight models, THE system SHALL leverage priming to achieve performance improvements that approach more expensive model capabilities
+5. THE system SHALL maintain priming templates that can be customized based on conference classification results and reused for similar conference types
+
+## Quality Assurance and Optimization
+
+### Requirement 12
 
 **User Story:** As a quality manager, I want adaptive quality assurance that builds confidence over time, so that I can ensure consistency while optimizing QA costs as the system proves reliable.
 
@@ -206,7 +242,7 @@ graph LR
 4. WHEN confidence scores indicate reliability, THE Quality_Assurance_Agent SHALL optimize checking to focus on high-risk scenarios while reducing overall QA costs
 5. THE Quality_Assurance_Agent SHALL maintain configurable confidence scoring that adapts to agent performance, conference complexity, and historical quality patterns
 
-### Requirement 11
+### Requirement 13
 
 **User Story:** As a system optimizer, I want A/B testing capabilities for different AI models, so that I can optimize cost and performance by using the most appropriate model for each task.
 
@@ -218,7 +254,7 @@ graph LR
 4. WHEN A/B testing completes, THE Quality_Evaluator SHALL generate recommendations for optimal model assignments
 5. THE Model_Configuration_System SHALL support reproducible testing by maintaining version control of model configurations and test data
 
-### Requirement 12
+### Requirement 14
 
 **User Story:** As a performance analyst, I want comprehensive metrics collection across all system components, so that I can optimize the entire pipeline for cost, speed, and quality.
 
@@ -250,7 +286,7 @@ graph TD
     
     J --> L[Wait for Classification]
     K --> L
-    L --> M[Light Summarizer Agent - ALL Talks]
+    L --> M[Summarizer Agent - Light Effort - ALL Talks]
     
     J --> N[Selection Criteria Generation]
     M --> O[Light Summaries + Keywords]
@@ -263,7 +299,7 @@ graph TD
     P -->|No| R[Light Summary Only]
     
     Q --> S[Dense Knowledge Encoder Agent]
-    S --> T[Deep Summarizer Agent]
+    S --> T[Summarizer Agent - Deep Effort]
     
     R --> U[Adaptive QA Agent]
     T --> U
@@ -461,19 +497,9 @@ The system supports different AI models for each agent type, enabling cost and p
 - **Human Summaries**: Decision-making utility score >7/10 in user evaluations
 - **Overall Pipeline**: <10% quality issues flagged by QA agent
 
-### Requirement 13
+## System Operations
 
-**User Story:** As a content strategist, I want automatic identification of conference technology focus areas, so that all processing agents can be primed with relevant domain expertise for better analysis quality.
-
-#### Acceptance Criteria
-
-1. WHEN presentation titles are extracted, THE Conference_Classifier_Agent SHALL analyze the complete set of titles to identify primary technology focus areas
-2. WHEN classifying conference scope, THE Conference_Classifier_Agent SHALL generate technology domain tags and expertise areas that inform subsequent agent processing
-3. WHEN processing completes, THE Conference_Classifier_Agent SHALL provide selection criteria and keywords for identifying high-priority presentations for deep processing
-4. WHEN classification results are available, THE Conference_Classifier_Agent SHALL prime other agents with domain-specific context to improve analysis quality
-5. THE Conference_Classifier_Agent SHALL complete analysis before transcript formatting, summarization, or dense encoding begins to ensure consistent domain expertise
-
-### Requirement 14
+### Requirement 15
 
 **User Story:** As a system administrator, I want centralized configuration management for all models and quality parameters, so that I can easily optimize cost and performance without code changes.
 
@@ -484,7 +510,8 @@ The system supports different AI models for each agent type, enabling cost and p
 3. WHEN optimizing costs, THE Configuration_Manager SHALL support cost budgets and model selection constraints that can be easily modified
 4. WHEN updating configurations, THE Configuration_Manager SHALL validate configuration changes and provide warnings for potentially problematic settings
 5. THE Configuration_Manager SHALL support environment-specific configurations (development, testing, production) with appropriate defaults for each
-### Requirement 15
+
+### Requirement 16
 
 **User Story:** As a batch processor, I want fully automated operation without user interaction, so that the system can run unattended and be integrated into automated workflows.
 
@@ -496,7 +523,7 @@ The system supports different AI models for each agent type, enabling cost and p
 4. WHEN errors occur, THE Conference_Extractor SHALL handle them automatically through the diagnostic and troubleshooting agents without stopping for user input
 5. THE Conference_Extractor SHALL provide comprehensive logging and status reporting for monitoring without requiring interactive feedback
 
-### Requirement 16
+### Requirement 17
 
 **User Story:** As a system operator, I want resumable and idempotent processing, so that interrupted jobs can be restarted efficiently without duplicating completed work.
 
@@ -508,17 +535,6 @@ The system supports different AI models for each agent type, enabling cost and p
 4. WHEN manual flags are added or removed, THE Conference_Extractor SHALL process only the presentations affected by the flag changes
 5. THE Conference_Extractor SHALL maintain processing metadata that enables intelligent decisions about what work needs to be redone versus what can be reused
 
-### Requirement 17
-
-**User Story:** As a quality optimizer, I want all AI processing to benefit from conference-specific priming, so that even lightweight models perform optimally with domain-appropriate context.
-
-#### Acceptance Criteria
-
-1. WHEN the Conference_Classifier_Agent completes analysis, THE system SHALL generate domain-specific priming prompts for all subsequent AI agents
-2. WHEN processing presentations, THE Light_Summarizer_Agent SHALL wait for classification results and use conference-specific priming to improve output quality
-3. WHEN priming agents, THE system SHALL provide technology context, common terminology, and domain expertise relevant to the specific conference
-4. WHEN using lightweight models, THE system SHALL leverage priming to achieve performance improvements that approach more expensive model capabilities
-5. THE system SHALL maintain priming templates that can be customized based on conference classification results and reused for similar conference types
 ### Requirement 18
 
 **User Story:** As a data pipeline operator, I want the option to perform only raw data extraction without any AI processing, so that I can separate data acquisition from data processing and optimize resource usage across different execution contexts.

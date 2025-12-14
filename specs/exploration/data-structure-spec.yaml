@@ -1,0 +1,319 @@
+# Sample Conference Data Output
+# KubeCon + CloudNativeCon North America 2025
+
+conference:
+  name: "KubeCon + CloudNativeCon North America 2025"
+  sponsor: "CNCF"
+  location: "Atlanta, GA, USA"
+  dates: "November 9-13, 2025"
+  sched_identifier: "kccncna2025"
+  main_url: "https://kccncna2025.sched.com/list/"
+  total_presentations: 542
+  extraction_date: "2025-01-13"
+
+# Available tracks/types for filtering
+available_tracks:
+  - name: "⚡ Lightning Talks"
+    display_text: "⚡ Lightning Talks"
+    list_url: "https://kccncna2025.sched.com/list/type/%E2%9A%A1+Lightning+Talks"
+    overview_url: "https://kccncna2025.sched.com/overview/type/%E2%9A%A1%20Lightning%20Talks"
+    has_emoji: true
+    
+  - name: "📚 Tutorials"
+    display_text: "📚 Tutorials"
+    list_url: "https://kccncna2025.sched.com/list/type/%F0%9F%93%9A+Tutorials"
+    overview_url: "https://kccncna2025.sched.com/overview/type/%F0%9F%93%9A%20Tutorials"
+    has_emoji: true
+    
+  - name: "🪧 Poster Sessions"
+    display_text: "🪧 Poster Sessions"
+    list_url: "https://kccncna2025.sched.com/list/type/%F0%9F%AA%A7+Poster+Sessions"
+    overview_url: "https://kccncna2025.sched.com/overview/type/%F0%9F%AA%A7%20Poster%20Sessions"
+    has_emoji: true
+    
+  - name: "🚨 ContribFest"
+    display_text: "🚨 ContribFest"
+    list_url: "https://kccncna2025.sched.com/list/type/%F0%9F%9A%A8+ContribFest"
+    overview_url: "https://kccncna2025.sched.com/overview/type/%F0%9F%9A%A8%20ContribFest"
+    has_emoji: true
+    
+  - name: "AI + ML"
+    display_text: "AI + ML"
+    list_url: "https://kccncna2025.sched.com/list/type/AI+%2B+ML"
+    overview_url: "https://kccncna2025.sched.com/overview/type/AI%20%2B%20ML"
+    has_emoji: false
+    
+  - name: "Application Development"
+    display_text: "Application Development"
+    list_url: "https://kccncna2025.sched.com/list/type/Application+Development"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Application%20Development"
+    has_emoji: false
+    
+  - name: "Breaks"
+    display_text: "Breaks"
+    list_url: "https://kccncna2025.sched.com/list/type/Breaks"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Breaks"
+    has_emoji: false
+    
+  - name: "Cloud Native Experience"
+    display_text: "Cloud Native Experience"
+    list_url: "https://kccncna2025.sched.com/list/type/Cloud+Native+Experience"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Cloud%20Native%20Experience"
+    has_emoji: false
+    
+  - name: "Cloud Native Novice"
+    display_text: "Cloud Native Novice"
+    list_url: "https://kccncna2025.sched.com/list/type/Cloud+Native+Novice"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Cloud%20Native%20Novice"
+    has_emoji: false
+    
+  - name: "Cloud Native Startup"
+    display_text: "Cloud Native Startup"
+    list_url: "https://kccncna2025.sched.com/list/type/Cloud+Native+Startup"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Cloud%20Native%20Startup"
+    has_emoji: false
+    
+  - name: "CNCF-hosted Co-located Events"
+    display_text: "CNCF-hosted Co-located Events"
+    list_url: "https://kccncna2025.sched.com/list/type/CNCF-hosted+Co-located+Events"
+    overview_url: "https://kccncna2025.sched.com/overview/type/CNCF-hosted%20Co-located%20Events"
+    has_emoji: false
+    
+  - name: "Connectivity"
+    display_text: "Connectivity"
+    list_url: "https://kccncna2025.sched.com/list/type/Connectivity"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Connectivity"
+    has_emoji: false
+    
+  - name: "Data Processing + Storage"
+    display_text: "Data Processing + Storage"
+    list_url: "https://kccncna2025.sched.com/list/type/Data+Processing+%2B+Storage"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Data%20Processing%20%2B%20Storage"
+    has_emoji: false
+    
+  - name: "Emerging + Advanced"
+    display_text: "Emerging + Advanced"
+    list_url: "https://kccncna2025.sched.com/list/type/Emerging+%2B+Advanced"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Emerging%20%2B%20Advanced"
+    has_emoji: false
+    
+  - name: "Experiences"
+    display_text: "Experiences"
+    list_url: "https://kccncna2025.sched.com/list/type/Experiences"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Experiences"
+    has_emoji: false
+    has_subtypes: true
+    
+  - name: "Inclusion + Accessibility"
+    display_text: "Inclusion + Accessibility"
+    list_url: "https://kccncna2025.sched.com/list/type/Inclusion+%2B+Accessibility"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Inclusion%20%2B%20Accessibility"
+    has_emoji: false
+    
+  - name: "Keynote Sessions"
+    display_text: "Keynote Sessions"
+    list_url: "https://kccncna2025.sched.com/list/type/Keynote+Sessions"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Keynote%20Sessions"
+    has_emoji: false
+    
+  - name: "Maintainer Track"
+    display_text: "Maintainer Track"
+    list_url: "https://kccncna2025.sched.com/list/type/Maintainer+Track"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Maintainer%20Track"
+    has_emoji: false
+    
+  - name: "Observability"
+    display_text: "Observability"
+    list_url: "https://kccncna2025.sched.com/list/type/Observability"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Observability"
+    has_emoji: false
+    
+  - name: "Operations + Performance"
+    display_text: "Operations + Performance"
+    list_url: "https://kccncna2025.sched.com/list/type/Operations+%2B+Performance"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Operations%20%2B%20Performance"
+    has_emoji: false
+    
+  - name: "Platform Engineering"
+    display_text: "Platform Engineering"
+    list_url: "https://kccncna2025.sched.com/list/type/Platform+Engineering"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Platform%20Engineering"
+    has_emoji: false
+    
+  - name: "Project Opportunities"
+    display_text: "Project Opportunities"
+    list_url: "https://kccncna2025.sched.com/list/type/Project+Opportunities"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Project%20Opportunities"
+    has_emoji: false
+    
+  - name: "Registration"
+    display_text: "Registration"
+    list_url: "https://kccncna2025.sched.com/list/type/Registration"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Registration"
+    has_emoji: false
+    
+  - name: "Security"
+    display_text: "Security"
+    list_url: "https://kccncna2025.sched.com/list/type/Security"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Security"
+    has_emoji: false
+    
+  - name: "Solutions Showcase"
+    display_text: "Solutions Showcase"
+    list_url: "https://kccncna2025.sched.com/list/type/Solutions+Showcase"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Solutions%20Showcase"
+    has_emoji: false
+    
+  - name: "Sponsor-hosted Co-located Event"
+    display_text: "Sponsor-hosted Co-located Event"
+    list_url: "https://kccncna2025.sched.com/list/type/Sponsor-hosted+Co-located+Event"
+    overview_url: "https://kccncna2025.sched.com/overview/type/Sponsor-hosted%20Co-located%20Event"
+    has_emoji: false
+
+# Track filtering configuration
+track_filtering:
+  enabled: true
+  default_action: "include_all"  # or "exclude_all"
+  user_selectable: true
+  exclude_by_default:
+    - "Breaks"
+    - "Registration" 
+    - "Solutions Showcase"
+  include_by_default:
+    - "AI + ML"
+    - "Application Development"
+    - "Cloud Native Experience"
+    - "Keynote Sessions"
+    - "Platform Engineering"
+    - "Security"
+
+presentations:
+  - id: "27FVb"
+    title: "Simplifying Advanced AI Model Serving on Kubernetes Using Helm Charts"
+    speakers:
+      - name: "Ajay Vohra"
+        company: "Amazon"
+      - name: "Tianlu Caron Zhang"
+        company: "Apple"
+    date: "Tuesday November 11, 2025"
+    time: "12:00pm - 12:30pm EST"
+    location: "Building B | Level 4 | B401-402"
+    track: "AI + ML"
+    track_url: "https://kccncna2025.sched.com/type/AI+%2B+ML"
+    experience_level: "Intermediate"
+    detail_url: "https://kccncna2025.sched.com/event/27FVb/simplifying-advanced-ai-model-serving-on-kubernetes-using-helm-charts-ajay-vohra-amazon-tianlu-caron-zhang-apple"
+    video_links:
+      - platform: "youtube"
+        url: "https://www.youtube.com/embed/PVB2hW8PuAM"
+        type: "embedded"
+        video_id: "PVB2hW8PuAM"
+    presentation_files:
+      - type: "pdf"
+        url: "https://static.sched.com/hosted_files/kccncna2025/1c/kubecon-2025-simplifying-advanced-model-serving-on-k8s-using-helm-charts.pdf"
+        filename: "kubecon-2025-simplifying-advanced-model-serving-on-k8s-using-helm-charts.pdf"
+      - type: "pptx"
+        url: "https://static.sched.com/hosted_files/kccncna2025/a0/kubecon-2025-simplifying-advanced-model-serving-on-k8s-using-helm-charts.pptx"
+        filename: "kubecon-2025-simplifying-advanced-model-serving-on-k8s-using-helm-charts.pptx"
+    content_status:
+      has_video: true
+      has_presentation_files: true
+      file_count: 2
+
+  - id: "27FVz"
+    title: "The Myth of Portability: Why Your Cloud Native App Is Married To Your Provider"
+    speakers:
+      - name: "Corey Quinn"
+        company: "The Duckbill Group"
+    date: "Tuesday November 11, 2025"
+    time: "2:30pm - 3:00pm EST"
+    location: "Building B | Level 3 | B308-309"
+    track: "Cloud Native Experience"
+    track_url: "https://kccncna2025.sched.com/type/Cloud+Native+Experience"
+    experience_level: "Any"
+    detail_url: "https://kccncna2025.sched.com/event/27FVz/the-myth-of-portability-why-your-cloud-native-app-is-married-to-your-provider-corey-quinn-the-duckbill-group"
+    video_links:
+      - platform: "youtube"
+        url: "https://www.youtube.com/embed/cvv1cVi1n9I"
+        type: "embedded"
+        video_id: "cvv1cVi1n9I"
+    presentation_files: []
+    content_status:
+      has_video: true
+      has_presentation_files: false
+      file_count: 0
+
+  - id: "2ArNt"
+    title: "🏃 Fun Run"
+    speakers: []
+    date: "Tuesday November 11, 2025"
+    time: "7:00am - 9:00am EST"
+    location: "Corner of Marietta St. and Park Ave across from Centennial Olympic Park, 267 Marietta St NW, Atlanta, GA 30313"
+    track: "Experiences"
+    track_url: "https://kccncna2025.sched.com/type/Experiences"
+    sub_track: "Wellness"
+    sub_track_url: "https://kccncna2025.sched.com/type/Experiences/Wellness"
+    experience_level: null
+    detail_url: "https://kccncna2025.sched.com/event/2ArNt/fun-run"
+    video_links: []
+    presentation_files: []
+    content_status:
+      has_video: false
+      has_presentation_files: false
+      file_count: 0
+
+  - id: "27Nko"
+    title: "🚨 Contribfest: Argo: Configure Your Local Setup and Contribute!"
+    speakers:
+      - name: "Alexandre Gaudreault"
+        company: "Intuit"
+        role: "Software Developer & Argo CD Maintainer"
+      - name: "Peter Jiang"
+        company: "Intuit"
+        role: "Software Engineer & Argo CD contributor"
+      - name: "Codey Jenkins"
+        company: "Intuit"
+        role: "Senior Software Engineer & Argo CD Contributor"
+      - name: "Nitish Kumar"
+        company: "Akuity"
+        role: "Software Engineer & Argo CD Maintainer"
+    date: "Tuesday November 11, 2025"
+    time: "2:30pm - 3:45pm EST"
+    location: "Building B | Level 2 | B207"
+    track: "🚨 ContribFest"
+    track_url: "https://kccncna2025.sched.com/type/%F0%9F%9A%A8+ContribFest"
+    sub_track: null
+    sub_track_url: null
+    experience_level: "Any"
+    detail_url: "https://kccncna2025.sched.com/event/27Nko/contribfest-argo-configure-your-local-setup-and-contribute-alexandre-gaudreault-peter-jiang-codey-jenkins-intuit-nitish-kumar-akuity"
+    video_links: []
+    presentation_files: []
+    content_status:
+      has_video: false
+      has_presentation_files: false
+      file_count: 0
+    special_characters:
+      has_emoji: true
+      emoji_in_title: "🚨"
+      emoji_in_track: "🚨"
+
+# Statistics
+extraction_summary:
+  total_presentations_found: 542
+  presentations_with_video: 2  # Based on sample
+  presentations_with_files: 1  # Based on sample
+  presentations_analyzed: 4
+  success_rate: "100%"
+  presentations_with_emoji: 2  # Fun Run 🏃, ContribFest 🚨
+  presentations_with_subtypes: 1  # Fun Run (Experiences/Wellness)
+  common_file_types:
+    - "pdf"
+    - "pptx"
+  video_platforms:
+    - "youtube"
+  track_types_found:
+    - "AI + ML"
+    - "Cloud Native Experience"
+    - "Experiences"
+    - "🚨 ContribFest"
+  sub_track_types_found:
+    - "Wellness"

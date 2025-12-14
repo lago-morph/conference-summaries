@@ -49,6 +49,8 @@ Ready for Python/shell script automation implementation based on the technical s
 conference-summaries/
 ├── ai-guidance/           # AI agent documentation and specifications
 ├── scripts/              # Analysis and test scripts (with own package.json)
+├── specs/                # System specifications and requirements
+│   └── exploration/      # Exploration phase results and implementation specs
 ├── temp/                 # Temporary files (HTML downloads, etc.)
 ├── web-search/           # Enhanced MCP web search server (with own package.json)
 ├── sample-output.yaml    # Target data format with examples
@@ -58,9 +60,11 @@ conference-summaries/
 ## Getting Started
 
 1. Read [`ai-guidance/project-progress.md`](./ai-guidance/project-progress.md) for complete project context
-2. Review [`ai-guidance/technical-specification.md`](./ai-guidance/technical-specification.md) for implementation details
-3. Check [`sample-output.yaml`](./sample-output.yaml) for target data format
-4. Use scripts in [`scripts/`](./scripts/) directory for testing and analysis (run `npm install` in scripts/ first)
+2. Review [`specs/exploration/README.md`](./specs/exploration/README.md) for distilled exploration results
+3. Check [`specs/exploration/data-structure-spec.yaml`](./specs/exploration/data-structure-spec.yaml) for target data format
+4. Review [`specs/exploration/extraction-workflow.md`](./specs/exploration/extraction-workflow.md) for step-by-step process
+5. Use implementation examples in [`specs/exploration/`](./specs/exploration/) directory
+6. Use scripts in [`scripts/`](./scripts/) directory for testing and analysis (run `npm install` in scripts/ first)
 
 ## Important Notes
 

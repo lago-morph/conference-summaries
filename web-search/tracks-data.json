@@ -1,0 +1,158 @@
+[
+  {
+    "name": "⚡ Lightning Talks",
+    "display_text": "⚡ Lightning Talks",
+    "url": "https://kccncna2025.sched.com/list/type/%E2%9A%A1+Lightning+Talks",
+    "overview_url": "https://kccncna2025.sched.com/overview/type/%E2%9A%A1%20Lightning%20Talks"
+  },
+  {
+    "name": "📚 Tutorials",
+    "display_text": "📚 Tutorials",
+    "url": "https://kccncna2025.sched.com/list/type/%F0%9F%93%9A+Tutorials",
+    "overview_url": "https://kccncna2025.sched.com/overview/type/%F0%9F%93%9A%20Tutorials"
+  },
+  {
+    "name": "🪧 Poster Sessions",
+    "display_text": "🪧 Poster Sessions",
+    "url": "https://kccncna2025.sched.com/list/type/%F0%9F%AA%A7+Poster+Sessions",
+    "overview_url": "https://kccncna2025.sched.com/overview/type/%F0%9F%AA%A7%20Poster%20Sessions"
+  },
+  {
+    "name": "🚨 ContribFest",
+    "display_text": "🚨 ContribFest",
+    "url": "https://kccncna2025.sched.com/list/type/%F0%9F%9A%A8+ContribFest",
+    "overview_url": "https://kccncna2025.sched.com/overview/type/%F0%9F%9A%A8%20ContribFest"
+  },
+  {
+    "name": "AI   ML",
+    "display_text": "AI + ML",
+    "url": "https://kccncna2025.sched.com/list/type/AI+%2B+ML",
+    "overview_url": "https://kccncna2025.sched.com/overview/type/AI%20%20%20ML"
+  },
+  {
+    "name": "Application Development",
+    "display_text": "Application Development",
+    "url": "https://kccncna2025.sched.com/list/type/Application+Development",
+    "overview_url": "https://kccncna2025.sched.com/overview/type/Application%20Development"
+  },
+  {
+    "name": "Breaks",
+    "display_text": "Breaks",
+    "url": "https://kccncna2025.sched.com/list/type/Breaks",
+    "overview_url": "https://kccncna2025.sched.com/overview/type/Breaks"
+  },
+  {
+    "name": "Cloud Native Experience",
+    "display_text": "Cloud Native Experience",
+    "url": "https://kccncna2025.sched.com/list/type/Cloud+Native+Experience",
+    "overview_url": "https://kccncna2025.sched.com/overview/type/Cloud%20Native%20Experience"
+  },
+  {
+    "name": "Cloud Native Novice",
+    "display_text": "Cloud Native Novice",
+    "url": "https://kccncna2025.sched.com/list/type/Cloud+Native+Novice",
+    "overview_url": "https://kccncna2025.sched.com/overview/type/Cloud%20Native%20Novice"
+  },
+  {
+    "name": "Cloud Native Startup",
+    "display_text": "Cloud Native Startup",
+    "url": "https://kccncna2025.sched.com/list/type/Cloud+Native+Startup",
+    "overview_url": "https://kccncna2025.sched.com/overview/type/Cloud%20Native%20Startup"
+  },
+  {
+    "name": "CNCF-hosted Co-located Events",
+    "display_text": "CNCF-hosted Co-located Events",
+    "url": "https://kccncna2025.sched.com/list/type/CNCF-hosted+Co-located+Events",
+    "overview_url": "https://kccncna2025.sched.com/overview/type/CNCF-hosted%20Co-located%20Events"
+  },
+  {
+    "name": "Connectivity",
+    "display_text": "Connectivity",
+    "url": "https://kccncna2025.sched.com/list/type/Connectivity",
+    "overview_url": "https://kccncna2025.sched.com/overview/type/Connectivity"
+  },
+  {
+    "name": "Data Processing   Storage",
+    "display_text": "Data Processing + Storage",
+    "url": "https://kccncna2025.sched.com/list/type/Data+Processing+%2B+Storage",
+    "overview_url": "https://kccncna2025.sched.com/overview/type/Data%20Processing%20%20%20Storage"
+  },
+  {
+    "name": "Emerging   Advanced",
+    "display_text": "Emerging + Advanced",
+    "url": "https://kccncna2025.sched.com/list/type/Emerging+%2B+Advanced",
+    "overview_url": "https://kccncna2025.sched.com/overview/type/Emerging%20%20%20Advanced"
+  },
+  {
+    "name": "Experiences",
+    "display_text": "Experiences",
+    "url": "https://kccncna2025.sched.com/list/type/Experiences",
+    "overview_url": "https://kccncna2025.sched.com/overview/type/Experiences"
+  },
+  {
+    "name": "Inclusion   Accessibility",
+    "display_text": "Inclusion + Accessibility",
+    "url": "https://kccncna2025.sched.com/list/type/Inclusion+%2B+Accessibility",
+    "overview_url": "https://kccncna2025.sched.com/overview/type/Inclusion%20%20%20Accessibility"
+  },
+  {
+    "name": "Keynote Sessions",
+    "display_text": "Keynote Sessions",
+    "url": "https://kccncna2025.sched.com/list/type/Keynote+Sessions",
+    "overview_url": "https://kccncna2025.sched.com/overview/type/Keynote%20Sessions"
+  },
+  {
+    "name": "Maintainer Track",
+    "display_text": "Maintainer Track",
+    "url": "https://kccncna2025.sched.com/list/type/Maintainer+Track",
+    "overview_url": "https://kccncna2025.sched.com/overview/type/Maintainer%20Track"
+  },
+  {
+    "name": "Observability",
+    "display_text": "Observability",
+    "url": "https://kccncna2025.sched.com/list/type/Observability",
+    "overview_url": "https://kccncna2025.sched.com/overview/type/Observability"
+  },
+  {
+    "name": "Operations   Performance",
+    "display_text": "Operations + Performance",
+    "url": "https://kccncna2025.sched.com/list/type/Operations+%2B+Performance",
+    "overview_url": "https://kccncna2025.sched.com/overview/type/Operations%20%20%20Performance"
+  },
+  {
+    "name": "Platform Engineering",
+    "display_text": "Platform Engineering",
+    "url": "https://kccncna2025.sched.com/list/type/Platform+Engineering",
+    "overview_url": "https://kccncna2025.sched.com/overview/type/Platform%20Engineering"
+  },
+  {
+    "name": "Project Opportunities",
+    "display_text": "Project Opportunities",
+    "url": "https://kccncna2025.sched.com/list/type/Project+Opportunities",
+    "overview_url": "https://kccncna2025.sched.com/overview/type/Project%20Opportunities"
+  },
+  {
+    "name": "Registration",
+    "display_text": "Registration",
+    "url": "https://kccncna2025.sched.com/list/type/Registration",
+    "overview_url": "https://kccncna2025.sched.com/overview/type/Registration"
+  },
+  {
+    "name": "Security",
+    "display_text": "Security",
+    "url": "https://kccncna2025.sched.com/list/type/Security",
+    "overview_url": "https://kccncna2025.sched.com/overview/type/Security"
+  },
+  {
+    "name": "Solutions Showcase",
+    "display_text": "Solutions Showcase",
+    "url": "https://kccncna2025.sched.com/list/type/Solutions+Showcase",
+    "overview_url": "https://kccncna2025.sched.com/overview/type/Solutions%20Showcase"
+  },
+  {
+    "name": "Sponsor-hosted Co-located Event",
+    "display_text": "Sponsor-hosted Co-located Event",
+    "url": "https://kccncna2025.sched.com/list/type/Sponsor-hosted+Co-located+Event",
+    "overview_url": "https://kccncna2025.sched.com/overview/type/Sponsor-hosted%20Co-located%20Event"
+  }
+]

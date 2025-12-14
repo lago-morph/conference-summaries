@@ -1,74 +1,70 @@
 # AI Agent Guidance
 
-This repository contains comprehensive documentation and guidance for AI agents working on the conference data extraction project.
+This repository contains a conference data extraction system for CNCF KubeCon conferences from Sched.com websites.
 
-## AI Guidance Directory
+## Project Status
+✅ **EXPLORATION COMPLETE** - Ready for production implementation
 
-All AI-focused instructions, specifications, and progress documentation are located in the [`ai-guidance/`](./ai-guidance/) directory:
-
-### Core Documentation
-
-- **[`project-progress.md`](./ai-guidance/project-progress.md)** - Complete project progress log with all phases, achievements, and current status
-- **[`technical-specification.md`](./ai-guidance/technical-specification.md)** - Comprehensive technical specification for conference data extraction from Sched.com websites
-- **[`sched-page-structure-analysis.md`](./ai-guidance/sched-page-structure-analysis.md)** - Detailed analysis of Sched.com page structures and HTML patterns
-- **[`mcp-web-search-setup.md`](./ai-guidance/mcp-web-search-setup.md)** - Instructions for setting up the MCP web search server
-
-### Key Information for AI Agents
-
-#### Project Status
-✅ **EXPLORATION COMPLETE** - All phases finished, ready for implementation
-
-#### What This Project Does
-Automated extraction of CNCF KubeCon conference presentation data from Sched.com websites, including:
+## What This System Does
+Automated extraction of conference presentation data including:
 - Conference metadata (name, location, dates, sponsor)
-- Presentation details (title, speakers, date, time, location)
-- Track/type information with filtering capabilities
-- Video links (primarily YouTube)
-- Presentation files (PDF, PPTX)
+- Presentation details (title, speakers, date, time, location, tracks)
+- Video links (primarily YouTube) and presentation files (PDF, PPTX)
+- Track filtering system (26 tracks identified, including emoji support)
 
-#### Current Capabilities
+## Current Capabilities
 - **Web Search**: Enhanced MCP server with multi-engine support
-- **Track Extraction**: All 26 tracks from KubeCon 2025 North America identified
-- **Data Extraction**: Validated patterns for presentations and metadata
+- **Data Extraction**: Validated patterns for 542 presentations
 - **Special Character Support**: Full emoji and Unicode handling
-- **Sub-type Support**: Hierarchical track categories (e.g., Experiences/Wellness)
+- **Track Filtering**: User-selectable presentation categories
 
-#### Test Conference
-**KubeCon + CloudNativeCon North America 2025**
-- Location: Atlanta, GA, USA
-- Dates: November 9-13, 2025
-- Sched URL: https://kccncna2025.sched.com/list/
-- Total Presentations: 542
-
-#### Next Steps
-Ready for Python/shell script automation implementation based on the technical specification.
+## Test Conference Validated
+**KubeCon + CloudNativeCon North America 2025** (Atlanta, GA, November 9-13, 2025)
+- 542 presentations across 26 tracks
+- 80-90% extraction success rate
+- ~5.6 minutes processing time
 
 ## Repository Structure
 
 ```
 conference-summaries/
-├── ai-guidance/           # AI agent documentation and specifications
+├── ai-guidance/           # Context-sensitive setup guides (read headers first)
 ├── scripts/              # Analysis and test scripts (with own package.json)
-├── specs/                # System specifications and requirements
-│   └── exploration/      # Exploration phase results and implementation specs
+├── specs/exploration/     # Exploration results and implementation specs (reference as needed)
 ├── temp/                 # Temporary files (HTML downloads, etc.)
-├── web-search/           # Enhanced MCP web search server (with own package.json)
-└── AGENTS.md            # This file
+├── web-search/           # Enhanced MCP web search server (production ready)
+└── AGENTS.md            # This file (always read)
 ```
 
-## Getting Started
+## Documentation Access Strategy
 
-1. Read [`ai-guidance/project-progress.md`](./ai-guidance/project-progress.md) for complete project context
-2. Review [`specs/exploration/README.md`](./specs/exploration/README.md) for distilled exploration results
-3. Check [`specs/exploration/data-structure-spec.yaml`](./specs/exploration/data-structure-spec.yaml) for target data format
-4. Review [`specs/exploration/extraction-workflow.md`](./specs/exploration/extraction-workflow.md) for step-by-step process
-5. Use implementation examples in [`specs/exploration/`](./specs/exploration/) directory
-6. Use scripts in [`scripts/`](./scripts/) directory for testing and analysis (run `npm install` in scripts/ first)
+### Always Read
+- **This file** (`AGENTS.md`) - Essential startup context
 
-## Important Notes
+### Read When Needed (Check Headers First)
+- **`ai-guidance/`** - Context-sensitive guides (e.g., MCP server setup)
+  - Each document has a header indicating when to read it
 
-- **Rate Limiting**: Use 100ms delays between requests
-- **Data Format**: Store in YAML format (may change later)
-- **Target Conferences**: Focus on CNCF/KubeCon initially
-- **Respectful Scraping**: Text-only extraction, no media downloading
-- **Special Characters**: Full emoji and Unicode support implemented
+### Reference for Specific Tasks
+- **`specs/exploration/`** - Complete exploration results and implementation specs
+  - Use during requirements gathering, design, and implementation phases
+  - Contains data structures, workflows, algorithms, and CSS selectors
+
+## Quick Start for Common Tasks
+
+### If you need to implement the system:
+1. Review `specs/exploration/README.md` for overview
+2. Check `specs/exploration/data-structure-spec.yaml` for output format
+3. Follow `specs/exploration/extraction-workflow.md` for step-by-step process
+
+### If web search isn't working:
+1. Read `ai-guidance/mcp-web-search-setup.md` (check header first)
+
+### If you need to analyze or test:
+1. Use scripts in `scripts/` directory (run `npm install` first)
+
+## Key Implementation Notes
+- **Rate Limiting**: 100ms delays between requests
+- **Data Format**: YAML output
+- **Target**: CNCF/KubeCon conferences initially
+- **Approach**: Respectful text-only extraction

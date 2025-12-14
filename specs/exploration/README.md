@@ -51,13 +51,21 @@ This exploration phase was critical because:
 
 ## Files in This Directory
 
+### Overview and Results
 - **[`README.md`](./README.md)** - This overview document
+- **[`project-progress.md`](./project-progress.md)** - Complete project progress log with all phases
+- **[`technical-specification.md`](./technical-specification.md)** - Comprehensive technical specification
+- **[`sched-page-structure-analysis.md`](./sched-page-structure-analysis.md)** - Detailed page structure analysis
+
+### Implementation Specifications
 - **[`data-structure-spec.yaml`](./data-structure-spec.yaml)** - Complete data structure specification
 - **[`extraction-workflow.md`](./extraction-workflow.md)** - Step-by-step extraction process
+- **[`css-selectors.md`](./css-selectors.md)** - Complete CSS selector reference
+
+### Working Implementation Examples
 - **[`discovery-algorithm.js`](./discovery-algorithm.js)** - Conference URL discovery implementation
 - **[`track-extraction.js`](./track-extraction.js)** - Track filtering system implementation
 - **[`presentation-extraction.js`](./presentation-extraction.js)** - Individual presentation data extraction
-- **[`css-selectors.md`](./css-selectors.md)** - Complete CSS selector reference
 
 ## Next Steps
 

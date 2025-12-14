@@ -1,5 +1,7 @@
 # Web Search MCP Server Setup Guide
 
+> **📋 WHEN TO READ THIS**: Only read this document if you need to set up web search capabilities and don't already have a working MCP search server configured in Kiro. If web search is already working, you can skip this document.
+
 This guide explains how to install and configure the web search MCP server for Kiro, enabling free web searching capabilities without API keys.
 
 ## Prerequisites

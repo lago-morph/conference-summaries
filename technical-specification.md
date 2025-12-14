@@ -113,6 +113,21 @@ a[href*=".pptx"]
 .tip-custom-fields a[href*="/company/"]
 ```
 
+### Special Character Handling
+
+#### Unicode and Emoji Support
+- **Emoji in Titles**: Presentations may contain emoji characters (e.g., 🚨, 🏃)
+- **URL Encoding**: Track URLs with special characters are URL-encoded (e.g., %F0%9F%9A%A8)
+- **Text Extraction**: Use proper Unicode handling to preserve emoji and special characters
+- **YAML Storage**: Store emoji and Unicode characters directly in YAML (UTF-8 encoding)
+
+#### Implementation Notes
+```python
+# Proper Unicode handling for titles and track names
+title = soup.select_one('.event .name').get_text().strip()  # Preserves emoji
+track_name = urllib.parse.unquote_plus(track_url.split('type/')[1])  # Decodes URL encoding
+```
+
 ### Data Extraction Patterns
 
 #### Conference Metadata Structure
@@ -144,6 +159,10 @@ presentations:
     sub_track: null  # No sub-track for this presentation
     sub_track_url: null
     experience_level: "Intermediate"
+    special_characters:
+      has_emoji: false
+      emoji_in_title: null
+      emoji_in_track: null
     detail_url: "https://kccncna2025.sched.com/event/27FVb/..."
     video_links:
       - platform: "youtube"

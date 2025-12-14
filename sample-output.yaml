@@ -85,15 +85,59 @@ presentations:
       has_presentation_files: false
       file_count: 0
 
+  - id: "27Nko"
+    title: "🚨 Contribfest: Argo: Configure Your Local Setup and Contribute!"
+    speakers:
+      - name: "Alexandre Gaudreault"
+        company: "Intuit"
+        role: "Software Developer & Argo CD Maintainer"
+      - name: "Peter Jiang"
+        company: "Intuit"
+        role: "Software Engineer & Argo CD contributor"
+      - name: "Codey Jenkins"
+        company: "Intuit"
+        role: "Senior Software Engineer & Argo CD Contributor"
+      - name: "Nitish Kumar"
+        company: "Akuity"
+        role: "Software Engineer & Argo CD Maintainer"
+    date: "Tuesday November 11, 2025"
+    time: "2:30pm - 3:45pm EST"
+    location: "Building B | Level 2 | B207"
+    track: "🚨 ContribFest"
+    track_url: "https://kccncna2025.sched.com/type/%F0%9F%9A%A8+ContribFest"
+    sub_track: null
+    sub_track_url: null
+    experience_level: "Any"
+    detail_url: "https://kccncna2025.sched.com/event/27Nko/contribfest-argo-configure-your-local-setup-and-contribute-alexandre-gaudreault-peter-jiang-codey-jenkins-intuit-nitish-kumar-akuity"
+    video_links: []
+    presentation_files: []
+    content_status:
+      has_video: false
+      has_presentation_files: false
+      file_count: 0
+    special_characters:
+      has_emoji: true
+      emoji_in_title: "🚨"
+      emoji_in_track: "🚨"
+
 # Statistics
 extraction_summary:
   total_presentations_found: 542
   presentations_with_video: 2  # Based on sample
   presentations_with_files: 1  # Based on sample
-  presentations_analyzed: 2
+  presentations_analyzed: 4
   success_rate: "100%"
+  presentations_with_emoji: 2  # Fun Run 🏃, ContribFest 🚨
+  presentations_with_subtypes: 1  # Fun Run (Experiences/Wellness)
   common_file_types:
     - "pdf"
     - "pptx"
   video_platforms:
     - "youtube"
+  track_types_found:
+    - "AI + ML"
+    - "Cloud Native Experience"
+    - "Experiences"
+    - "🚨 ContribFest"
+  sub_track_types_found:
+    - "Wellness"

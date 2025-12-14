@@ -1,0 +1,74 @@
+# Sample Conference Data Output
+# KubeCon + CloudNativeCon North America 2025
+
+conference:
+  name: "KubeCon + CloudNativeCon North America 2025"
+  sponsor: "CNCF"
+  location: "Atlanta, GA, USA"
+  dates: "November 9-13, 2025"
+  sched_identifier: "kccncna2025"
+  main_url: "https://kccncna2025.sched.com/list/"
+  total_presentations: 542
+  extraction_date: "2025-01-13"
+
+presentations:
+  - id: "27FVb"
+    title: "Simplifying Advanced AI Model Serving on Kubernetes Using Helm Charts"
+    speakers:
+      - name: "Ajay Vohra"
+        company: "Amazon"
+      - name: "Tianlu Caron Zhang"
+        company: "Apple"
+    date: "Tuesday November 11, 2025"
+    time: "12:00pm - 12:30pm EST"
+    location: "Building B | Level 4 | B401-402"
+    detail_url: "https://kccncna2025.sched.com/event/27FVb/simplifying-advanced-ai-model-serving-on-kubernetes-using-helm-charts-ajay-vohra-amazon-tianlu-caron-zhang-apple"
+    video_links:
+      - platform: "youtube"
+        url: "https://www.youtube.com/embed/PVB2hW8PuAM"
+        type: "embedded"
+        video_id: "PVB2hW8PuAM"
+    presentation_files:
+      - type: "pdf"
+        url: "https://static.sched.com/hosted_files/kccncna2025/1c/kubecon-2025-simplifying-advanced-model-serving-on-k8s-using-helm-charts.pdf"
+        filename: "kubecon-2025-simplifying-advanced-model-serving-on-k8s-using-helm-charts.pdf"
+      - type: "pptx"
+        url: "https://static.sched.com/hosted_files/kccncna2025/a0/kubecon-2025-simplifying-advanced-model-serving-on-k8s-using-helm-charts.pptx"
+        filename: "kubecon-2025-simplifying-advanced-model-serving-on-k8s-using-helm-charts.pptx"
+    content_status:
+      has_video: true
+      has_presentation_files: true
+      file_count: 2
+
+  - id: "27FVz"
+    title: "The Myth of Portability: Why Your Cloud Native App Is Married To Your Provider"
+    speakers:
+      - name: "Corey Quinn"
+        company: "The Duckbill Group"
+    date: "Tuesday November 11, 2025"
+    time: "2:30pm - 3:00pm EST"
+    location: "Building B | Level 3 | B308-309"
+    detail_url: "https://kccncna2025.sched.com/event/27FVz/the-myth-of-portability-why-your-cloud-native-app-is-married-to-your-provider-corey-quinn-the-duckbill-group"
+    video_links:
+      - platform: "youtube"
+        url: "https://www.youtube.com/embed/cvv1cVi1n9I"
+        type: "embedded"
+        video_id: "cvv1cVi1n9I"
+    presentation_files: []
+    content_status:
+      has_video: true
+      has_presentation_files: false
+      file_count: 0
+
+# Statistics
+extraction_summary:
+  total_presentations_found: 542
+  presentations_with_video: 2  # Based on sample
+  presentations_with_files: 1  # Based on sample
+  presentations_analyzed: 2
+  success_rate: "100%"
+  common_file_types:
+    - "pdf"
+    - "pptx"
+  video_platforms:
+    - "youtube"

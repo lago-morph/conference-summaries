@@ -48,9 +48,9 @@ Ready for Python/shell script automation implementation based on the technical s
 ```
 conference-summaries/
 ├── ai-guidance/           # AI agent documentation and specifications
-├── scripts/              # Analysis and test scripts
+├── scripts/              # Analysis and test scripts (with own package.json)
 ├── temp/                 # Temporary files (HTML downloads, etc.)
-├── web-search/           # Enhanced MCP web search server
+├── web-search/           # Enhanced MCP web search server (with own package.json)
 ├── sample-output.yaml    # Target data format with examples
 └── AGENTS.md            # This file
 ```
@@ -60,7 +60,7 @@ conference-summaries/
 1. Read [`ai-guidance/project-progress.md`](./ai-guidance/project-progress.md) for complete project context
 2. Review [`ai-guidance/technical-specification.md`](./ai-guidance/technical-specification.md) for implementation details
 3. Check [`sample-output.yaml`](./sample-output.yaml) for target data format
-4. Use scripts in [`scripts/`](./scripts/) directory for testing and analysis
+4. Use scripts in [`scripts/`](./scripts/) directory for testing and analysis (run `npm install` in scripts/ first)
 
 ## Important Notes
 

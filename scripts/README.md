@@ -17,12 +17,21 @@ This directory contains various scripts used for testing, analysis, and explorat
 - **`analyze-contribfest.js`** - Analysis of ContribFest presentation with emoji
 - **`analyze-fun-run.js`** - Analysis of Fun Run event with sub-types
 
+## Installation
+
+To use these scripts, install the required dependencies:
+
+```bash
+cd scripts
+npm install
+```
+
 ## Usage
 
 These scripts were used during the exploration phase to understand Sched.com page structures and validate extraction patterns. They require:
 
 1. Node.js environment
-2. Dependencies: `axios`, `cheerio`
+2. Dependencies: `axios`, `cheerio` (install with `npm install`)
 3. Working MCP web search server (for search-related scripts)
 
 ## Rate Limiting

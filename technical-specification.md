@@ -177,7 +177,89 @@ presentations:
         filename: "kubecon-2025-simplifying-advanced-model-serving-on-k8s-using-helm-charts.pptx"
 ```
 
+### Track/Type Extraction ✅ COMPLETED
+
+#### Track Discovery Method
+Tracks are available as filter links on the main conference page with the URL pattern:
+- **Filter URL Pattern**: `https://[identifier].sched.com/overview/type/[TRACK_NAME]`
+- **List URL Pattern**: `https://[identifier].sched.com/list/type/[TRACK_NAME]`
+- **Total Tracks Found**: 26 tracks for KubeCon 2025 North America
+
+#### CSS Selectors for Track Extraction
+```css
+/* Track filter links */
+a[href*="/overview/type/"]
+a[href*="type/"]
+
+/* Alternative selectors */
+.filter a
+.type-filter a
+[class*="filter"] a
+[class*="type"] a
+```
+
+#### Track Data Structure
+```yaml
+available_tracks:
+  - name: "AI + ML"                    # Decoded track name
+    display_text: "AI + ML"            # Text shown on page
+    list_url: "https://kccncna2025.sched.com/list/type/AI+%2B+ML"
+    overview_url: "https://kccncna2025.sched.com/overview/type/AI%20%2B%20ML"
+    has_emoji: false                   # Whether track contains emoji
+    has_subtypes: false                # Whether track has sub-categories
+```
+
+#### Special Track Considerations
+- **Emoji Tracks**: Some tracks contain emoji (e.g., "⚡ Lightning Talks", "🚨 ContribFest")
+- **URL Encoding**: Track names with special characters are URL-encoded in links
+- **Sub-types**: Some tracks have sub-categories (e.g., "Experiences/Wellness")
+- **Filtering**: Users can select tracks to include/exclude from extraction
+
+#### Track Filtering Configuration
+```yaml
+track_filtering:
+  enabled: true
+  default_action: "include_all"
+  user_selectable: true
+  exclude_by_default:
+    - "Breaks"
+    - "Registration"
+    - "Solutions Showcase"
+```
+
 ### Implementation Algorithm
+
+#### Step 0: Track Discovery (New)
+```python
+def extract_available_tracks(main_url):
+    html = fetch_page(main_url)
+    soup = BeautifulSoup(html, 'html.parser')
+    
+    tracks = []
+    track_links = soup.select('a[href*="/overview/type/"]')
+    
+    for link in track_links:
+        href = link['href']
+        display_text = link.get_text().strip()
+        
+        # Extract track name from URL
+        if '/overview/type/' in href:
+            type_part = href.split('/overview/type/')[1]
+            track_name = urllib.parse.unquote_plus(type_part)
+            
+            # Check for emoji
+            has_emoji = any(ord(char) > 127 for char in display_text)
+            
+            tracks.append({
+                'name': track_name,
+                'display_text': display_text,
+                'list_url': href.replace('/overview/', '/list/'),
+                'overview_url': urljoin(main_url, href),
+                'has_emoji': has_emoji
+            })
+    
+    return sorted(tracks, key=lambda x: x['name'])
+```
 
 #### Step 1: Conference Discovery
 ```python
@@ -190,9 +272,9 @@ def find_conference_sched_url(conference_name):
     return None
 ```
 
-#### Step 2: Extract Presentation List
+#### Step 2: Extract Presentation List (with Track Filtering)
 ```python
-def extract_presentations(main_url):
+def extract_presentations(main_url, excluded_tracks=None):
     html = fetch_page(main_url)
     soup = BeautifulSoup(html, 'html.parser')
     
@@ -200,12 +282,38 @@ def extract_presentations(main_url):
     for event in soup.select('.event'):
         link = event.select_one('a.name')
         if link:
-            presentations.append({
+            presentation = {
                 'title': link.get_text().strip(),
                 'url': urljoin(main_url, link['href']),
                 'id': extract_id_from_url(link['href'])
-            })
+            }
+            
+            # If track filtering is enabled, check track before adding
+            if excluded_tracks:
+                # Extract track info quickly to filter
+                track_info = extract_track_from_url(presentation['url'])
+                if track_info and track_info['track'] not in excluded_tracks:
+                    presentations.append(presentation)
+            else:
+                presentations.append(presentation)
+    
     return presentations
+
+def extract_track_from_url(presentation_url):
+    """Quick track extraction for filtering purposes"""
+    try:
+        html = fetch_page(presentation_url)
+        soup = BeautifulSoup(html, 'html.parser')
+        
+        track_link = soup.select_one('.sched-event-type a[href*="type/"]')
+        if track_link:
+            href = track_link['href']
+            if 'type/' in href:
+                type_part = href.split('type/')[1].split('/')[0]
+                return {'track': urllib.parse.unquote_plus(type_part)}
+        return None
+    except:
+        return None
 ```
 
 #### Step 3: Extract Individual Presentation Data
@@ -316,9 +424,101 @@ presentations:
   - # ... presentation data
 ```
 
+### Complete Extraction Workflow
+
+#### Full Process with Track Filtering
+```python
+def extract_conference_data(conference_name, excluded_tracks=None):
+    # Step 0: Find conference URL
+    main_url = find_conference_sched_url(conference_name)
+    if not main_url:
+        raise Exception(f"Could not find Sched.com URL for {conference_name}")
+    
+    # Step 1: Extract available tracks for user selection
+    available_tracks = extract_available_tracks(main_url)
+    print(f"Found {len(available_tracks)} available tracks")
+    
+    # Step 2: Get user track preferences (if interactive)
+    if excluded_tracks is None:
+        excluded_tracks = get_user_track_preferences(available_tracks)
+    
+    # Step 3: Extract presentation list with filtering
+    presentations = extract_presentations(main_url, excluded_tracks)
+    print(f"Found {len(presentations)} presentations after filtering")
+    
+    # Step 4: Extract detailed data for each presentation
+    detailed_presentations = []
+    for i, presentation in enumerate(presentations):
+        print(f"Processing {i+1}/{len(presentations)}: {presentation['title']}")
+        
+        details = extract_presentation_details(presentation['url'])
+        presentation.update(details)
+        detailed_presentations.append(presentation)
+        
+        # Rate limiting
+        time.sleep(0.1)  # 100ms delay
+    
+    # Step 5: Extract conference metadata
+    conference_info = extract_conference_metadata(main_url)
+    
+    return {
+        'conference': conference_info,
+        'available_tracks': available_tracks,
+        'presentations': detailed_presentations,
+        'extraction_summary': {
+            'total_presentations_found': len(presentations),
+            'excluded_tracks': excluded_tracks,
+            'success_rate': calculate_success_rate(detailed_presentations)
+        }
+    }
+```
+
+### Track Filtering Implementation
+
+#### User Interface for Track Selection
+```python
+def get_user_track_preferences(available_tracks):
+    """Interactive track selection for filtering"""
+    print("\nAvailable tracks:")
+    for i, track in enumerate(available_tracks):
+        emoji_indicator = " 📱" if track['has_emoji'] else ""
+        subtype_indicator = " 📁" if track.get('has_subtypes') else ""
+        print(f"{i+1:2d}. {track['display_text']}{emoji_indicator}{subtype_indicator}")
+    
+    print("\nEnter track numbers to EXCLUDE (comma-separated), or press Enter for none:")
+    user_input = input().strip()
+    
+    excluded_tracks = []
+    if user_input:
+        try:
+            indices = [int(x.strip()) - 1 for x in user_input.split(',')]
+            excluded_tracks = [available_tracks[i]['name'] for i in indices if 0 <= i < len(available_tracks)]
+        except ValueError:
+            print("Invalid input, proceeding without exclusions")
+    
+    return excluded_tracks
+```
+
+### Performance Considerations
+
+#### Optimization Strategies
+- **Track Pre-filtering**: Filter presentations by track before detailed extraction
+- **Parallel Processing**: Process multiple presentations concurrently (with rate limiting)
+- **Caching**: Cache track information to avoid repeated requests
+- **Progress Tracking**: Show progress for large conferences (500+ presentations)
+
+#### Estimated Processing Times
+- **Track Discovery**: ~1-2 seconds
+- **Presentation List**: ~2-3 seconds  
+- **Individual Details**: ~0.5 seconds per presentation + 0.1s delay
+- **Total for 542 presentations**: ~325 seconds (~5.4 minutes)
+
 ### Next Steps for Automation
-1. Implement the extraction algorithm in Python
-2. Add error handling and retry logic
-3. Create progress tracking for large datasets
-4. Add validation for extracted data
-5. Test on multiple conference years for consistency
+1. Implement the complete extraction algorithm in Python
+2. Add interactive track filtering interface
+3. Add error handling and retry logic for failed requests
+4. Create progress tracking with ETA for large datasets
+5. Add validation for extracted data completeness
+6. Test on multiple conference years for consistency
+7. Add support for batch processing multiple conferences
+8. Implement data export formats (JSON, CSV, database)

@@ -53,7 +53,6 @@ conference-summaries/
 │   └── exploration/      # Exploration phase results and implementation specs
 ├── temp/                 # Temporary files (HTML downloads, etc.)
 ├── web-search/           # Enhanced MCP web search server (with own package.json)
-├── sample-output.yaml    # Target data format with examples
 └── AGENTS.md            # This file
 ```
 

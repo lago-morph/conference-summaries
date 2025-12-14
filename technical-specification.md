@@ -141,6 +141,8 @@ presentations:
     location: "Building B | Level 4 | B401-402"
     track: "AI + ML"
     track_url: "https://kccncna2025.sched.com/type/AI+%2B+ML"
+    sub_track: null  # No sub-track for this presentation
+    sub_track_url: null
     experience_level: "Intermediate"
     detail_url: "https://kccncna2025.sched.com/event/27FVb/..."
     video_links:
@@ -214,10 +216,32 @@ def extract_presentation_details(presentation_url):
     # Extract session details
     time_info = soup.select_one('[class*="time"]')
     
-    # Extract track/type information
-    track_link = soup.select_one('.sched-event-type a[href*="type/"]')
-    track = track_link.get_text().strip() if track_link else None
-    track_url = urljoin(presentation_url, track_link['href']) if track_link else None
+    # Extract track/type information (including sub-types)
+    track_links = soup.select('.sched-event-type a[href*="type/"]')
+    track = None
+    track_url = None
+    sub_track = None
+    sub_track_url = None
+    
+    for link in track_links:
+        href = link['href']
+        text = link.get_text().strip()
+        
+        if 'type/' in href:
+            type_part = href.split('type/')[1]
+            parts = type_part.split('/')
+            
+            if len(parts) == 1:
+                # Main type only
+                track = urllib.parse.unquote_plus(parts[0])
+                track_url = urljoin(presentation_url, href)
+            elif len(parts) == 2:
+                # Sub-type (URL contains main type + sub-type)
+                if not track:  # Set main type if not already set
+                    track = urllib.parse.unquote_plus(parts[0])
+                    track_url = urljoin(presentation_url, f"type/{parts[0]}")
+                sub_track = urllib.parse.unquote_plus(parts[1])
+                sub_track_url = urljoin(presentation_url, href)
     
     # Extract experience level
     experience_link = soup.select_one('.tip-custom-fields a[href*="/company/"]')
@@ -228,6 +252,8 @@ def extract_presentation_details(presentation_url):
         'presentation_files': files,
         'track': track,
         'track_url': track_url,
+        'sub_track': sub_track,
+        'sub_track_url': sub_track_url,
         'experience_level': experience_level,
         'session_details': time_info.get_text().strip() if time_info else None
     }

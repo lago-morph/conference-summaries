@@ -111,14 +111,52 @@ async function analyzeIndividualPresentation(eventUrl, presentationName) {
       }
     });
     
-    // Look for track/type information
+    // Look for track/type information (including sub-types)
     console.log('\n--- Track/Type Information ---');
-    const trackLink = $('.sched-event-type a[href*="type/"]');
-    if (trackLink.length > 0) {
-      const track = trackLink.text().trim();
-      const trackUrl = trackLink.attr('href');
-      console.log(`Track: ${track}`);
-      console.log(`Track URL: ${trackUrl.startsWith('http') ? trackUrl : 'https://kccncna2025.sched.com/' + trackUrl}`);
+    const trackLinks = $('.sched-event-type a[href*="type/"]');
+    if (trackLinks.length > 0) {
+      console.log(`Found ${trackLinks.length} track links`);
+      
+      let mainType = null;
+      let subType = null;
+      let mainTypeUrl = null;
+      let subTypeUrl = null;
+      
+      trackLinks.each((i, el) => {
+        const linkText = $(el).text().trim();
+        const linkHref = $(el).attr('href');
+        console.log(`  Link ${i + 1}: "${linkText}" -> ${linkHref}`);
+        
+        if (linkHref.includes('type/')) {
+          const typePart = linkHref.split('type/')[1];
+          const parts = typePart.split('/');
+          
+          if (parts.length === 1) {
+            // Main type only
+            mainType = decodeURIComponent(parts[0]).replace(/\+/g, ' ');
+            mainTypeUrl = linkHref.startsWith('http') ? linkHref : 'https://kccncna2025.sched.com/' + linkHref;
+          } else if (parts.length === 2) {
+            // Sub-type (includes main type in URL)
+            subType = decodeURIComponent(parts[1]).replace(/\+/g, ' ');
+            subTypeUrl = linkHref.startsWith('http') ? linkHref : 'https://kccncna2025.sched.com/' + linkHref;
+            // Also extract main type from sub-type URL if not already found
+            if (!mainType) {
+              mainType = decodeURIComponent(parts[0]).replace(/\+/g, ' ');
+              mainTypeUrl = `https://kccncna2025.sched.com/type/${parts[0]}`;
+            }
+          }
+        }
+      });
+      
+      console.log(`Track: ${mainType}`);
+      console.log(`Track URL: ${mainTypeUrl}`);
+      if (subType) {
+        console.log(`Sub-track: ${subType}`);
+        console.log(`Sub-track URL: ${subTypeUrl}`);
+      } else {
+        console.log(`Sub-track: None`);
+      }
+      
     } else {
       console.log('No track information found');
     }

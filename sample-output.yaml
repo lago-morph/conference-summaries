@@ -66,6 +66,25 @@ presentations:
       has_presentation_files: false
       file_count: 0
 
+  - id: "2ArNt"
+    title: "🏃 Fun Run"
+    speakers: []
+    date: "Tuesday November 11, 2025"
+    time: "7:00am - 9:00am EST"
+    location: "Corner of Marietta St. and Park Ave across from Centennial Olympic Park, 267 Marietta St NW, Atlanta, GA 30313"
+    track: "Experiences"
+    track_url: "https://kccncna2025.sched.com/type/Experiences"
+    sub_track: "Wellness"
+    sub_track_url: "https://kccncna2025.sched.com/type/Experiences/Wellness"
+    experience_level: null
+    detail_url: "https://kccncna2025.sched.com/event/2ArNt/fun-run"
+    video_links: []
+    presentation_files: []
+    content_status:
+      has_video: false
+      has_presentation_files: false
+      file_count: 0
+
 # Statistics
 extraction_summary:
   total_presentations_found: 542

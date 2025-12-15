@@ -629,7 +629,7 @@ The system supports different AI model capability levels for each agent type, en
 ### Performance Targets
 - **Conference Discovery**: 95% success rate for valid conference names
 - **Extraction Scripts**: 80-90% presentation extraction success rate
-- **Transcript Processing**: 70% transcript availability (limited by YouTube API)
+- **Transcript Processing**: 70% transcript availability (limited by yt_dlp capabilities)
 - **Quality Assurance**: <5% false positive rate, <2% false negative rate
 - **End-to-End Processing**: Complete conference processing in <2 hours for 500 presentations
 

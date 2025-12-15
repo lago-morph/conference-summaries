@@ -68,3 +68,16 @@ conference-summaries/
 - **Data Format**: YAML output
 - **Target**: CNCF/KubeCon conferences initially
 - **Approach**: Respectful text-only extraction
+
+## 🚨 Critical: Git Command Usage
+**ALWAYS use `--no-pager` with git commands that trigger paging to prevent hanging:**
+
+```bash
+# ✅ Required format
+git --no-pager diff [options]
+git --no-pager log [options]
+git --no-pager show [options]
+
+# ✅ Safe without --no-pager
+git status, add, commit, push, pull, branch, checkout
+```

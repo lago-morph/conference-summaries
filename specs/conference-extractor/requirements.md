@@ -6,7 +6,7 @@ This document specifies the requirements for the Agentic Conference Data Extract
 
 ## Phased Implementation Approach
 
-This system will be implemented in **10 incremental phases** to deliver value early while building toward full sophistication. Each requirement is marked with its implementation phase to support iterative development:
+This system will be implemented in **16 incremental phases** to deliver value early while building toward full sophistication. Each requirement is marked with its implementation phase to support iterative development:
 
 - **Phase 1**: Foundation + Manual Task 1 (data store, basic extraction, manual URL input)
 - **Phase 2**: AI-Powered Task 1 (Conference Discovery Agent)
@@ -15,9 +15,15 @@ This system will be implemented in **10 incremental phases** to deliver value ea
 - **Phase 5**: Troubleshooting Agents (for Tasks 1 + 2)
 - **Phase 6**: GitHub Issue Integration (for Tasks 1 + 2)
 - **Phase 7**: Basic Task 3 (AI processing without QA)
+- **Phase 7.2**: Conference Classifier Implementation (priming agent for AI processing)
+- **Phase 7.4**: Transcript Formatter Implementation (speaker diarization consistency)
+- **Phase 7.6**: Summarizer Implementation (presentation summaries)
+- **Phase 7.8**: Dense Knowledge Encoder Implementation (dense representations)
 - **Phase 8**: Task 3 QA + Troubleshooting + GitHub
 - **Phase 9**: Task 4 (GitHub issue monitoring)
 - **Phase 10**: A/B Testing System
+- **Phase 11**: NoSQL Database Migration (parallelism support)
+- **Phase 12**: Task Scope Control (optional execution arguments)
 
 **Phase Markers**: Each requirement includes a phase marker (e.g., `[Phase 1]`) indicating when it will be implemented. Requirements may be partially implemented across multiple phases.
 

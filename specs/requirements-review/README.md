@@ -82,12 +82,43 @@ Organized into five sub-phases to batch related changes:
 
 ## Document Artifacts
 
-The review process generated several key documents (see `implementation-tasks.md` for complete tracking):
+### Requirements Review Directory Contents
 
-- **`decision-journal.md`**: Complete formal decision log with reasoning for all 30 decisions
-- **`validation-checklist.md`**: Detailed validation results confirming all decisions were properly handled
-- **`changes-summary.md`**: Comprehensive summary of all changes made during the review
-- **Enhanced specification documents**: Updated requirements.md, implementation-context.md, and requirements-context.md
+| File | Purpose | Phase Created |
+|------|---------|---------------|
+| **`README.md`** | This overview document - narrative of the review process | Final |
+| **`implementation-tasks.md`** | Master tracking document with phase progress and decision status | Phase A |
+| **`decision-journal.md`** | Complete formal decision log with reasoning for all 30 decisions | Phase B1 |
+| **`validation-checklist.md`** | Detailed validation results confirming all decisions were properly handled | Phase C |
+| **`changes-summary.md`** | Comprehensive summary of all changes made during the review | Phase C |
+| **`change-tracking.md`** | Initial analysis framework and decision categorization | Phase A |
+| **`master-issue-list.md`** | Consolidated list of all 26 issues extracted from source reviews | Phase A |
+| **`workflow-guide.md`** | Process guidance document for decision-making workflow | Phase A |
+| **`decision-template.md`** | Template for structured decision documentation | Phase A |
+| **`tasks.md`** | Initial task planning document (superseded by implementation-tasks.md) | Phase A |
+
+### Source Review Documents
+| File | Source | Content |
+|------|--------|---------|
+| **`claude_opus_review.md`** | Claude Opus | Architectural simplification and complexity concerns |
+| **`google_gemini_pro_3.md`** | Gemini Pro | Quality assurance and testing strategy recommendations |
+| **`gpt_codex_5_1.md`** | GPT Codex | Implementation details and technical considerations |
+
+### Key Documents for Understanding the Review
+
+**Start Here**: 
+- **`README.md`** (this file) - Process overview and navigation guide
+- **`implementation-tasks.md`** - Complete phase tracking and progress status
+
+**Decision Details**:
+- **`decision-journal.md`** - All 30 decisions with full reasoning
+- **`changes-summary.md`** - What actually changed in the specifications
+
+**Validation Results**:
+- **`validation-checklist.md`** - Verification that all decisions were properly implemented
+
+**Source Material**:
+- **`claude_opus_review.md`**, **`google_gemini_pro_3.md`**, **`gpt_codex_5_1.md`** - Original AI model reviews
 
 ## Methodology Insights
 

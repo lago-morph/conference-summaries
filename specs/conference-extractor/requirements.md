@@ -82,33 +82,40 @@ graph TD
 
 ```mermaid
 graph LR
-    A[Source Data] --> B[Model Config A]
-    A --> C[Model Config B]
-    B --> D[Agent Pipeline A]
-    C --> E[Agent Pipeline B]
-    D --> F[Output A]
-    E --> G[Output B]
-    F --> H[Quality Evaluator]
-    G --> H
-    H --> I[Performance Metrics]
-    I --> J[Model Recommendations]
+    A[Selected Records] --> B[Existing Results A]
+    A --> C[Alternative Config B]
     
-    subgraph "Testable Agents"
-        K[Discovery Agent]
-        L[Formatter Agent]
-        M[Encoder Agent]
-        N[Summarizer Agent]
-        O[QA Agent]
+    C --> D{Task Selection}
+    D -->|Task 1| E[Conference Discovery + QA]
+    D -->|Task 2| F[Raw Data Extraction + QA]
+    D -->|Task 3| G[AI Processing Pipeline]
+    
+    E --> H[Alternative Results B1]
+    F --> I[Alternative Results B2]
+    G --> J[Alternative Results B3]
+    
+    B --> K[Quality Evaluator]
+    H --> K
+    I --> K
+    J --> K
+    
+    K --> L[Impact Assessment]
+    L --> M[Configuration Decision]
+    
+    subgraph "Testable Tasks"
+        N[Task 1: Discovery]
+        O[Task 2: Extraction]
+        P[Task 3: AI Processing]
     end
     
-    style H fill:#fff3e0
-    style I fill:#e8f5e8
-    style J fill:#e1f5fe
+    style K fill:#fff3e0
+    style L fill:#e8f5e8
+    style M fill:#e1f5fe
 ```
 
 ## Glossary
 
-- **A/B_Testing_System**: Separate system component that compares pipeline outputs using completed data as baseline "A" and alternative configurations as "B" for specific processing steps
+- **A/B_Testing_System**: Separate system component that compares task outputs by reprocessing selected records with alternative configurations and comparing results against existing processed data
 - **CNCF**: Cloud Native Computing Foundation, the target conference organization
 - **Conference_Classifier_Agent**: AI agent that analyzes presentation titles, authors, and tracks to identify conference technology focus areas and generate selection criteria for deep processing
 - **Conference_Discovery_Agent**: AI agent that interprets unstructured conference information and finds Sched.com URLs
@@ -311,15 +318,15 @@ graph LR
 
 ### Requirement 13
 
-**User Story:** As a system optimizer, I want A/B testing capabilities for specific pipeline steps, so that I can measure the impact of substituting different approaches or models for individual processing stages.
+**User Story:** As a system optimizer, I want A/B testing capabilities for individual tasks using alternative configurations, so that I can optimize specific processing steps by comparing results against existing processed data.
 
 #### Acceptance Criteria
 
-1. WHEN conducting A/B tests, THE A/B_Testing_System SHALL use completed pipeline data as baseline "A" and process random samples through alternative "B" configurations
-2. WHEN testing specific steps, THE A/B_Testing_System SHALL support testing individual pipeline stages (e.g., formatter, summarizer, dense encoder) with alternative model or parameter configurations
-3. WHEN comparing outputs, THE A/B_Testing_System SHALL use a high-effort evaluation agent to determine quality differences and measure improvement metrics
-4. WHEN A/B testing completes, THE A/B_Testing_System SHALL generate impact assessments showing the effect of proposed substitutions
-5. THE A/B_Testing_System SHALL operate as a separate component using random sampling (e.g., 10 talks) rather than processing entire conferences
+1. WHEN conducting A/B tests, THE A/B_Testing_System SHALL use existing processed records as baseline "A" and reprocess selected records with alternative task configurations as "B"
+2. WHEN testing specific tasks, THE A/B_Testing_System SHALL support testing individual tasks (Task 1, 2, or 3) with alternative model assignments, parameters, or processing approaches
+3. WHEN comparing outputs, THE A/B_Testing_System SHALL use a high-effort evaluation agent to determine quality differences between original and alternative processing results
+4. WHEN A/B testing completes, THE A/B_Testing_System SHALL generate impact assessments showing whether alternative configurations should replace default settings
+5. THE A/B_Testing_System SHALL operate on manually selected subsets of records and preserve original results while storing alternative results for comparison
 
 ### Requirement 14
 
@@ -504,56 +511,45 @@ sequenceDiagram
 
 ```mermaid
 graph TD
-    A[Source Data] --> B[Test Configuration]
-    B --> C[Model A Pipeline]
-    B --> D[Model B Pipeline]
+    A[Shared Data Store] --> B[Select Records for Testing]
+    B --> C[Existing Results - Baseline A]
+    B --> D[Alternative Configuration B]
     
-    C --> E[Discovery Agent A]
-    C --> F[Formatter Agent A]
-    C --> G[Encoder Agent A]
-    C --> H[Summarizer Agent A]
-    C --> I[QA Agent A]
+    D --> E{Which Task to Test?}
+    E -->|Task 1| F[Run Task 1 with Config B]
+    E -->|Task 2| G[Run Task 2 with Config B]
+    E -->|Task 3| H[Run Task 3 with Config B]
     
-    D --> J[Discovery Agent B]
-    D --> K[Formatter Agent B]
-    D --> L[Encoder Agent B]
-    D --> M[Summarizer Agent B]
-    D --> N[QA Agent B]
+    F --> I[Alternative Results B1]
+    G --> J[Alternative Results B2]
+    H --> K[Alternative Results B3]
     
-    E --> O[Output A1]
-    F --> P[Output A2]
-    G --> Q[Output A3]
-    H --> R[Output A4]
-    I --> S[Output A5]
+    C --> L[Quality Evaluator Agent]
+    I --> L
+    J --> L
+    K --> L
     
-    J --> T[Output B1]
-    K --> U[Output B2]
-    L --> V[Output B3]
-    M --> W[Output B4]
-    N --> X[Output B5]
+    L --> M[Comparison Analysis]
+    M --> N[Quality Metrics]
+    M --> O[Cost Analysis]
+    M --> P[Performance Metrics]
     
-    O --> Y[Quality Evaluator]
-    P --> Y
-    Q --> Y
-    R --> Y
-    S --> Y
-    T --> Y
-    U --> Y
-    V --> Y
-    W --> Y
-    X --> Y
+    N --> Q[Configuration Recommendation]
+    O --> Q
+    P --> Q
     
-    Y --> Z[Performance Metrics]
-    Z --> AA[Cost Analysis]
-    Z --> BB[Quality Scores]
-    Z --> CC[Speed Metrics]
+    Q --> R{Adopt Alternative Config?}
+    R -->|Yes| S[Update Default Configuration]
+    R -->|No| T[Keep Current Configuration]
     
-    AA --> DD[Model Recommendations]
-    BB --> DD
-    CC --> DD
+    S --> U[Archive Test Results]
+    T --> U
     
-    style Y fill:#fff3e0
-    style DD fill:#e1f5fe
+    style A fill:#f0f0f0
+    style C fill:#e8f5e8
+    style L fill:#fff3e0
+    style Q fill:#e1f5fe
+    style S fill:#ffe0e0
 ```
 
 ## Quality Assurance Decision Tree

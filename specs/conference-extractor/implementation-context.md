@@ -617,9 +617,10 @@ quality_evaluation_framework:
 
 ### Kiro Spec-Driven Development Integration
 - **Requirements**: All requirements marked with phase indicators for iterative implementation
-- **Design Phase**: Focus only on requirements for current implementation phase
+- **Design Phase**: Focus only on requirements for current implementation phase AND address deferred design decisions for that phase
 - **Task Lists**: Generate tasks only for current phase requirements
 - **Implementation**: Complete design → tasks → implementation cycle for each phase
+- **Deferred Decisions**: Each phase design must resolve the deferred design decisions listed in this document before proceeding to task generation
 
 ### Phase Transition Strategy
 - **Incremental Enhancement**: Each phase builds on validated previous phases
@@ -692,38 +693,38 @@ quality_evaluation_framework:
 
 ### Deferred Design Decisions
 
-The following design decisions have been deferred to specific phases based on requirements review feedback:
+The following design decisions have been deferred to specific phases based on requirements review feedback. These decisions must be made **during the design phase** of each implementation phase, before implementation begins:
 
-#### Phase 1 Design Decisions
+#### Phase 1 Design Phase Decisions
 - **Task Interface Specifications (R5)**: Define CLI/IPC contracts for task inputs/outputs, arguments, environment variables, exit codes, and telemetry topics
 - **Data Model Planning (D1)**: Plan data model evolution to consider growth needs and avoid major changes in later phases
 
-#### Phase 2 Design Decisions  
+#### Phase 2 Design Phase Decisions  
 - **AI Agent Testing Strategy (P1)**: Specify testing strategy for the Conference Discovery Agent as the first AI component
 
-#### Phase 3 Design Decisions
+#### Phase 3 Design Phase Decisions
 - **yt_dlp Fallback Strategy (T2)**: Document YouTube API as viable alternative for transcript extraction
 - **Contract Testing (P1)**: Add contract testing for shared data store interface
 
-#### Phase 4 Design Decisions
+#### Phase 4 Design Phase Decisions
 - **Extraction QA Deterministic Validation (A2)**: Evaluate whether Extraction QA Agent should use deterministic code instead of AI
 - **QA Confidence System Testing (P1)**: Specify how to test the adaptive QA confidence system
 
-#### Phase 5 Design Decisions
+#### Phase 5 Design Phase Decisions
 - **CSS Selector Brittleness (T1)**: Address selector versioning, automatic failure detection, and multiple selector sets for different Sched.com versions
 - **QA/Troubleshooting Agent Consolidation (A2)**: Decide whether to merge Diagnostic Monitor and Troubleshooting agents into single error handling component
 
-#### Phase 6 Design Decisions
+#### Phase 6 Design Phase Decisions
 - **GitHub Issue Structure (D5)**: Determine structured field requirements for GitHub issue links at conference, presentation, and processing levels
 - **GitHub Integration Testing (P1)**: Specify how to test GitHub issue integration without creating real issues
 
-#### Phase 7.2 Design Decisions
+#### Phase 7.2 Design Phase Decisions
 - **Conference Classifier Validation (A2)**: Validate Conference Classifier value with A/B testing before making it a hard dependency
 
-#### Phase 7.4 Design Decisions
+#### Phase 7.4 Design Phase Decisions
 - **Speaker Diarization Consistency (D6)**: Implement structured JSON transcript format with speaker_id and timestamp for every block
 
-#### Phase 8 Design Decisions
+#### Phase 8 Design Phase Decisions
 - **QA Metrics and Telemetry Storage (P3)**: Design metrics storage for QA agent confidence scores, verdicts, and A/B test results
 - **Testing AI Agents (P1)**: Specify mock strategies for AI agents, snapshot testing for outputs, and validation of non-deterministic behavior
 

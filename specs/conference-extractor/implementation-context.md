@@ -262,7 +262,7 @@ The Conference Classifier provides domain-specific context to optimize all subse
 - **Selection keywords**: Terms that indicate high-priority presentations for deep processing
 
 ### Selection Criteria Generation
-The Conference Classifier generates both automatic and manual selection support:
+The Conference Classifier generates both automatic and configuration-based selection support:
 
 ```yaml
 selection_criteria:
@@ -270,8 +270,8 @@ selection_criteria:
     high_priority: ["security", "platform engineering", "kubernetes operators"]
     medium_priority: ["observability", "gitops", "service mesh"]
     technology_specific: ["istio", "prometheus", "helm", "argo"]
-  manual_support:
-    flagging_interface: true
+  configuration_support:
+    data_store_flagging: true
     retroactive_processing: true
     cost_estimation: true
 ```
@@ -449,7 +449,7 @@ processing_metadata:
 - **Task-Specific Testing**: Test individual tasks (1, 2, or 3) with alternative configurations
 - **Baseline Preservation**: Use existing processed records as "A" baseline
 - **Alternative Processing**: Reprocess selected records with "B" configuration
-- **Manual Selection**: User manually selects subset of records for testing
+- **Configuration-Based Selection**: User configures subset of records for testing via shared data store
 - **Configuration Comparison**: Compare alternative task configurations against current defaults
 - **Impact Assessment**: Determine whether alternative configurations should replace defaults
 
@@ -531,7 +531,7 @@ The A/B testing system focuses on **task-specific optimization** rather than ful
 
 - **Targeted Optimization**: Test individual tasks (1, 2, or 3) with alternative configurations
 - **Baseline Preservation**: Use existing processed records as "A" baseline for comparison
-- **Manual Selection**: User manually selects subset of records for testing specific scenarios
+- **Configuration-Based Selection**: User configures subset of records for testing specific scenarios via shared data store
 - **Configuration Comparison**: Compare alternative task configurations against current defaults
 - **Cost-Effective Testing**: Avoid reprocessing entire pipelines when testing specific components
 - **Impact Assessment**: Determine whether alternative configurations should replace defaults
@@ -575,8 +575,8 @@ multi_step_ab_test:
 - **Decision Support**: Generate recommendations for configuration changes
 - **Cost Analysis**: Track processing costs for both baseline and alternative approaches
 
-### Manual A/B Testing Workflow
-1. **Record Selection**: User manually selects subset of processed records
+### A/B Testing Workflow
+1. **Record Selection**: User configures subset of processed records via shared data store
 2. **Configuration Setup**: Define alternative configuration for specific task
 3. **Alternative Processing**: Run selected task with alternative configuration
 4. **Quality Evaluation**: Compare original vs alternative results using evaluation agent

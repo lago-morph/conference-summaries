@@ -192,7 +192,7 @@ Create an automated system to extract comprehensive presentation data from CNCF 
 
 ### Key Decisions Made During Exploration
 1. **Multi-engine web search** - Implemented for reliability
-2. **Track filtering system** - User-selectable presentation categories
+2. **Track filtering system** - Presentation categories configurable via shared data store
 3. **Emoji support** - Full Unicode handling implemented
 4. **Sub-track hierarchy** - Support for nested track categories
 5. **File type detection** - PDF, PPTX, PPT file extraction

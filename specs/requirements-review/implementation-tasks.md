@@ -47,10 +47,10 @@
 - [x] D2: Clarify missing vs null field semantics (missing = not processed, null = processed but empty)
 - [x] **Commit:** "B3.1: Update core requirements for testability, conflicts, state inference"
 
-##### B3.2: Language Clarifications
-- [ ] A5: Update all "user selectable" language to clarify data store configuration (not interactive UI)
-- [ ] Review requirements and implementation context for terminology consistency
-- [ ] **Target Commit:** "B3.2: Clarify 'user selectable' language to mean data store configuration"
+##### B3.2: Language Clarifications ✅ COMPLETE
+- [x] A5: Update all "user selectable" language to clarify data store configuration (not interactive UI)
+- [x] Review requirements and implementation context for terminology consistency
+- [x] **Commit:** "B3.2: Clarify 'user selectable' language to mean data store configuration"
 
 ##### B3.3: New Operational Requirements
 - [ ] P4: Add deployment documentation requirements
@@ -131,6 +131,6 @@
 - [ ] New phase definitions
 
 ## Current Status
-**Phase:** B3.1 ✅ Complete  
-**Next:** B3.2 - Language clarifications  
+**Phase:** B3.2 ✅ Complete  
+**Next:** B3.3 - New operational requirements  
 **Context Window:** Safe - all information preserved in files

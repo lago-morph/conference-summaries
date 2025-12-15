@@ -353,7 +353,7 @@ graph LR
 2. `[Phase 10]` WHEN testing specific tasks, THE A/B_Testing_System SHALL support testing individual tasks (Task 1, 2, or 3) with alternative model assignments, parameters, or processing approaches
 3. `[Phase 10]` WHEN comparing outputs, THE A/B_Testing_System SHALL use a high-effort evaluation agent to determine quality differences between original and alternative processing results
 4. `[Phase 10]` WHEN A/B testing completes, THE A/B_Testing_System SHALL generate impact assessments showing whether alternative configurations should replace default settings
-5. `[Phase 10]` THE A/B_Testing_System SHALL operate on manually selected subsets of records and preserve original results while storing alternative results for comparison
+5. `[Phase 10]` THE A/B_Testing_System SHALL operate on configured subsets of records (specified via shared data store) and preserve original results while storing alternative results for comparison
 
 ### Requirement 14 `[Phase 1: Basic, Phase 4+: Enhanced]`
 

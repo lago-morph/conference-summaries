@@ -68,18 +68,23 @@
 - [x] Document all deferred design decisions by phase
 - [x] **Commit:** "B4: Update implementation context with new phases and deferred design decisions"
 
-#### B5: Future Phase Documentation
-- [ ] Create deferred decision tracking for each phase:
+#### B5: Future Phase Documentation ✅ COMPLETE
+- [x] Create deferred decision tracking for each phase:
   - Phase 1: Task interfaces (R5), Data model planning (D1)
+  - Phase 2: AI agent testing strategy (P1)
   - Phase 3: yt_dlp fallback strategy (T2), Contract testing (P1)
   - Phase 4: QA agent deterministic validation (A2), Testing strategy (P1)
   - Phase 5: CSS selector brittleness (T1), Agent consolidation (A2), Monitoring/recovery (P4)
   - Phase 6: GitHub issue structure (D5), Testing integration (P1)
   - Phase 7.2: Classifier validation (A2)
   - Phase 7.4: Speaker diarization (D6)
+  - Phase 7.6: Summarizer implementation
+  - Phase 7.8: Dense encoder implementation
   - Phase 8: QA metrics design (P3), Testing AI agents (P1)
-- [ ] Update future-analytics with D4 time normalization idea
-- [ ] **Target Commit:** "B5: Document deferred decisions and future phase considerations"
+  - Phase 11: NoSQL migration strategy
+  - Phase 12: Task scope control implementation
+- [x] Update future-analytics with D4 time normalization idea
+- [x] **Commit:** "B5: Document deferred decisions and future phase considerations"
 
 ### Phase C: Validation & Integration
 - [ ] Cross-reference check - ensure all 24 decisions implemented
@@ -132,6 +137,6 @@
 - [ ] New phase definitions
 
 ## Current Status
-**Phase:** B4 ✅ Complete  
-**Next:** B5 - Future phase documentation  
+**Phase:** B5 ✅ Complete  
+**Next:** Phase C - Validation and integration  
 **Context Window:** Safe - all information preserved in files

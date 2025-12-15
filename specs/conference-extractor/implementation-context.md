@@ -697,36 +697,116 @@ The following design decisions have been deferred to specific phases based on re
 
 #### Phase 1 Design Phase Decisions
 - **Task Interface Specifications (R5)**: Define CLI/IPC contracts for task inputs/outputs, arguments, environment variables, exit codes, and telemetry topics
+  - **Context**: Task interfaces (CLI/IPC contracts) must be defined as part of Phase 1 design, equally important as data schema definition
+  - **Requirements**: Specify input/output formats, command-line arguments, environment variables, exit codes, and telemetry integration
+  - **Impact**: Foundation for all task execution and orchestration patterns
+
 - **Data Model Planning (D1)**: Plan data model evolution to consider growth needs and avoid major changes in later phases
+  - **Context**: Data model planning needed during Phase 1 design to consider growth needs and avoid major changes later
+  - **Requirements**: Design schema evolution strategy, migration patterns, and backward compatibility approach
+  - **Impact**: Prevents major data restructuring in later phases, enables smooth NoSQL migration
 
 #### Phase 2 Design Phase Decisions  
 - **AI Agent Testing Strategy (P1)**: Specify testing strategy for the Conference Discovery Agent as the first AI component
+  - **Context**: First AI agent implementation requires establishing testing patterns for all subsequent AI agents
+  - **Requirements**: Mock strategies, snapshot testing, validation of non-deterministic behavior
+  - **Impact**: Testing framework foundation for all AI agents in later phases
 
 #### Phase 3 Design Phase Decisions
 - **yt_dlp Fallback Strategy (T2)**: Document YouTube API as viable alternative for transcript extraction
+  - **Context**: Address yt_dlp dependency risk with documented fallback approach
+  - **Requirements**: YouTube API integration design, cost analysis, migration strategy
+  - **Impact**: Reduces single-point-of-failure risk for transcript extraction
+
 - **Contract Testing (P1)**: Add contract testing for shared data store interface
+  - **Context**: Validate data store interface contracts before adding complexity
+  - **Requirements**: Interface validation, schema compliance testing, error handling verification
+  - **Impact**: Ensures data store reliability before heavy usage in later phases
 
 #### Phase 4 Design Phase Decisions
 - **Extraction QA Deterministic Validation (A2)**: Evaluate whether Extraction QA Agent should use deterministic code instead of AI
+  - **Context**: Determine optimal approach for extraction quality assurance - algorithmic vs AI-based
+  - **Requirements**: Performance comparison, accuracy analysis, cost-benefit evaluation
+  - **Impact**: Establishes QA pattern for all extraction tasks
+
 - **QA Confidence System Testing (P1)**: Specify how to test the adaptive QA confidence system
+  - **Context**: Adaptive confidence scoring requires specialized testing approach
+  - **Requirements**: Confidence score validation, adaptation behavior testing, edge case handling
+  - **Impact**: Ensures reliable quality assurance system for AI processing phases
 
 #### Phase 5 Design Phase Decisions
 - **CSS Selector Brittleness (T1)**: Address selector versioning, automatic failure detection, and multiple selector sets for different Sched.com versions
+  - **Context**: Handle Sched.com page structure changes across different conferences and time periods
+  - **Requirements**: Selector versioning system, automatic fallback mechanisms, failure detection patterns
+  - **Impact**: Improves extraction reliability across diverse conference websites
+
 - **QA/Troubleshooting Agent Consolidation (A2)**: Decide whether to merge Diagnostic Monitor and Troubleshooting agents into single error handling component
+  - **Context**: Evaluate agent consolidation to reduce complexity while maintaining functionality
+  - **Requirements**: Functionality analysis, performance comparison, maintenance complexity assessment
+  - **Impact**: Determines error handling architecture for all subsequent phases
+
+- **Monitoring and Recovery Requirements (P4)**: Associate monitoring and recovery documentation with troubleshooting implementation
+  - **Context**: Operational requirements must be integrated with troubleshooting agent design
+  - **Requirements**: Monitoring integration, recovery procedures, operational documentation standards
+  - **Impact**: Ensures production-ready error handling and recovery capabilities
 
 #### Phase 6 Design Phase Decisions
 - **GitHub Issue Structure (D5)**: Determine structured field requirements for GitHub issue links at conference, presentation, and processing levels
+  - **Context**: Define structured approach to GitHub issue integration beyond simple URL links
+  - **Requirements**: Issue categorization, metadata requirements, linking granularity
+  - **Impact**: Enables sophisticated issue tracking and resolution workflows
+
 - **GitHub Integration Testing (P1)**: Specify how to test GitHub issue integration without creating real issues
+  - **Context**: Test GitHub integration functionality without polluting real repositories
+  - **Requirements**: Mock GitHub API, test repository setup, integration validation
+  - **Impact**: Ensures reliable GitHub integration without development overhead
 
 #### Phase 7.2 Design Phase Decisions
 - **Conference Classifier Validation (A2)**: Validate Conference Classifier value with A/B testing before making it a hard dependency
+  - **Context**: Ensure Conference Classifier provides measurable value before making it mandatory for all processing
+  - **Requirements**: A/B testing framework, quality metrics, performance comparison
+  - **Impact**: Validates critical dependency for all AI processing agents
 
 #### Phase 7.4 Design Phase Decisions
 - **Speaker Diarization Consistency (D6)**: Implement structured JSON transcript format with speaker_id and timestamp for every block
+  - **Context**: Ensure consistent speaker identification across transcript formatting
+  - **Requirements**: JSON schema design, speaker identification algorithms, timestamp preservation
+  - **Impact**: Enables reliable speaker-aware transcript processing
+
+#### Phase 7.6 Design Phase Decisions
+- **Summarizer Agent Implementation**: Design and implement presentation summarization capabilities
+  - **Context**: Create both light and deep summarization options with appropriate model selection
+  - **Requirements**: Summary quality criteria, length targets, cost optimization
+  - **Impact**: Core content processing capability for presentation analysis
+
+#### Phase 7.8 Design Phase Decisions
+- **Dense Knowledge Encoder Implementation**: Design and implement dense representation creation
+  - **Context**: Create dense representations suitable for RAG and knowledge extraction
+  - **Requirements**: Encoding strategies, vector dimensions, retrieval optimization
+  - **Impact**: Enables advanced analytics and knowledge discovery capabilities
 
 #### Phase 8 Design Phase Decisions
 - **QA Metrics and Telemetry Storage (P3)**: Design metrics storage for QA agent confidence scores, verdicts, and A/B test results
+  - **Context**: Comprehensive metrics system for AI processing quality assurance
+  - **Requirements**: Metrics schema, storage backend, analysis capabilities
+  - **Impact**: Enables data-driven quality improvement and system optimization
+
 - **Testing AI Agents (P1)**: Specify mock strategies for AI agents, snapshot testing for outputs, and validation of non-deterministic behavior
+  - **Context**: Comprehensive testing strategy for all AI processing agents
+  - **Requirements**: Mock frameworks, output validation, regression testing
+  - **Impact**: Ensures reliable AI agent behavior across system updates
+
+#### Phase 11 Design Phase Decisions
+- **NoSQL Database Migration Strategy**: Plan migration from file-based to NoSQL database for parallelism support
+  - **Context**: Enable multiple tasks running simultaneously on different conferences
+  - **Requirements**: Database selection, migration procedures, concurrency management
+  - **Impact**: Unlocks parallel processing capabilities for large-scale operations
+
+#### Phase 12 Design Phase Decisions
+- **Task Scope Control Implementation**: Add optional arguments to limit task execution scope
+  - **Context**: Enable fine-grained control over task execution for specific use cases
+  - **Requirements**: Argument parsing, filtering logic, scope validation
+  - **Impact**: Supports parallelism and selective processing workflows
 
 ### Critical Implementation Dependencies
 

@@ -34,6 +34,7 @@
 - [x] Add Phase 11: NoSQL database migration for parallelism
 - [x] Add Phase 12: Task scope control with optional arguments
 - [x] Update existing phase references to accommodate new phases
+- [x] Update requirements-context.md phase structure
 - [x] **Commit:** "B2: Add new phases 7.2, 7.4, 7.6, 7.8, 11, 12 and update phase references"
 
 #### B3: Requirements Updates (Batched)

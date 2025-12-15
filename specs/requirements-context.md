@@ -31,7 +31,7 @@ This document captures the strategic context, user requirements, and design deci
 - Granular issue tracking at conference/presentation/processing levels
 
 ### Phased Implementation Strategy
-**Decision**: 10 incremental phases from foundation to full AI sophistication
+**Decision**: 16 incremental phases from foundation to full AI sophistication
 **Rationale**:
 - Deliver immediate value with Phase 1 (working conference extraction)
 - Learn from early phases to inform later requirements
@@ -232,12 +232,16 @@ Create an automated system to extract comprehensive presentation data from CNCF 
 - Basic extraction scripts without AI assistance
 - Foundation for all subsequent phases
 
-### Phases 2-10 (Progressive Enhancement)
+### Phases 2-16 (Progressive Enhancement)
 - Phase 2: AI-powered conference discovery
 - Phases 3-6: Task 2 + QA/troubleshooting/GitHub integration
-- Phases 7-8: Task 3 + QA/troubleshooting/GitHub integration
+- Phase 7: Basic Task 3 framework setup
+- Phases 7.2-7.8: Individual AI agent implementation (Classifier, Formatter, Summarizer, Dense Encoder)
+- Phase 8: Task 3 QA + troubleshooting + GitHub integration
 - Phase 9: Automated GitHub issue monitoring
 - Phase 10: A/B testing system
+- Phase 11: NoSQL database migration for parallelism
+- Phase 12: Task scope control with optional execution arguments
 
 ### Kiro Spec-Driven Development Integration
 - Each phase follows complete requirements → design → tasks → implementation cycle

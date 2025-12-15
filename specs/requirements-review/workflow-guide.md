@@ -1,7 +1,7 @@
 # Systematic Review Workflow Guide
 
 **⚠️ ONE-TIME TASK DOCUMENTATION - DO NOT READ FOR CONTEXT**
-*This guide outlines the process for working through the December 2024 requirements review. Future AI agents should ignore this file.*
+*This guide outlines the process for working through the December 2025 requirements review. Future AI agents should ignore this file.*
 
 ## Phase 3: Systematic Review Process
 

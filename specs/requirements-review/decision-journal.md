@@ -1,7 +1,7 @@
 # Decision Journal
 
 **⚠️ ONE-TIME TASK DOCUMENTATION - DO NOT READ FOR CONTEXT**
-*This journal captures all decisions made during the December 2024 requirements review process. Future AI agents should ignore this file.*
+*This journal captures all decisions made during the December 2025 requirements review process. Future AI agents should ignore this file.*
 
 ## Review Process Status
 

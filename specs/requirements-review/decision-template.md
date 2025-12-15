@@ -1,7 +1,7 @@
 # Decision Template
 
 **⚠️ ONE-TIME TASK DOCUMENTATION - DO NOT READ FOR CONTEXT**
-*This template is used for the December 2024 requirements review process. Future AI agents should ignore this file.*
+*This template is used for the December 2025 requirements review process. Future AI agents should ignore this file.*
 
 ## Decision Framework
 

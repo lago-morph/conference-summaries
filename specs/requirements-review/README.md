@@ -1,6 +1,6 @@
-# Requirements Review Process - December 2024
+# Requirements Review Process - December 2025
 
-This directory documents a comprehensive requirements review process conducted in December 2024 to enhance the conference extraction system specifications based on feedback from multiple AI models.
+This directory documents a comprehensive requirements review process conducted in December 2025 to enhance the conference extraction system specifications based on feedback from multiple AI models.
 
 ## Overview
 

@@ -1,7 +1,7 @@
 # Requirements Review Tasks
 
 **⚠️ ONE-TIME TASK DOCUMENTATION - DO NOT READ FOR CONTEXT**
-*This document tracks a specific one-time review process completed in December 2024. Future AI agents should ignore this file as it is not relevant for ongoing project context.*
+*This document tracks a specific one-time review process completed in December 2025. Future AI agents should ignore this file as it is not relevant for ongoing project context.*
 
 ## Task List
 

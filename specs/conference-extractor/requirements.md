@@ -4,6 +4,23 @@
 
 This document specifies the requirements for the Agentic Conference Data Extraction System, a sophisticated multi-agent application that automatically discovers, extracts, processes, and analyzes comprehensive presentation data from CNCF KubeCon conferences. The system combines AI agents for complex reasoning tasks with automated scripts for heavy data processing, includes comprehensive quality assurance, and supports A/B testing for model optimization.
 
+## Phased Implementation Approach
+
+This system will be implemented in **10 incremental phases** to deliver value early while building toward full sophistication. Each requirement is marked with its implementation phase to support iterative development:
+
+- **Phase 1**: Foundation + Manual Task 1 (data store, basic extraction, manual URL input)
+- **Phase 2**: AI-Powered Task 1 (Conference Discovery Agent)
+- **Phase 3**: Basic Task 2 (raw data extraction scripts only)
+- **Phase 4**: Task 1 + 2 QA Agents (extraction quality assurance)
+- **Phase 5**: Troubleshooting Agents (for Tasks 1 + 2)
+- **Phase 6**: GitHub Issue Integration (for Tasks 1 + 2)
+- **Phase 7**: Basic Task 3 (AI processing without QA)
+- **Phase 8**: Task 3 QA + Troubleshooting + GitHub
+- **Phase 9**: Task 4 (GitHub issue monitoring)
+- **Phase 10**: A/B Testing System
+
+**Phase Markers**: Each requirement includes a phase marker (e.g., `[Phase 1]`) indicating when it will be implemented. Requirements may be partially implemented across multiple phases.
+
 ## System Architecture Overview
 
 The system is organized into 4 distinct tasks that operate through a shared data store:
@@ -140,205 +157,209 @@ graph LR
 
 ## Task 1: Conference Discovery and Basic Metadata
 
-### Requirement 1
+### Requirement 1 `[Phase 1: Manual, Phase 2: AI-Powered]`
 
 **User Story:** As a conference researcher, I want an AI agent to interpret unstructured conference information and discover the correct Sched.com URL, so that I can start extraction without manual URL hunting.
 
 #### Acceptance Criteria
 
-1. WHEN a user provides unstructured conference information, THE Conference_Discovery_Agent SHALL interpret various formats including partial names, years, and locations
-2. WHEN searching for conference URLs, THE Conference_Discovery_Agent SHALL use web search to find Sched.com websites
-3. WHEN multiple candidate URLs are found, THE Conference_Discovery_Agent SHALL select the most appropriate main conference page
-4. WHEN no suitable URL is found, THE Conference_Discovery_Agent SHALL suggest alternative search strategies and report the failure
-5. THE Conference_Discovery_Agent SHALL validate URL accessibility and confirm it contains conference data before proceeding
+1. `[Phase 2]` WHEN a user provides unstructured conference information, THE Conference_Discovery_Agent SHALL interpret various formats including partial names, years, and locations
+2. `[Phase 2]` WHEN searching for conference URLs, THE Conference_Discovery_Agent SHALL use web search to find Sched.com websites
+3. `[Phase 2]` WHEN multiple candidate URLs are found, THE Conference_Discovery_Agent SHALL select the most appropriate main conference page
+4. `[Phase 2]` WHEN no suitable URL is found, THE Conference_Discovery_Agent SHALL suggest alternative search strategies and report the failure
+5. `[Phase 1]` THE system SHALL validate URL accessibility and confirm it contains conference data before proceeding
 
-### Requirement 2
+**Phase 1 Implementation**: User manually provides Sched.com URL, system validates accessibility only.
+
+### Requirement 2 `[Phase 1]`
 
 **User Story:** As a system operator, I want automated scripts to handle the heavy data extraction work, so that the system can process large conferences efficiently without constant AI model costs.
 
 #### Acceptance Criteria
 
-1. WHEN provided with a validated conference URL, THE Extraction_Scripts SHALL extract all presentation metadata using the validated patterns from exploration
-2. WHEN processing presentation lists, THE Extraction_Scripts SHALL implement rate limiting with configurable delays between requests
-3. WHEN extracting individual presentations, THE Extraction_Scripts SHALL gather titles, speakers, dates, tracks, videos, and files
-4. WHEN encountering standard parsing errors, THE Extraction_Scripts SHALL retry with exponential backoff
-5. THE Extraction_Scripts SHALL generate structured output with extraction statistics and error logs
+1. `[Phase 1]` WHEN provided with a validated conference URL, THE Extraction_Scripts SHALL extract all presentation metadata using the validated patterns from exploration
+2. `[Phase 1]` WHEN processing presentation lists, THE Extraction_Scripts SHALL implement rate limiting with configurable delays between requests
+3. `[Phase 1]` WHEN extracting individual presentations, THE Extraction_Scripts SHALL gather titles, speakers, dates, tracks, videos, and files
+4. `[Phase 1]` WHEN encountering standard parsing errors, THE Extraction_Scripts SHALL retry with exponential backoff
+5. `[Phase 1]` THE Extraction_Scripts SHALL generate structured output with extraction statistics and error logs
 
-### Requirement 3
+### Requirement 3 `[Phase 4]`
 
 **User Story:** As a reliability engineer, I want a lightweight AI agent to monitor script performance and trigger troubleshooting when needed, so that issues can be identified and resolved without complex metric thresholds.
 
 #### Acceptance Criteria
 
-1. WHEN extraction scripts are running, THE Diagnostic_Monitor_Agent SHALL observe extraction patterns and identify anomalous behavior using AI reasoning
-2. WHEN potential issues are detected, THE Diagnostic_Monitor_Agent SHALL make intelligent decisions about whether to trigger troubleshooting
-3. WHEN monitoring detects problems, THE Diagnostic_Monitor_Agent SHALL activate the Troubleshooting_Agent with relevant context
-4. WHEN scripts are performing normally, THE Diagnostic_Monitor_Agent SHALL operate with minimal resource usage
-5. THE Diagnostic_Monitor_Agent SHALL use low-capability models to keep monitoring costs minimal
+1. `[Phase 4]` WHEN extraction scripts are running, THE Diagnostic_Monitor_Agent SHALL observe extraction patterns and identify anomalous behavior using AI reasoning
+2. `[Phase 4]` WHEN potential issues are detected, THE Diagnostic_Monitor_Agent SHALL make intelligent decisions about whether to trigger troubleshooting
+3. `[Phase 4]` WHEN monitoring detects problems, THE Diagnostic_Monitor_Agent SHALL activate the Troubleshooting_Agent with relevant context
+4. `[Phase 4]` WHEN scripts are performing normally, THE Diagnostic_Monitor_Agent SHALL operate with minimal resource usage
+5. `[Phase 4]` THE Diagnostic_Monitor_Agent SHALL use low-capability models to keep monitoring costs minimal
 
-### Requirement 4
+### Requirement 4 `[Phase 5]`
 
 **User Story:** As a system maintainer, I want an AI agent to analyze extraction failures and provide corrective parameters, so that temporary issues can be resolved automatically without human intervention.
 
 #### Acceptance Criteria
 
-1. WHEN the diagnostic monitor reports extraction problems, THE Troubleshooting_Agent SHALL analyze the failure patterns and error logs
-2. WHEN CSS selectors are failing, THE Troubleshooting_Agent SHALL attempt to identify alternative selectors from page structure
-3. WHEN rate limiting issues are detected, THE Troubleshooting_Agent SHALL recommend adjusted timing parameters
-4. WHEN network issues occur, THE Troubleshooting_Agent SHALL suggest retry strategies and timeout adjustments
-5. WHEN troubleshooting succeeds, THE Troubleshooting_Agent SHALL provide updated parameters to restart the extraction scripts
+1. `[Phase 5]` WHEN the diagnostic monitor reports extraction problems, THE Troubleshooting_Agent SHALL analyze the failure patterns and error logs
+2. `[Phase 5]` WHEN CSS selectors are failing, THE Troubleshooting_Agent SHALL attempt to identify alternative selectors from page structure
+3. `[Phase 5]` WHEN rate limiting issues are detected, THE Troubleshooting_Agent SHALL recommend adjusted timing parameters
+4. `[Phase 5]` WHEN network issues occur, THE Troubleshooting_Agent SHALL suggest retry strategies and timeout adjustments
+5. `[Phase 5]` WHEN troubleshooting succeeds, THE Troubleshooting_Agent SHALL provide updated parameters to restart the extraction scripts
 
-### Requirement 5
+### Requirement 5 `[Phase 6]`
 
 **User Story:** As a developer, I want automated GitHub issue creation when problems cannot be resolved, so that I receive detailed bug reports with sufficient context to fix issues efficiently.
 
 #### Acceptance Criteria
 
-1. WHEN the troubleshooting agent cannot resolve extraction failures, THE GitHub_Issue_Reporter_Agent SHALL create detailed bug reports
-2. WHEN filing issues, THE GitHub_Issue_Reporter_Agent SHALL include error logs, diagnostic information, and reproduction steps
-3. WHEN creating bug reports, THE GitHub_Issue_Reporter_Agent SHALL attach relevant HTML samples and configuration details
-4. WHEN multiple similar issues exist, THE GitHub_Issue_Reporter_Agent SHALL update existing issues rather than creating duplicates
-5. THE GitHub_Issue_Reporter_Agent SHALL categorize issues by severity and assign appropriate labels for triage
+1. `[Phase 6]` WHEN the troubleshooting agent cannot resolve extraction failures, THE GitHub_Issue_Reporter_Agent SHALL create detailed bug reports
+2. `[Phase 6]` WHEN filing issues, THE GitHub_Issue_Reporter_Agent SHALL include error logs, diagnostic information, and reproduction steps
+3. `[Phase 6]` WHEN creating bug reports, THE GitHub_Issue_Reporter_Agent SHALL attach relevant HTML samples and configuration details
+4. `[Phase 6]` WHEN multiple similar issues exist, THE GitHub_Issue_Reporter_Agent SHALL update existing issues rather than creating duplicates
+5. `[Phase 6]` THE GitHub_Issue_Reporter_Agent SHALL categorize issues by severity and assign appropriate labels for triage
 
 ## Task 2: Raw Data Extraction
 
-### Requirement 6
+### Requirement 6 `[Phase 3]`
 
 **User Story:** As a content analyst, I want automated extraction of YouTube transcripts from presentation videos, so that I can analyze the actual content of presentations beyond just metadata.
 
 #### Acceptance Criteria
 
-1. WHEN presentation videos are identified, THE YouTube_Transcript_Scripts SHALL extract available text transcripts using yt_dlp
-2. WHEN transcripts are not available, THE YouTube_Transcript_Scripts SHALL attempt to use automated speech recognition if configured
-3. WHEN processing transcripts, THE YouTube_Transcript_Scripts SHALL preserve timing information and speaker identification where available
-4. WHEN transcript extraction fails, THE YouTube_Transcript_Scripts SHALL log the failure and continue with remaining videos
-5. THE YouTube_Transcript_Scripts SHALL handle rate limiting and API quotas appropriately for batch processing
+1. `[Phase 3]` WHEN presentation videos are identified, THE YouTube_Transcript_Scripts SHALL extract available text transcripts using yt_dlp
+2. `[Phase 3]` WHEN transcripts are not available, THE YouTube_Transcript_Scripts SHALL attempt to use automated speech recognition if configured
+3. `[Phase 3]` WHEN processing transcripts, THE YouTube_Transcript_Scripts SHALL preserve timing information and speaker identification where available
+4. `[Phase 3]` WHEN transcript extraction fails, THE YouTube_Transcript_Scripts SHALL log the failure and continue with remaining videos
+5. `[Phase 3]` THE YouTube_Transcript_Scripts SHALL handle rate limiting and API quotas appropriately for batch processing
 
-### Requirement 19
+### Requirement 19 `[Phase 3: Basic, Phase 4-6: QA/Troubleshooting/GitHub]`
 
 **User Story:** As a system operator, I want detailed presentation data extraction from individual talk pages, so that I can gather comprehensive information about each presentation beyond basic metadata.
 
 #### Acceptance Criteria
 
-1. WHEN processing talk URLs from Task 1, THE Extraction_Scripts SHALL extract detailed presentation information from individual talk pages
-2. WHEN extracting presentation details, THE Extraction_Scripts SHALL gather speaker information, abstracts, presentation files, and video links
-3. WHEN encountering extraction failures, THE Extraction_QA_Agent SHALL assess data completeness using algorithmic criteria
-4. WHEN quality issues are detected, THE Troubleshooting_Agent SHALL attempt to resolve extraction problems automatically
-5. WHEN issues cannot be resolved, THE GitHub_Issue_Reporter_Agent SHALL create detailed bug reports and link them to the affected records
+1. `[Phase 3]` WHEN processing talk URLs from Task 1, THE Extraction_Scripts SHALL extract detailed presentation information from individual talk pages
+2. `[Phase 3]` WHEN extracting presentation details, THE Extraction_Scripts SHALL gather speaker information, abstracts, presentation files, and video links
+3. `[Phase 4]` WHEN encountering extraction failures, THE Extraction_QA_Agent SHALL assess data completeness using algorithmic criteria
+4. `[Phase 5]` WHEN quality issues are detected, THE Troubleshooting_Agent SHALL attempt to resolve extraction problems automatically
+5. `[Phase 6]` WHEN issues cannot be resolved, THE GitHub_Issue_Reporter_Agent SHALL create detailed bug reports and link them to the affected records
 
 ## Task 3: AI Processing Pipeline
 
-### Requirement 7
+### Requirement 7 `[Phase 7: Basic, Phase 8: QA/Troubleshooting/GitHub]`
 
 **User Story:** As a content consumer, I want AI-formatted transcripts with proper timestamps and structure, so that I can easily read and reference specific sections of presentations.
 
 #### Acceptance Criteria
 
-1. WHEN raw transcripts are available, THE Transcript_Formatter_Agent SHALL create human-readable formatted versions with proper paragraphing
-2. WHEN formatting transcripts, THE Transcript_Formatter_Agent SHALL preserve and enhance timestamp information for major sections
-3. WHEN speaker changes are detected, THE Transcript_Formatter_Agent SHALL clearly indicate speaker transitions
-4. WHEN technical terms or acronyms appear, THE Transcript_Formatter_Agent SHALL maintain consistent formatting and capitalization
-5. THE Transcript_Formatter_Agent SHALL generate both full transcripts and section-based summaries with timestamps
+1. `[Phase 7]` WHEN raw transcripts are available, THE Transcript_Formatter_Agent SHALL create human-readable formatted versions with proper paragraphing
+2. `[Phase 7]` WHEN formatting transcripts, THE Transcript_Formatter_Agent SHALL preserve and enhance timestamp information for major sections
+3. `[Phase 7]` WHEN speaker changes are detected, THE Transcript_Formatter_Agent SHALL clearly indicate speaker transitions
+4. `[Phase 7]` WHEN technical terms or acronyms appear, THE Transcript_Formatter_Agent SHALL maintain consistent formatting and capitalization
+5. `[Phase 7]` THE Transcript_Formatter_Agent SHALL generate both full transcripts and section-based summaries with timestamps
 
-### Requirement 8
+### Requirement 8 `[Phase 7]`
 
 **User Story:** As a knowledge engineer, I want dense summaries with extracted keywords optimized for retrieval systems, so that I can build effective RAG databases for selected high-value presentations.
 
 #### Acceptance Criteria
 
-1. WHEN processing selected presentations, THE Dense_Knowledge_Encoder_Agent SHALL create compressed summaries optimized for semantic search
-2. WHEN encoding knowledge, THE Dense_Knowledge_Encoder_Agent SHALL extract and preserve key technical concepts, methodologies, and technology keywords
-3. WHEN processing presentations, THE Dense_Knowledge_Encoder_Agent SHALL identify and highlight novel contributions and important findings
-4. WHEN creating dense summaries, THE Dense_Knowledge_Encoder_Agent SHALL maintain traceability back to original transcript sections with timestamps
-5. THE Dense_Knowledge_Encoder_Agent SHALL generate embeddings-friendly text suitable for vector database storage and tag outputs with processing effort indicators
+1. `[Phase 7]` WHEN processing selected presentations, THE Dense_Knowledge_Encoder_Agent SHALL create compressed summaries optimized for semantic search
+2. `[Phase 7]` WHEN encoding knowledge, THE Dense_Knowledge_Encoder_Agent SHALL extract and preserve key technical concepts, methodologies, and technology keywords
+3. `[Phase 7]` WHEN processing presentations, THE Dense_Knowledge_Encoder_Agent SHALL identify and highlight novel contributions and important findings
+4. `[Phase 7]` WHEN creating dense summaries, THE Dense_Knowledge_Encoder_Agent SHALL maintain traceability back to original transcript sections with timestamps
+5. `[Phase 7]` THE Dense_Knowledge_Encoder_Agent SHALL generate embeddings-friendly text suitable for vector database storage and tag outputs with processing effort indicators
 
-### Requirement 9
+### Requirement 9 `[Phase 7]`
 
 **User Story:** As a conference attendee, I want tiered summaries of presentations with cost-effective processing, so that I can quickly decide which talks are worth deeper investigation while managing processing costs.
 
 #### Acceptance Criteria
 
-1. WHEN processing all presentations, THE Summarizer_Agent SHALL create basic summaries using cost-effective models and light effort configuration for every presentation
-2. WHEN generating light summaries, THE Summarizer_Agent SHALL extract key topics, speaker information, and basic takeaways with keyword identification
-3. WHEN processing selected presentations, THE Summarizer_Agent SHALL create comprehensive summaries with detailed analysis using sophisticated models and deep effort configuration
-4. WHEN creating tiered summaries, THE system SHALL tag each output with effort indicators showing processing cost and model sophistication used
-5. THE Summarizer_Agent SHALL generate summaries in markdown format for human readability and support iterative re-processing of presentations from light to deep effort levels
+1. `[Phase 7]` WHEN processing all presentations, THE Summarizer_Agent SHALL create basic summaries using cost-effective models and light effort configuration for every presentation
+2. `[Phase 7]` WHEN generating light summaries, THE Summarizer_Agent SHALL extract key topics, speaker information, and basic takeaways with keyword identification
+3. `[Phase 7]` WHEN processing selected presentations, THE Summarizer_Agent SHALL create comprehensive summaries with detailed analysis using sophisticated models and deep effort configuration
+4. `[Phase 7]` WHEN creating tiered summaries, THE system SHALL tag each output with effort indicators showing processing cost and model sophistication used
+5. `[Phase 7]` THE Summarizer_Agent SHALL generate summaries in markdown format for human readability and support iterative re-processing of presentations from light to deep effort levels
 
-### Requirement 10
+### Requirement 10 `[Phase 7]`
 
 **User Story:** As a content strategist, I want automatic identification of conference technology focus areas, so that all processing agents can be primed with relevant domain expertise for better analysis quality.
 
 #### Acceptance Criteria
 
-1. WHEN presentation titles are extracted, THE Conference_Classifier_Agent SHALL analyze the complete set of titles to identify primary technology focus areas
-2. WHEN classifying conference scope, THE Conference_Classifier_Agent SHALL generate technology domain tags and expertise areas that inform subsequent agent processing
-3. WHEN processing completes, THE Conference_Classifier_Agent SHALL provide selection criteria and keywords for identifying high-priority presentations for deep processing
-4. WHEN classification results are available, THE Conference_Classifier_Agent SHALL prime other agents with domain-specific context to improve analysis quality
-5. THE Conference_Classifier_Agent SHALL complete analysis before transcript formatting, summarization, or dense encoding begins to ensure consistent domain expertise
+1. `[Phase 7]` WHEN presentation titles are extracted, THE Conference_Classifier_Agent SHALL analyze the complete set of titles to identify primary technology focus areas
+2. `[Phase 7]` WHEN classifying conference scope, THE Conference_Classifier_Agent SHALL generate technology domain tags and expertise areas that inform subsequent agent processing
+3. `[Phase 7]` WHEN processing completes, THE Conference_Classifier_Agent SHALL provide selection criteria and keywords for identifying high-priority presentations for deep processing
+4. `[Phase 7]` WHEN classification results are available, THE Conference_Classifier_Agent SHALL prime other agents with domain-specific context to improve analysis quality
+5. `[Phase 7]` THE Conference_Classifier_Agent SHALL complete analysis before transcript formatting, summarization, or dense encoding begins to ensure consistent domain expertise
 
-### Requirement 11
+### Requirement 11 `[Phase 7]`
 
 **User Story:** As a quality optimizer, I want all AI processing to benefit from conference-specific priming, so that even lightweight models perform optimally with domain-appropriate context.
 
 #### Acceptance Criteria
 
-1. WHEN the Conference_Classifier_Agent completes analysis, THE system SHALL generate domain-specific priming prompts for all subsequent AI agents
-2. WHEN processing presentations, THE Summarizer_Agent SHALL wait for classification results and use conference-specific priming to improve output quality
-3. WHEN priming agents, THE system SHALL provide technology context, common terminology, and domain expertise relevant to the specific conference
-4. WHEN using lightweight models, THE system SHALL leverage priming to achieve performance improvements that approach more expensive model capabilities
-5. THE system SHALL maintain priming templates that can be customized based on conference classification results and reused for similar conference types
+1. `[Phase 7]` WHEN the Conference_Classifier_Agent completes analysis, THE system SHALL generate domain-specific priming prompts for all subsequent AI agents
+2. `[Phase 7]` WHEN processing presentations, THE Summarizer_Agent SHALL wait for classification results and use conference-specific priming to improve output quality
+3. `[Phase 7]` WHEN priming agents, THE system SHALL provide technology context, common terminology, and domain expertise relevant to the specific conference
+4. `[Phase 7]` WHEN using lightweight models, THE system SHALL leverage priming to achieve performance improvements that approach more expensive model capabilities
+5. `[Phase 7]` THE system SHALL maintain priming templates that can be customized based on conference classification results and reused for similar conference types
 
 ## Task 4: GitHub Issue Resolution Monitoring
 
-### Requirement 20
+### Requirement 20 `[Phase 9]`
 
 **User Story:** As a system administrator, I want automated monitoring of GitHub issues linked to failed records, so that processing can automatically resume when issues are resolved.
 
 #### Acceptance Criteria
 
-1. WHEN running issue resolution monitoring, THE GitHub_Issue_Monitor SHALL identify all records with GitHub issue links in the shared data store
-2. WHEN checking issue status, THE GitHub_Issue_Monitor SHALL query GitHub API to determine if linked issues are closed or resolved
-3. WHEN issues are resolved, THE GitHub_Issue_Monitor SHALL remove the GitHub issue link from the affected records
-4. WHEN issue links are removed, THE system SHALL make records available for processing by Tasks 1-3 on subsequent runs
-5. THE GitHub_Issue_Monitor SHALL log all issue status changes and link removals for audit purposes
+1. `[Phase 9]` WHEN running issue resolution monitoring, THE GitHub_Issue_Monitor SHALL identify all records with GitHub issue links in the shared data store
+2. `[Phase 9]` WHEN checking issue status, THE GitHub_Issue_Monitor SHALL query GitHub API to determine if linked issues are closed or resolved
+3. `[Phase 9]` WHEN issues are resolved, THE GitHub_Issue_Monitor SHALL remove the GitHub issue link from the affected records
+4. `[Phase 9]` WHEN issue links are removed, THE system SHALL make records available for processing by Tasks 1-3 on subsequent runs
+5. `[Phase 9]` THE GitHub_Issue_Monitor SHALL log all issue status changes and link removals for audit purposes
+
+**Phase 6-8 Implementation**: Manual GitHub issue monitoring and link removal.
 
 ## Quality Assurance and Optimization
 
-### Requirement 12
+### Requirement 12 `[Phase 4: Extraction QA, Phase 8: Processing QA]`
 
 **User Story:** As a quality manager, I want adaptive quality assurance that builds confidence over time, so that I can ensure consistency while optimizing QA costs as the system proves reliable.
 
 #### Acceptance Criteria
 
-1. WHEN processing content, THE Processing_QA_Agent SHALL perform adaptive quality assurance on Transcript Formatter Agent, Summarizer Agent, and Dense Knowledge Encoder Agent outputs using confidence scoring
-2. WHEN monitoring extraction, THE Extraction_QA_Agent SHALL use algorithmic criteria to assess extraction scripts by analyzing file sizes and log files for errors and warnings
-3. WHEN evaluating presentations, THE Extraction_QA_Agent SHALL apply lightweight pass/fail/warn criteria per presentation, sending failures to Troubleshooting Agent and warnings for detailed review
-4. WHEN building confidence in agent performance, THE Processing_QA_Agent SHALL gradually reduce checking frequency while maintaining quality standards
-5. WHEN quality issues are detected, BOTH QA agents SHALL increase checking rates for affected components and flag problems with detailed context
+1. `[Phase 8]` WHEN processing content, THE Processing_QA_Agent SHALL perform adaptive quality assurance on Transcript Formatter Agent, Summarizer Agent, and Dense Knowledge Encoder Agent outputs using confidence scoring
+2. `[Phase 4]` WHEN monitoring extraction, THE Extraction_QA_Agent SHALL use algorithmic criteria to assess extraction scripts by analyzing file sizes and log files for errors and warnings
+3. `[Phase 4]` WHEN evaluating presentations, THE Extraction_QA_Agent SHALL apply lightweight pass/fail/warn criteria per presentation, sending failures to Troubleshooting Agent and warnings for detailed review
+4. `[Phase 8]` WHEN building confidence in agent performance, THE Processing_QA_Agent SHALL gradually reduce checking frequency while maintaining quality standards
+5. `[Phase 4, Phase 8]` WHEN quality issues are detected, BOTH QA agents SHALL increase checking rates for affected components and flag problems with detailed context
 
-### Requirement 13
+### Requirement 13 `[Phase 10]`
 
 **User Story:** As a system optimizer, I want A/B testing capabilities for individual tasks using alternative configurations, so that I can optimize specific processing steps by comparing results against existing processed data.
 
 #### Acceptance Criteria
 
-1. WHEN conducting A/B tests, THE A/B_Testing_System SHALL use existing processed records as baseline "A" and reprocess selected records with alternative task configurations as "B"
-2. WHEN testing specific tasks, THE A/B_Testing_System SHALL support testing individual tasks (Task 1, 2, or 3) with alternative model assignments, parameters, or processing approaches
-3. WHEN comparing outputs, THE A/B_Testing_System SHALL use a high-effort evaluation agent to determine quality differences between original and alternative processing results
-4. WHEN A/B testing completes, THE A/B_Testing_System SHALL generate impact assessments showing whether alternative configurations should replace default settings
-5. THE A/B_Testing_System SHALL operate on manually selected subsets of records and preserve original results while storing alternative results for comparison
+1. `[Phase 10]` WHEN conducting A/B tests, THE A/B_Testing_System SHALL use existing processed records as baseline "A" and reprocess selected records with alternative task configurations as "B"
+2. `[Phase 10]` WHEN testing specific tasks, THE A/B_Testing_System SHALL support testing individual tasks (Task 1, 2, or 3) with alternative model assignments, parameters, or processing approaches
+3. `[Phase 10]` WHEN comparing outputs, THE A/B_Testing_System SHALL use a high-effort evaluation agent to determine quality differences between original and alternative processing results
+4. `[Phase 10]` WHEN A/B testing completes, THE A/B_Testing_System SHALL generate impact assessments showing whether alternative configurations should replace default settings
+5. `[Phase 10]` THE A/B_Testing_System SHALL operate on manually selected subsets of records and preserve original results while storing alternative results for comparison
 
-### Requirement 14
+### Requirement 14 `[Phase 1: Basic, Phase 4+: Enhanced]`
 
 **User Story:** As a performance analyst, I want comprehensive metrics collection across all system components, so that I can optimize the entire pipeline for cost, speed, and quality.
 
 #### Acceptance Criteria
 
-1. WHEN agents and scripts execute, THE system SHALL collect performance metrics including execution time, token usage, and success rates
-2. WHEN quality evaluations occur, THE system SHALL track quality scores and improvement trends over time
-3. WHEN A/B tests run, THE system SHALL maintain detailed comparison data for model performance analysis
-4. WHEN processing completes, THE system SHALL generate comprehensive reports showing cost-benefit analysis of different configurations
-5. THE system SHALL provide APIs for external monitoring and alerting systems to track pipeline health
+1. `[Phase 1]` WHEN agents and scripts execute, THE system SHALL collect performance metrics including execution time, token usage, and success rates
+2. `[Phase 4]` WHEN quality evaluations occur, THE system SHALL track quality scores and improvement trends over time
+3. `[Phase 10]` WHEN A/B tests run, THE system SHALL maintain detailed comparison data for model performance analysis
+4. `[Phase 4]` WHEN processing completes, THE system SHALL generate comprehensive reports showing cost-benefit analysis of different configurations
+5. `[Phase 4]` THE system SHALL provide APIs for external monitoring and alerting systems to track pipeline health
 
 ## Task-Based Processing Flow
 
@@ -625,29 +646,29 @@ The system supports different AI model capability levels for each agent type, en
 
 ## Shared Data Store and State Management
 
-### Requirement 21
+### Requirement 21 `[Phase 1]`
 
 **User Story:** As a system architect, I want a centralized data store that manages all system state, so that tasks can operate independently while sharing data seamlessly.
 
 #### Acceptance Criteria
 
-1. WHEN any task needs data access, THE Shared_Data_Store SHALL provide a consistent interface for reading and writing conference, presentation, and processing state information
-2. WHEN storing data, THE Shared_Data_Store SHALL maintain data integrity and support atomic updates to prevent corruption during concurrent access
-3. WHEN tasks query for work, THE Shared_Data_Store SHALL enable tasks to discover incomplete work within their domain of responsibility
-4. WHEN migrating storage backends, THE Shared_Data_Store SHALL provide an abstracted access layer that enables transition from file-based to NoSQL storage without code changes
-5. THE Shared_Data_Store SHALL support idempotent operations where tasks can safely resume processing after interruption
+1. `[Phase 1]` WHEN any task needs data access, THE Shared_Data_Store SHALL provide a consistent interface for reading and writing conference, presentation, and processing state information
+2. `[Phase 1]` WHEN storing data, THE Shared_Data_Store SHALL maintain data integrity and support atomic updates to prevent corruption during concurrent access
+3. `[Phase 1]` WHEN tasks query for work, THE Shared_Data_Store SHALL enable tasks to discover incomplete work within their domain of responsibility
+4. `[Phase 1]` WHEN migrating storage backends, THE Shared_Data_Store SHALL provide an abstracted access layer that enables transition from file-based to NoSQL storage without code changes
+5. `[Phase 1]` THE Shared_Data_Store SHALL support idempotent operations where tasks can safely resume processing after interruption
 
-### Requirement 22
+### Requirement 22 `[Phase 6: Creation, Phase 9: Monitoring]`
 
 **User Story:** As a quality manager, I want GitHub issue integration that prevents processing of problematic records, so that system resources are not wasted on known failing cases.
 
 #### Acceptance Criteria
 
-1. WHEN a record has a GitHub issue link, ALL processing tasks (Tasks 1-3) SHALL skip that record and not attempt any processing operations
-2. WHEN the Troubleshooting_Agent cannot resolve issues, THE GitHub_Issue_Reporter_Agent SHALL create GitHub issues and link them to the affected records in the shared data store
-3. WHEN Tasks 1-3 scan for work, THE system SHALL exclude any records with GitHub issue links from processing queues
-4. WHEN GitHub issues are resolved and links are removed by Task 4, THE system SHALL make those records available for normal processing on subsequent task runs
-5. THE system SHALL support GitHub issue links at conference, presentation, and processing enrichment levels to enable granular issue tracking
+1. `[Phase 6]` WHEN a record has a GitHub issue link, ALL processing tasks (Tasks 1-3) SHALL skip that record and not attempt any processing operations
+2. `[Phase 6]` WHEN the Troubleshooting_Agent cannot resolve issues, THE GitHub_Issue_Reporter_Agent SHALL create GitHub issues and link them to the affected records in the shared data store
+3. `[Phase 6]` WHEN Tasks 1-3 scan for work, THE system SHALL exclude any records with GitHub issue links from processing queues
+4. `[Phase 9]` WHEN GitHub issues are resolved and links are removed by Task 4, THE system SHALL make those records available for normal processing on subsequent task runs
+5. `[Phase 6]` THE system SHALL support GitHub issue links at conference, presentation, and processing enrichment levels to enable granular issue tracking
 
 ## System Operations
 

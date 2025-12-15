@@ -19,8 +19,9 @@ This document captures the strategic context, user requirements, and design deci
 **Rationale**:
 - No inter-task dependencies beyond data availability
 - Idempotent operations with resumable processing
-- State inference through missing/null fields
+- State inference through missing/null fields (missing = not processed, null = processed but empty)
 - Future-proof for file-to-NoSQL migration
+- All user configuration via shared data store between batch runs, not interactive UI
 
 ### GitHub Issue Integration
 **Decision**: Automatic issue creation with processing suspension
@@ -37,6 +38,14 @@ This document captures the strategic context, user requirements, and design deci
 - Learn from early phases to inform later requirements
 - Avoid designing for requirements that may change
 - Build on validated foundations incrementally
+
+### Agent Priming Strategy
+**Decision**: Conference classification must complete before all other Task 3 AI agents
+**Rationale**:
+- Domain-specific context improves AI processing quality across all agents
+- Consistent priming ensures optimal performance even with lightweight models
+- Non-negotiable timing requirement prevents suboptimal processing
+- Enables cost-effective model selection through enhanced context
 
 ## Project Goals and Use Cases
 
@@ -163,9 +172,16 @@ Create an automated system to extract comprehensive presentation data from CNCF 
 
 ### User Experience Requirements
 - **Progress Feedback**: Show extraction progress for long operations
-- **Track Filtering**: Allow users to exclude unwanted presentation categories
+- **Track Filtering**: Allow users to exclude unwanted presentation categories via shared data store configuration
 - **Output Options**: Flexible output formats and locations
 - **Error Recovery**: Clear guidance when extractions fail
+
+### Operational Excellence Requirements
+- **Documentation Consistency**: Automated validation of documentation completeness and accuracy
+- **Deployment Documentation**: Up-to-date installation, configuration, and dependency documentation
+- **Monitoring and Recovery**: Comprehensive failure detection and recovery procedures
+- **Configuration Management**: Clear documentation of all settings and their effects
+- **Testable Operations**: All operational procedures must be validated at phase completion
 
 ## Future Evolution Considerations
 
@@ -198,6 +214,14 @@ Create an automated system to extract comprehensive presentation data from CNCF 
 5. **File type detection** - PDF, PPTX, PPT file extraction
 6. **Video platform support** - YouTube primary, extensible to others
 
+### Key Decisions Made During Requirements Review (December 2024)
+1. **Enhanced Phase Structure** - Expanded from 10 to 16 phases with 6 new AI agent phases
+2. **Agent Priming Strategy** - Conference classification mandatory before all Task 3 processing
+3. **Requirements Testability** - Replaced vague criteria with specific, measurable requirements
+4. **Operational Excellence** - Added comprehensive documentation and validation requirements
+5. **State Semantics Clarification** - Missing vs null field meanings clearly defined
+6. **User Configuration Approach** - All configuration via shared data store, no interactive UI
+
 ### Validation Results
 - **Conference Discovery**: 100% success rate finding Sched.com URLs
 - **Track Extraction**: 26 tracks identified including 4 with emoji
@@ -226,22 +250,88 @@ Create an automated system to extract comprehensive presentation data from CNCF 
 
 ## Implementation Phases
 
-### Phase 1 (Foundation)
+### Complete 16-Phase Implementation Strategy
+
+**Phase 1**: Foundation + Manual Task 1 (data store, basic extraction, manual URL input)
 - Shared data store with abstracted access layer
 - Manual Task 1 (user provides Sched.com URL)
 - Basic extraction scripts without AI assistance
 - Foundation for all subsequent phases
 
-### Phases 2-16 (Progressive Enhancement)
-- Phase 2: AI-powered conference discovery
-- Phases 3-6: Task 2 + QA/troubleshooting/GitHub integration
-- Phase 7: Basic Task 3 framework setup
-- Phases 7.2-7.8: Individual AI agent implementation (Classifier, Formatter, Summarizer, Dense Encoder)
-- Phase 8: Task 3 QA + troubleshooting + GitHub integration
-- Phase 9: Automated GitHub issue monitoring
-- Phase 10: A/B testing system
-- Phase 11: NoSQL database migration for parallelism
-- Phase 12: Task scope control with optional execution arguments
+**Phase 2**: AI-Powered Task 1 (Conference Discovery Agent)
+- AI-powered conference discovery from unstructured information
+- Web search integration for Sched.com URL finding
+- Automated URL validation and accessibility checking
+
+**Phase 3**: Basic Task 2 (raw data extraction scripts only)
+- Raw data extraction scripts for presentation details
+- YouTube transcript extraction using yt_dlp
+- Rate limiting and respectful scraping implementation
+
+**Phase 4**: Task 1 + 2 QA Agents (extraction quality assurance)
+- Extraction QA Agent with algorithmic criteria
+- File size and log analysis for quality assessment
+- Lightweight pass/fail/warn assessment per presentation
+
+**Phase 5**: Troubleshooting Agents (for Tasks 1 + 2)
+- Troubleshooting Agent for automatic issue resolution
+- CSS selector failure detection and alternative identification
+- Network issue handling and retry strategy recommendations
+
+**Phase 6**: GitHub Issue Integration (for Tasks 1 + 2)
+- GitHub Issue Reporter Agent for unresolvable problems
+- Automatic issue creation with detailed context
+- Processing suspension for records with GitHub issue links
+
+**Phase 7**: Basic Task 3 (AI processing without QA)
+- Basic Task 3 framework and data flow setup
+- Foundation for AI processing pipeline
+
+**Phase 7.2**: Conference Classifier Implementation (priming agent for AI processing)
+- Conference Classifier Agent that analyzes presentation titles and tracks
+- Domain-specific context generation for all subsequent AI agents
+- Technology focus identification and terminology extraction
+- **Critical Timing**: Must complete before all other Task 3 AI agents
+
+**Phase 7.4**: Transcript Formatter Implementation (speaker diarization consistency)
+- Transcript Formatter Agent with human-readable formatting
+- Speaker diarization consistency with structured JSON format
+- Timestamp preservation and section-based organization
+
+**Phase 7.6**: Summarizer Implementation (presentation summaries)
+- Summarizer Agent with tiered processing (light and deep)
+- Cost-effective model selection based on effort level
+- Both quick decision-making summaries and comprehensive analysis
+
+**Phase 7.8**: Dense Knowledge Encoder Implementation (dense representations)
+- Dense Knowledge Encoder Agent for RAG-optimized summaries
+- Compressed summaries suitable for semantic search
+- Vector-friendly text generation for knowledge databases
+
+**Phase 8**: Task 3 QA + Troubleshooting + GitHub
+- Processing QA Agent with adaptive confidence scoring
+- Quality assurance for AI processing outputs
+- GitHub integration for AI processing issues
+
+**Phase 9**: Task 4 (GitHub issue monitoring)
+- Automated GitHub issue status monitoring
+- Automatic link removal when issues are resolved
+- Processing resumption for previously blocked records
+
+**Phase 10**: A/B Testing System
+- Task-specific A/B testing with alternative configurations
+- Quality evaluation and impact assessment
+- Configuration optimization based on comparison results
+
+**Phase 11**: NoSQL Database Migration (parallelism support)
+- Migration from file-based to NoSQL database
+- Server-side concurrency management
+- Multiple tasks running simultaneously on different conferences
+
+**Phase 12**: Task Scope Control (optional execution arguments)
+- Optional arguments to limit task execution scope
+- Fine-grained control for specific use cases
+- Support for parallel processing workflows
 
 ### Kiro Spec-Driven Development Integration
 - Each phase follows complete requirements → design → tasks → implementation cycle

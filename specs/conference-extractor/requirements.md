@@ -6,43 +6,76 @@ This document specifies the requirements for the Agentic Conference Data Extract
 
 ## System Architecture Overview
 
+The system is organized into 4 distinct tasks that operate through a shared data store:
+
 ```mermaid
 graph TD
-    A[Unstructured Conference Info] --> B[Conference Discovery Agent]
-    B --> C[Extraction Scripts - Basic Data]
-    C --> CC[Conference Classifier Agent]
-    C --> D[Extraction QA Agent]
-    D --> E{Scripts Working?}
-    E -->|Yes| F[YouTube Transcript Scripts]
-    E -->|No| G[Troubleshooting Agent]
-    G --> H{Can Fix?}
-    H -->|Yes| C
-    H -->|No| I[GitHub Issue Reporter Agent]
+    SDS[(Shared Data Store)]
     
-    CC --> K[Agent Priming & Selection Criteria]
-    F --> J[Wait for Classification]
-    K --> J
-    J --> L[Transcript Formatter Agent]
-    L --> M[Dense Knowledge Encoder Agent]
-    M --> N[Summarizer Agent]
-    N --> O[Processing QA Agent]
-    O --> P{Quality OK?}
-    P -->|Yes| Q[Final Output]
-    P -->|No| R{Too Many Issues?}
-    R -->|No| S[Flag & Continue]
-    R -->|Yes| T[Stop Process]
-    S --> I
-    T --> I
+    subgraph "Task 1: Conference Discovery"
+        T1A[Conference Discovery Agent]
+        T1B[Extraction QA Agent]
+        T1C[Troubleshooting Agent]
+        T1D[GitHub Issue Reporter]
+    end
     
-    style B fill:#e1f5fe
-    style D fill:#fff3e0
-    style CC fill:#e1f5fe
-    style G fill:#fff3e0
-    style I fill:#ffebee
-    style L fill:#e8f5e8
-    style M fill:#e8f5e8
-    style N fill:#e8f5e8
-    style O fill:#f3e5f5
+    subgraph "Task 2: Raw Data Extraction"
+        T2A[Extraction Scripts]
+        T2B[YouTube Transcript Scripts]
+        T2C[Extraction QA Agent]
+        T2D[Troubleshooting Agent]
+        T2E[GitHub Issue Reporter]
+    end
+    
+    subgraph "Task 3: AI Processing"
+        T3A[Conference Classifier Agent]
+        T3B[Transcript Formatter Agent]
+        T3C[Dense Knowledge Encoder Agent]
+        T3D[Summarizer Agent]
+        T3E[Processing QA Agent]
+        T3F[GitHub Issue Reporter]
+    end
+    
+    subgraph "Task 4: Issue Resolution Monitor"
+        T4A[GitHub API Monitor]
+        T4B[Issue Status Checker]
+    end
+    
+    SDS --> T1A
+    T1A --> T1B
+    T1B --> T1C
+    T1C --> T1D
+    T1D --> SDS
+    
+    SDS --> T2A
+    T2A --> T2C
+    T2C --> T2D
+    T2D --> T2E
+    T2E --> SDS
+    
+    SDS --> T3A
+    T3A --> T3B
+    T3B --> T3C
+    T3C --> T3D
+    T3D --> T3E
+    T3E --> T3F
+    T3F --> SDS
+    
+    SDS --> T4A
+    T4A --> T4B
+    T4B --> SDS
+    
+    style SDS fill:#f0f0f0
+    style T1A fill:#e1f5fe
+    style T1B fill:#fff3e0
+    style T2A fill:#e8f5e8
+    style T2C fill:#fff3e0
+    style T3A fill:#e1f5fe
+    style T3B fill:#e8f5e8
+    style T3C fill:#e8f5e8
+    style T3D fill:#e8f5e8
+    style T3E fill:#f3e5f5
+    style T4A fill:#ffe0e0
 ```
 
 ## A/B Testing Framework
@@ -84,9 +117,11 @@ graph LR
 - **Diagnostic_Monitor_Agent**: AI agent that monitors script performance and detects extraction failures
 - **Extraction_QA_Agent**: AI agent that monitors extraction script performance using algorithmic criteria (file sizes, log analysis) with lightweight pass/fail/warn assessment per presentation
 - **Extraction_Scripts**: Automated programs that perform heavy data extraction from Sched.com websites
+- **GitHub_Issue_Monitor**: System component that checks GitHub issue status and removes resolved issue links from records
 - **GitHub_Issue_Reporter_Agent**: AI agent that files detailed bug reports when issues cannot be resolved
 - **Model_Configuration_System**: Framework for assigning different AI models to agents for A/B testing
 - **Processing_QA_Agent**: AI agent that validates consistency and quality of content processing outputs (formatting, summarization, dense encoding) using adaptive confidence scoring
+- **Shared_Data_Store**: Central data repository that maintains all conference, presentation, and processing state information with abstracted access layer for future NoSQL migration
 - **Quality_Evaluator**: Component that compares outputs from different models and measures quality differences
 - **Sched.com**: The conference management platform hosting the target conferences
 - **Summarizer_Agent**: AI agent that creates human-readable presentation summaries with configurable effort levels (light or deep processing)
@@ -96,7 +131,7 @@ graph LR
 
 ## Requirements
 
-## Core Extraction Pipeline
+## Task 1: Conference Discovery and Basic Metadata
 
 ### Requirement 1
 
@@ -158,6 +193,8 @@ graph LR
 4. WHEN multiple similar issues exist, THE GitHub_Issue_Reporter_Agent SHALL update existing issues rather than creating duplicates
 5. THE GitHub_Issue_Reporter_Agent SHALL categorize issues by severity and assign appropriate labels for triage
 
+## Task 2: Raw Data Extraction
+
 ### Requirement 6
 
 **User Story:** As a content analyst, I want automated extraction of YouTube transcripts from presentation videos, so that I can analyze the actual content of presentations beyond just metadata.
@@ -170,7 +207,19 @@ graph LR
 4. WHEN transcript extraction fails, THE YouTube_Transcript_Scripts SHALL log the failure and continue with remaining videos
 5. THE YouTube_Transcript_Scripts SHALL handle rate limiting and API quotas appropriately for batch processing
 
-## AI Processing Pipeline
+### Requirement 19
+
+**User Story:** As a system operator, I want detailed presentation data extraction from individual talk pages, so that I can gather comprehensive information about each presentation beyond basic metadata.
+
+#### Acceptance Criteria
+
+1. WHEN processing talk URLs from Task 1, THE Extraction_Scripts SHALL extract detailed presentation information from individual talk pages
+2. WHEN extracting presentation details, THE Extraction_Scripts SHALL gather speaker information, abstracts, presentation files, and video links
+3. WHEN encountering extraction failures, THE Extraction_QA_Agent SHALL assess data completeness using algorithmic criteria
+4. WHEN quality issues are detected, THE Troubleshooting_Agent SHALL attempt to resolve extraction problems automatically
+5. WHEN issues cannot be resolved, THE GitHub_Issue_Reporter_Agent SHALL create detailed bug reports and link them to the affected records
+
+## Task 3: AI Processing Pipeline
 
 ### Requirement 7
 
@@ -232,6 +281,20 @@ graph LR
 4. WHEN using lightweight models, THE system SHALL leverage priming to achieve performance improvements that approach more expensive model capabilities
 5. THE system SHALL maintain priming templates that can be customized based on conference classification results and reused for similar conference types
 
+## Task 4: GitHub Issue Resolution Monitoring
+
+### Requirement 20
+
+**User Story:** As a system administrator, I want automated monitoring of GitHub issues linked to failed records, so that processing can automatically resume when issues are resolved.
+
+#### Acceptance Criteria
+
+1. WHEN running issue resolution monitoring, THE GitHub_Issue_Monitor SHALL identify all records with GitHub issue links in the shared data store
+2. WHEN checking issue status, THE GitHub_Issue_Monitor SHALL query GitHub API to determine if linked issues are closed or resolved
+3. WHEN issues are resolved, THE GitHub_Issue_Monitor SHALL remove the GitHub issue link from the affected records
+4. WHEN issue links are removed, THE system SHALL make records available for processing by Tasks 1-3 on subsequent runs
+5. THE GitHub_Issue_Monitor SHALL log all issue status changes and link removals for audit purposes
+
 ## Quality Assurance and Optimization
 
 ### Requirement 12
@@ -270,54 +333,119 @@ graph LR
 4. WHEN processing completes, THE system SHALL generate comprehensive reports showing cost-benefit analysis of different configurations
 5. THE system SHALL provide APIs for external monitoring and alerting systems to track pipeline health
 
-## Optimized Processing Flow
+## Task-Based Processing Flow
 
+### Task 1: Conference Discovery Flow
 ```mermaid
 graph TD
-    A[Batch Input Configuration] --> B[Conference Discovery Agent]
-    B --> C[Extraction Scripts - Basic Data]
+    A[Shared Data Store] --> B{Records with Search Terms?}
+    B -->|Yes| C{GitHub Issue Link?}
+    B -->|No| Z[No Work - Exit]
+    C -->|Yes| D[Skip Record]
+    C -->|No| E[Conference Discovery Agent]
+    E --> F[Extraction QA Agent]
+    F --> G{Quality OK?}
+    G -->|Yes| H[Update Shared Data Store]
+    G -->|No| I[Troubleshooting Agent]
+    I --> J{Can Fix?}
+    J -->|Yes| E
+    J -->|No| K[GitHub Issue Reporter]
+    K --> L[Create Issue + Link to Record]
+    L --> H
+    D --> M[Check Next Record]
+    H --> M
+    M --> B
     
-    C --> CC[Conference Classifier Agent]
-    C --> D{Processing Effort Level}
-    D -->|Zero - Extract Only| E[YouTube Transcript Scripts Only]
-    D -->|Light/Deep| F[YouTube Transcript Scripts]
+    style A fill:#f0f0f0
+    style E fill:#e1f5fe
+    style F fill:#fff3e0
+    style K fill:#ffebee
+```
+
+### Task 2: Raw Data Extraction Flow
+```mermaid
+graph TD
+    A[Shared Data Store] --> B{Records with Talk URLs?}
+    B -->|Yes| C{GitHub Issue Link?}
+    B -->|No| Z[No Work - Exit]
+    C -->|Yes| D[Skip Record]
+    C -->|No| E{Raw Data Missing?}
+    E -->|Yes| F[Extraction Scripts]
+    E -->|No| G[Check Next Record]
+    F --> H[YouTube Transcript Scripts]
+    H --> I[Extraction QA Agent]
+    I --> J{Quality OK?}
+    J -->|Yes| K[Update Shared Data Store]
+    J -->|No| L[Troubleshooting Agent]
+    L --> M{Can Fix?}
+    M -->|Yes| F
+    M -->|No| N[GitHub Issue Reporter]
+    N --> O[Create Issue + Link to Record]
+    O --> K
+    D --> G
+    K --> G
+    G --> B
     
-    E --> H[Raw Data + Zero Effort Tags]
-    H --> I[Stop - Extraction Complete]
+    style A fill:#f0f0f0
+    style F fill:#e8f5e8
+    style H fill:#e8f5e8
+    style I fill:#fff3e0
+    style N fill:#ffebee
+```
+
+### Task 3: AI Processing Flow
+```mermaid
+graph TD
+    A[Shared Data Store] --> B{Records with Raw Data?}
+    B -->|Yes| C{GitHub Issue Link?}
+    B -->|No| Z[No Work - Exit]
+    C -->|Yes| D[Skip Record]
+    C -->|No| E{AI Processing Missing?}
+    E -->|Yes| F[Conference Classifier Agent]
+    E -->|No| G[Check Next Record]
+    F --> H[Transcript Formatter Agent]
+    H --> I[Dense Knowledge Encoder Agent]
+    I --> J[Summarizer Agent]
+    J --> K[Processing QA Agent]
+    K --> L{Quality OK?}
+    L -->|Yes| M[Update Shared Data Store]
+    L -->|No| N[GitHub Issue Reporter]
+    N --> O[Create Issue + Link to Record]
+    O --> M
+    D --> G
+    M --> G
+    G --> B
     
-    CC --> J[Technology Focus Areas + Priming]
-    F --> K[Raw Transcripts]
-    
-    J --> L[Selection Criteria Generation]
-    J --> M[Wait for Classification Complete]
-    K --> M
-    
-    M --> N{Deep Processing Needed?}
-    L --> N
-    
-    N -->|Yes - Auto Keywords| O[Transcript Formatter Agent]
-    N -->|Yes - Manual Flag| O
-    N -->|No - Light Only| P[Summarizer Agent - Light Effort]
-    
-    O --> Q[Dense Knowledge Encoder Agent]
-    O --> R[Summarizer Agent - Deep Effort]
-    
-    P --> S[Processing QA Agent]
-    Q --> S
-    R --> S
-    
-    S --> T[State Persistence]
-    T --> U[Final Output with Cost Tags]
-    
-    style D fill:#fff9c4
-    style E fill:#e3f2fd
-    style CC fill:#e1f5fe
+    style A fill:#f0f0f0
+    style F fill:#e1f5fe
+    style H fill:#e8f5e8
+    style I fill:#e8f5e8
     style J fill:#e8f5e8
-    style O fill:#ffebee
-    style Q fill:#ffebee
-    style R fill:#ffebee
-    style S fill:#f3e5f5
-    style T fill:#f0f0f0
+    style K fill:#f3e5f5
+    style N fill:#ffebee
+```
+
+### Task 4: GitHub Issue Resolution Flow
+```mermaid
+graph TD
+    A[Shared Data Store] --> B{Records with GitHub Links?}
+    B -->|Yes| C[GitHub Issue Monitor]
+    B -->|No| Z[No Work - Exit]
+    C --> D[Check Issue Status via API]
+    D --> E{Issue Closed/Resolved?}
+    E -->|Yes| F[Remove GitHub Link from Record]
+    E -->|No| G[Keep Link - Check Next]
+    F --> H[Update Shared Data Store]
+    H --> I[Log Resolution]
+    I --> G
+    G --> J{More Records?}
+    J -->|Yes| C
+    J -->|No| K[Complete - Exit]
+    
+    style A fill:#f0f0f0
+    style C fill:#ffe0e0
+    style D fill:#ffe0e0
+    style F fill:#e8f5e8
 ```
 
 ## Detailed Agent Interaction Flow
@@ -498,6 +626,32 @@ The system supports different AI model capability levels for each agent type, en
 - **Dense Summaries**: Semantic similarity >0.85 with original content
 - **Human Summaries**: Decision-making utility score >7/10 in user evaluations
 - **Overall Pipeline**: <10% quality issues flagged by QA agent
+
+## Shared Data Store and State Management
+
+### Requirement 21
+
+**User Story:** As a system architect, I want a centralized data store that manages all system state, so that tasks can operate independently while sharing data seamlessly.
+
+#### Acceptance Criteria
+
+1. WHEN any task needs data access, THE Shared_Data_Store SHALL provide a consistent interface for reading and writing conference, presentation, and processing state information
+2. WHEN storing data, THE Shared_Data_Store SHALL maintain data integrity and support atomic updates to prevent corruption during concurrent access
+3. WHEN tasks query for work, THE Shared_Data_Store SHALL enable tasks to discover incomplete work within their domain of responsibility
+4. WHEN migrating storage backends, THE Shared_Data_Store SHALL provide an abstracted access layer that enables transition from file-based to NoSQL storage without code changes
+5. THE Shared_Data_Store SHALL support idempotent operations where tasks can safely resume processing after interruption
+
+### Requirement 22
+
+**User Story:** As a quality manager, I want GitHub issue integration that prevents processing of problematic records, so that system resources are not wasted on known failing cases.
+
+#### Acceptance Criteria
+
+1. WHEN a record has a GitHub issue link, ALL processing tasks (Tasks 1-3) SHALL skip that record and not attempt any processing operations
+2. WHEN the Troubleshooting_Agent cannot resolve issues, THE GitHub_Issue_Reporter_Agent SHALL create GitHub issues and link them to the affected records in the shared data store
+3. WHEN Tasks 1-3 scan for work, THE system SHALL exclude any records with GitHub issue links from processing queues
+4. WHEN GitHub issues are resolved and links are removed by Task 4, THE system SHALL make those records available for normal processing on subsequent task runs
+5. THE system SHALL support GitHub issue links at conference, presentation, and processing enrichment levels to enable granular issue tracking
 
 ## System Operations
 

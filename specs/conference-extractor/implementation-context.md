@@ -4,10 +4,19 @@
 
 ## System Architecture Principles
 
+### Task-Based Architecture
+The system is organized into 4 distinct, manually-triggered tasks that communicate through a shared data store:
+
+1. **Task 1: Conference Discovery** - Light AI + Light web scraping
+2. **Task 2: Raw Data Extraction** - Light AI + Heavy web scraping  
+3. **Task 3: AI Processing** - Heavy AI + No web scraping
+4. **Task 4: GitHub Issue Resolution** - Light scripting + API calls
+
 ### Agent vs Script Allocation
 - **AI Agents**: Used for tasks requiring reasoning, interpretation, and context-sensitive decisions
 - **Scripts**: Used for heavy data processing, HTTP requests, and deterministic operations
 - **Hybrid Approach**: Agents orchestrate and monitor scripts, scripts handle bulk processing
+- **Task Separation**: Clear boundaries between web scraping (Tasks 1-2) and AI processing (Task 3)
 
 ### Cost Optimization Strategy
 - **Two-tier processing**: Light processing for all content, deep processing for selected content
@@ -52,92 +61,117 @@ processing_qa_confidence_system:
     low_confidence: 0.50         # <70% = intensive checking (30-50%)
 ```
 
-## Processing Flow Dependencies
+## Task-Based Processing Flow
 
-### Processing Effort Levels
-The system supports multiple processing effort levels:
+### Task Execution Model
+- **Manual Triggering**: All tasks are triggered manually, orchestration is out of scope
+- **Work Discovery**: Each task scans the shared data store for work in its domain
+- **Independent Operation**: Tasks can run in any order and combination
+- **Idempotent Design**: Tasks can be stopped and resumed at any point
+- **GitHub Issue Blocking**: All processing tasks skip records with GitHub issue links
 
-- **Level 0 (Extraction-Only)**: Raw data extraction only, no AI processing
+### Task Dependencies and Data Flow
+1. **Task 1 → Task 2**: Conference metadata and talk URLs enable raw data extraction
+2. **Task 2 → Task 3**: Raw transcripts and presentation data enable AI processing
+3. **Task 4**: Independent monitoring of GitHub issues across all records
+4. **No Strict Sequencing**: Tasks can process partial data sets (e.g., Task 3 can run on conferences where Task 2 is only partially complete)
+
+### Processing Effort Levels (Task 3 Only)
+The AI processing task supports multiple effort levels:
+
+- **Level 0 (Extraction-Only)**: Skip Task 3 entirely, only run Tasks 1-2
 - **Level 1 (Light Processing)**: Basic summarization with cost-effective models
 - **Level 2 (Deep Processing)**: Comprehensive analysis with sophisticated models
 
-### Critical Path Analysis
-1. **Conference Discovery** → **Basic Extraction** 
-2. **Extraction-Only Mode**: Stop after transcript extraction with zero effort tags
-3. **AI Processing Mode**: **Conference Classification** → **Agent Priming** → **All AI Processing**
-4. **YouTube Transcripts** → **Transcript Formatting** → **Dense Encoding**
-5. **Light Summarization** waits for **Classification** for optimal priming
-
-### Parallel Processing Opportunities
-- Conference classification runs parallel with transcript extraction (when AI processing enabled)
-- Basic metadata extraction independent of AI processing
-- Multiple presentations can be processed simultaneously (with rate limiting)
-- QA can run asynchronously with main processing pipeline
-- Extraction-only mode bypasses all AI processing for maximum speed
+### Critical Path Analysis (Within Task 3)
+1. **Conference Classification** → **Agent Priming** → **All Content Processing**
+2. **YouTube Transcripts** → **Transcript Formatting** → **Dense Encoding**
+3. **Summarization** waits for **Classification** for optimal priming
+4. **No content processing** until classifier provides priming (non-negotiable)
 
 ### Synchronization Points
-- **Extraction-Only**: No synchronization needed, process completes after transcript extraction
-- **AI Processing**: All AI agents wait for conference classification completion
-- Dense encoding waits for transcript formatting
-- Final output waits for QA completion (when enabled)
-- GitHub issue reporting can run asynchronously
+- **Between Tasks**: No synchronization, data availability determines processing
+- **Within Task 3**: All AI agents wait for conference classification completion
+- **GitHub Issues**: Task 4 operates independently of other tasks
+- **State Persistence**: Each task updates shared data store atomically
 
-## State Management and Persistence
+## Shared Data Store Architecture
 
-### Idempotency Requirements
-- **Processing state tracking**: Maintain completion status for each presentation at each processing level
-- **Configuration versioning**: Track which configuration version was used for each output
-- **Incremental updates**: Only reprocess when configuration changes affect specific presentations
-- **Resume capability**: Restart from last completed presentation after interruption
+### Storage Backend Strategy
+- **Current Implementation**: File-based storage (YAML files) with no parallelism support
+- **Future Migration**: NoSQL database with server-side concurrency management
+- **Access Layer**: Abstracted data access interface to enable seamless backend migration
+- **Concurrency Handling**: Out of scope - user ensures single process execution or provides concurrent-safe backend
 
-### State Storage Design
+### Data Store Structure
 ```yaml
-processing_state:
-  conference_id: "kccncna2025"
-  processing_effort_level: 1  # 0=extraction-only, 1=light, 2=deep
-  classification_complete: true
-  classification_version: "v1.2"
-  selection_criteria:
-    keyword_based: ["kubernetes", "platform", "security"]
-    manual_flags: ["27FVb", "2ArNt"]
-  presentations:
-    - id: "27FVb"
-      basic_extraction: "complete"
-      transcript_extraction: "complete"
-      light_summary: "complete_v1.2"
-      deep_processing: "complete_v1.2"
-      qa_checked: "2024-12-13T20:30:00Z"
-      effort_level: 2
-      total_cost_estimate: "$0.045"
-      manual_flag: true
-    - id: "27FVz"
-      basic_extraction: "complete"
-      transcript_extraction: "complete"
-      light_summary: "complete_v1.2"
-      deep_processing: "not_started"
-      qa_checked: "2024-12-13T20:30:00Z"
-      effort_level: 1
-      total_cost_estimate: "$0.008"
-      manual_flag: false
+conferences:
+  - id: "kccncna2025"
+    search_terms: "KubeCon CloudNativeCon North America 2025"
+    github_issue_link: null  # or "https://github.com/user/repo/issues/123"
+    
+    # Task 1 outputs
+    conference_metadata:
+      name: "KubeCon + CloudNativeCon North America 2025"
+      location: "Atlanta, GA"
+      dates: "November 9-13, 2025"
+      sched_url: "https://kccncna2025.sched.com"
+    
+    # Task 2 outputs  
+    presentations:
+      - id: "27FVb"
+        github_issue_link: null
+        
+        # Basic metadata from Task 1
+        title: "Platform Engineering at Scale"
+        speakers: ["Jane Doe", "John Smith"]
+        track: "Platform Engineering"
+        detail_url: "https://kccncna2025.sched.com/event/27FVb"
+        
+        # Raw data from Task 2
+        abstract: "Detailed presentation abstract..."
+        video_url: "https://youtube.com/watch?v=abc123"
+        transcript_raw: "Raw transcript text with timestamps..."
+        presentation_files: ["slides.pdf", "demo.pptx"]
+        
+        # Task 3 outputs
+        ai_processing:
+          github_issue_link: null
+          classification_complete: true
+          classification_version: "v1.2"
+          effort_level: 2
+          transcript_formatted: "Human-readable formatted transcript..."
+          dense_summary: "Compressed summary for RAG..."
+          human_summary: "Executive summary for decision-making..."
+          processing_metadata:
+            total_cost_estimate: "$0.045"
+            models_used: {...}
+            quality_score: 0.87
+            last_updated: "2024-12-13T20:30:00Z"
 ```
 
-### Resume Logic
-- Check existing state file on startup
-- Compare current configuration with stored configuration versions
-- Identify presentations needing reprocessing based on configuration changes
-- Skip completed work that matches current configuration
-- **Effort Level Changes**: When upgrading from extraction-only (0) to AI processing (1+), skip re-extraction
-- **Selection Changes**: When manual flags or keywords change, only reprocess affected presentations
-- **Model Changes**: When AI model assignments change, reprocess only AI-generated outputs
+### State Inference and Idempotency
+- **Work Discovery**: Tasks scan for records where their output fields are missing/null
+- **GitHub Issue Blocking**: Any record with github_issue_link is skipped by all processing tasks
+- **Partial Processing**: Task 3 processes only presentations with available raw data
+- **Resume Capability**: Tasks can be interrupted and resumed, continuing from where they left off
+- **Configuration Changes**: Only reprocess records when configuration affects their specific processing level
+
+### Data Access Patterns
+- **Task 1**: Finds conferences with search_terms but missing conference_metadata
+- **Task 2**: Finds presentations with detail_url but missing raw data fields
+- **Task 3**: Finds presentations with raw data but missing ai_processing fields
+- **Task 4**: Finds any record (conference/presentation/ai_processing) with github_issue_link
 
 ## Agent Priming Strategy
 
-### Conference Classification Timing
-- **Execution**: Runs immediately after basic presentation list extraction (titles, speakers, companies, tracks)
-- **Input Requirements**: Only needs presentation metadata, not transcript content
-- **Dependency**: ALL content-based processing agents wait for classification completion and priming
-- **Bypass**: Skipped entirely in extraction-only mode (effort level 0)
+### Conference Classification Timing (Task 3 Only)
+- **Execution**: First step in Task 3, runs when raw presentation data is available
+- **Input Requirements**: Uses presentation titles, speakers, companies, tracks from Task 2 output
+- **Dependency**: ALL content-based processing agents in Task 3 wait for classification completion and priming
+- **Bypass**: Task 3 skipped entirely in extraction-only mode (effort level 0)
 - **Critical Rule**: No transcript formatting, summarization, or dense encoding until priming is available
+- **Cross-Task Independence**: Classification does not affect Tasks 1, 2, or 4
 
 ### Conference Classification Output
 - **Technology domains**: Primary focus areas (e.g., "Kubernetes", "Platform Engineering", "AI/ML Operations")
@@ -174,6 +208,42 @@ priming_context:
     formatter: "Format transcripts for an audience familiar with cloud native technologies..."
     encoder: "Extract knowledge relevant to Kubernetes ecosystem and platform engineering..."
 ```
+
+## GitHub Issue Integration and Error Handling
+
+### Issue Creation and Linking
+- **Automatic Issue Creation**: When Troubleshooting Agents cannot resolve failures
+- **Issue Linking**: GitHub issue URLs stored in record's github_issue_link field
+- **Granular Linking**: Issues can be linked at conference, presentation, or ai_processing levels
+- **Processing Suspension**: Any record with github_issue_link is skipped by all processing tasks
+
+### Issue Resolution Workflow
+1. **Developer Action**: Human developer investigates and fixes underlying issue (out of scope)
+2. **Issue Closure**: Developer closes GitHub issue when problem is resolved (out of scope)
+3. **Automated Detection**: Task 4 detects closed issues via GitHub API
+4. **Link Removal**: Task 4 removes github_issue_link from affected records
+5. **Processing Resume**: Tasks 1-3 can now process previously blocked records
+
+### Issue Monitoring Implementation
+```yaml
+github_issue_monitoring:
+  api_endpoint: "https://api.github.com/repos/{owner}/{repo}/issues/{issue_number}"
+  check_frequency: "manual_batch_execution"
+  resolution_criteria:
+    - state: "closed"
+    - state_reason: "completed"  # not "not_planned"
+  actions_on_resolution:
+    - remove_github_issue_link_from_record
+    - log_resolution_event
+    - make_record_available_for_processing
+```
+
+### Error Handling Strategy
+- **Data-Driven Error Detection**: Missing/null fields indicate processing failures
+- **Graceful Degradation**: Process available data, skip incomplete records
+- **Automatic Escalation**: Unresolvable issues escalated to GitHub
+- **Processing Isolation**: Issues in one record don't affect others
+- **Audit Trail**: All issue creation and resolution events logged
 
 ## Error Handling and Recovery
 
@@ -240,10 +310,11 @@ processing_metadata:
 ## Integration Points
 
 ### External Dependencies
-- **YouTube API**: For transcript extraction (quota limits, rate limiting)
+- **yt_dlp**: For transcript extraction (no API quotas, but rate limiting still needed)
 - **Web Search MCP**: For conference discovery (multiple engine fallbacks)
-- **GitHub API**: For issue reporting (authentication, rate limiting)
+- **GitHub API**: For issue reporting and status monitoring (authentication, rate limiting)
 - **AI Model APIs**: Multiple providers for redundancy and cost optimization
+- **Shared Data Store Backend**: File system (current) or NoSQL database (future)
 
 ### Configuration Management
 - **Model assignments**: Which AI model for each agent type
@@ -272,5 +343,51 @@ processing_metadata:
 - **Scale testing**: Large conferences (500+ presentations)
 - **Cost validation**: Actual vs. estimated processing costs
 - **Quality benchmarking**: Output quality across different model configurations
+
+## Task Execution Patterns and Orchestration
+
+### Manual Task Execution
+- **No Automatic Triggering**: All tasks require manual execution
+- **Orchestration Out of Scope**: External systems may orchestrate task execution
+- **Flexible Scheduling**: Tasks can run in any order, frequency, or combination
+- **Independent Processes**: Each task is a separate executable/process
+
+### Typical Execution Scenarios
+```yaml
+scenario_1_full_pipeline:
+  description: "Complete conference processing from search term to final output"
+  sequence:
+    - task_1: "Conference discovery for new search terms"
+    - task_2: "Raw data extraction for discovered conferences"  
+    - task_3: "AI processing for extracted raw data"
+    - task_4: "Issue resolution monitoring (periodic)"
+
+scenario_2_batch_extraction:
+  description: "Extract raw data for multiple conferences before AI processing"
+  sequence:
+    - task_1: "Discover multiple conferences"
+    - task_2: "Extract raw data for all conferences"
+    - task_2: "Extract raw data for all conferences (repeat until complete)"
+    - task_3: "AI process all extracted data"
+
+scenario_3_selective_processing:
+  description: "Process only specific presentations or conferences"
+  sequence:
+    - task_3: "AI process conferences with manual flags or keyword matches"
+    - task_4: "Clean up resolved issues"
+    - task_3: "Reprocess previously blocked records"
+```
+
+### Work Discovery and Filtering
+- **Task 1**: `conferences WHERE search_terms IS NOT NULL AND conference_metadata IS NULL AND github_issue_link IS NULL`
+- **Task 2**: `presentations WHERE detail_url IS NOT NULL AND (transcript_raw IS NULL OR abstract IS NULL) AND github_issue_link IS NULL`
+- **Task 3**: `presentations WHERE transcript_raw IS NOT NULL AND ai_processing IS NULL AND github_issue_link IS NULL`
+- **Task 4**: `* WHERE github_issue_link IS NOT NULL`
+
+### Configuration and State Sharing
+- **Shared Configuration**: Single YAML configuration file used by all tasks
+- **Shared Data Store**: All tasks read from and write to the same data repository
+- **No Inter-Task Communication**: Tasks communicate only through shared data store
+- **Stateless Execution**: Each task execution is independent and stateless
 
 This context provides the detailed implementation guidance needed for the design and development phases.

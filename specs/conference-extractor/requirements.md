@@ -196,7 +196,7 @@ graph LR
 #### Acceptance Criteria
 
 1. `[Phase 4]` WHEN extraction scripts are running, THE Diagnostic_Monitor_Agent SHALL observe extraction patterns and identify anomalous behavior using AI reasoning
-2. `[Phase 4]` WHEN potential issues are detected, THE Diagnostic_Monitor_Agent SHALL make intelligent decisions about whether to trigger troubleshooting
+2. `[Phase 4]` WHEN potential issues are detected, THE Diagnostic_Monitor_Agent SHALL trigger troubleshooting when information retrieved is garbled or zero-length data is retrieved (specific criteria to be defined during Phase 4 design)
 3. `[Phase 4]` WHEN monitoring detects problems, THE Diagnostic_Monitor_Agent SHALL activate the Troubleshooting_Agent with relevant context
 4. `[Phase 4]` WHEN scripts are performing normally, THE Diagnostic_Monitor_Agent SHALL operate with minimal resource usage
 5. `[Phase 4]` THE Diagnostic_Monitor_Agent SHALL use low-capability models to keep monitoring costs minimal
@@ -310,7 +310,7 @@ graph LR
 1. `[Phase 7]` WHEN the Conference_Classifier_Agent completes analysis, THE system SHALL generate domain-specific priming prompts for all subsequent AI agents
 2. `[Phase 7]` WHEN processing presentations, THE Summarizer_Agent SHALL wait for classification results and use conference-specific priming to improve output quality
 3. `[Phase 7]` WHEN priming agents, THE system SHALL provide technology context, common terminology, and domain expertise relevant to the specific conference
-4. `[Phase 7]` WHEN using lightweight models, THE system SHALL leverage priming to achieve performance improvements that approach more expensive model capabilities
+4. `[Phase 7]` WHEN using lightweight models, THE system SHALL require that conference classification runs before summarizer, formatter, and dense encoder agents to provide priming prompts that improve performance
 5. `[Phase 7]` THE system SHALL maintain priming templates that can be customized based on conference classification results and reused for similar conference types
 
 ## Task 4: GitHub Issue Resolution Monitoring
@@ -340,7 +340,7 @@ graph LR
 1. `[Phase 8]` WHEN processing content, THE Processing_QA_Agent SHALL perform adaptive quality assurance on Transcript Formatter Agent, Summarizer Agent, and Dense Knowledge Encoder Agent outputs using confidence scoring
 2. `[Phase 4]` WHEN monitoring extraction, THE Extraction_QA_Agent SHALL use algorithmic criteria to assess extraction scripts by analyzing file sizes and log files for errors and warnings
 3. `[Phase 4]` WHEN evaluating presentations, THE Extraction_QA_Agent SHALL apply lightweight pass/fail/warn criteria per presentation, sending failures to Troubleshooting Agent and warnings for detailed review
-4. `[Phase 8]` WHEN building confidence in agent performance, THE Processing_QA_Agent SHALL gradually reduce checking frequency while maintaining quality standards
+4. `[Phase 8]` WHEN building confidence in agent performance, THE Processing_QA_Agent SHALL decrease checking frequency every time an artifact passes checks and increase frequency whenever an artifact fails checks (specific algorithm and initial parameters to be defined during Phase 8 design)
 5. `[Phase 4, Phase 8]` WHEN quality issues are detected, BOTH QA agents SHALL increase checking rates for affected components and flag problems with detailed context
 
 ### Requirement 13 `[Phase 10]`
@@ -696,7 +696,7 @@ The system supports different AI model capability levels for each agent type, en
 
 #### Acceptance Criteria
 
-1. WHEN the system is running, THE Conference_Extractor SHALL operate without requiring any user input or interactive prompts
+1. WHEN the system is running, THE Conference_Extractor SHALL operate without requiring any user input or interactive prompts during execution (all user input provided via shared data store configuration)
 2. WHEN processing conferences, THE Conference_Extractor SHALL make all decisions automatically based on configuration and learned parameters
 3. WHEN selection criteria are needed, THE Conference_Extractor SHALL use keyword matching and configuration-based rules without user intervention
 4. WHEN errors occur, THE Conference_Extractor SHALL handle them automatically through the diagnostic and troubleshooting agents without stopping for user input
@@ -711,7 +711,7 @@ The system supports different AI model capability levels for each agent type, en
 1. WHEN processing is interrupted, THE Conference_Extractor SHALL maintain state information to enable resumption from the last completed presentation
 2. WHEN restarted with identical parameters, THE Conference_Extractor SHALL detect previously completed work and skip redundant processing
 3. WHEN configuration changes affect processing level or keywords, THE Conference_Extractor SHALL identify which presentations need reprocessing and update only those
-4. WHEN manual flags are added or removed, THE Conference_Extractor SHALL process only the presentations affected by the flag changes
+4. WHEN flags are added or removed via shared data store, THE Conference_Extractor SHALL process only the presentations affected by the flag changes (note: no automatic talk flagging currently implemented, all talks processed identically)
 5. THE Conference_Extractor SHALL maintain processing metadata that enables intelligent decisions about what work needs to be redone versus what can be reused
 
 ### Requirement 18

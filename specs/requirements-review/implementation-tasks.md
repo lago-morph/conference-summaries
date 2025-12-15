@@ -39,13 +39,13 @@
 
 #### B3: Requirements Updates (Batched)
 
-##### B3.1: Core Requirements Clarifications
-- [ ] R1: Update requirement 3.2 (remove "intelligent decisions" → garbled/zero-length triggers)
-- [ ] R1: Update requirement 11.4 (clarify priming → classifier must run before summarizer/formatter/encoder)
-- [ ] R1: Update requirement 12.4 (specify frequency algorithm → decrease on success, increase on failure)
-- [ ] R3: Clarify no user input during runs, all input via shared data store
-- [ ] D2: Clarify missing vs null field semantics (missing = not processed, null = processed but empty)
-- [ ] **Target Commit:** "B3.1: Update core requirements for testability, conflicts, state inference"
+##### B3.1: Core Requirements Clarifications ✅ COMPLETE
+- [x] R1: Update requirement 3.2 (remove "intelligent decisions" → garbled/zero-length triggers)
+- [x] R1: Update requirement 11.4 (clarify priming → classifier must run before summarizer/formatter/encoder)
+- [x] R1: Update requirement 12.4 (specify frequency algorithm → decrease on success, increase on failure)
+- [x] R3: Clarify no user input during runs, all input via shared data store
+- [x] D2: Clarify missing vs null field semantics (missing = not processed, null = processed but empty)
+- [x] **Commit:** "B3.1: Update core requirements for testability, conflicts, state inference"
 
 ##### B3.2: Language Clarifications
 - [ ] A5: Update all "user selectable" language to clarify data store configuration (not interactive UI)
@@ -131,6 +131,6 @@
 - [ ] New phase definitions
 
 ## Current Status
-**Phase:** B2 ✅ Complete  
-**Next:** B3.1 - Core requirements clarifications  
+**Phase:** B3.1 ✅ Complete  
+**Next:** B3.2 - Language clarifications  
 **Context Window:** Safe - all information preserved in files

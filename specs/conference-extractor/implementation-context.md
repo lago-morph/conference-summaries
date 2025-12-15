@@ -214,7 +214,9 @@ conferences:
 ```
 
 ### State Inference and Idempotency
-- **Work Discovery**: Tasks scan for records where their output fields are missing/null
+- **Work Discovery**: Tasks scan for records where their output fields are missing (not processed) or null (processed but empty)
+- **Field Semantics**: Missing fields indicate not yet processed; null fields indicate processed but no data found
+- **Task Granularity**: Tasks are granular enough that partial completion is not saved - interrupted tasks leave fields missing
 - **GitHub Issue Blocking**: Any record with github_issue_link is skipped by all processing tasks
 - **Partial Processing**: Task 3 processes only presentations with available raw data
 - **Resume Capability**: Tasks can be interrupted and resumed, continuing from where they left off
@@ -338,7 +340,7 @@ github_issue_monitoring:
 ```
 
 ### Error Handling Strategy
-- **Data-Driven Error Detection**: Missing/null fields indicate processing failures
+- **Data-Driven Error Detection**: Missing fields indicate processing not attempted; null fields indicate processing attempted but no data found
 - **Graceful Degradation**: Process available data, skip incomplete records
 - **Automatic Escalation**: Unresolvable issues escalated to GitHub
 - **Processing Isolation**: Issues in one record don't affect others

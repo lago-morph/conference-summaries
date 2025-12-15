@@ -4,6 +4,40 @@
 
 This document captures the strategic context, user requirements, and design decisions that shaped the conference data extraction system.
 
+## Major Architectural Decisions (December 2024)
+
+### Task-Based Architecture
+**Decision**: Split monolithic pipeline into 4 independent, manually-triggered tasks
+**Rationale**: 
+- Separate web scraping (Tasks 1-2) from AI processing (Task 3) for resource optimization
+- Enable incremental processing and flexible execution order
+- Allow partial dataset processing (e.g., Task 3 on incomplete Task 2 data)
+- Support different infrastructure for different task types
+
+### Shared Data Store Communication
+**Decision**: All task communication through centralized data store only
+**Rationale**:
+- No inter-task dependencies beyond data availability
+- Idempotent operations with resumable processing
+- State inference through missing/null fields
+- Future-proof for file-to-NoSQL migration
+
+### GitHub Issue Integration
+**Decision**: Automatic issue creation with processing suspension
+**Rationale**:
+- Prevent wasted resources on known failing cases
+- Automated escalation when troubleshooting fails
+- Self-healing system when issues are resolved
+- Granular issue tracking at conference/presentation/processing levels
+
+### Phased Implementation Strategy
+**Decision**: 10 incremental phases from foundation to full AI sophistication
+**Rationale**:
+- Deliver immediate value with Phase 1 (working conference extraction)
+- Learn from early phases to inform later requirements
+- Avoid designing for requirements that may change
+- Build on validated foundations incrementally
+
 ## Project Goals and Use Cases
 
 ### Primary Objective
@@ -57,6 +91,14 @@ Create an automated system to extract comprehensive presentation data from CNCF 
 - Handles anti-bot measures through engine switching
 - Free approach (no API keys required)
 - Reliable conference URL discovery (100% success rate)
+
+### Transcript Extraction: yt_dlp
+**Decision**: Use yt_dlp instead of YouTube APIs for transcript extraction
+**Rationale**:
+- No API quota limitations
+- More reliable transcript availability
+- Handles various video platforms beyond YouTube
+- Proven extraction capabilities from exploration phase
 
 ## User Constraints and Preferences
 
@@ -162,5 +204,45 @@ Create an automated system to extract comprehensive presentation data from CNCF 
 - **Presentation Extraction**: 4/5 test presentations successful
 - **Special Character Handling**: Emoji and Unicode fully supported
 - **Performance**: 5.6 minutes for 542 presentations acceptable
+
+## System Architecture Overview
+
+### 4-Task Structure
+1. **Task 1**: Conference Discovery + Basic Metadata (light AI + light web scraping)
+2. **Task 2**: Raw Data Extraction (light AI + heavy web scraping)
+3. **Task 3**: AI Processing Pipeline (heavy AI + no web scraping)
+4. **Task 4**: GitHub Issue Resolution Monitoring (API monitoring)
+
+### Quality Assurance Strategy
+- **Extraction QA Agent**: Algorithmic criteria for Tasks 1-2 (file sizes, log analysis)
+- **Processing QA Agent**: Adaptive confidence scoring for Task 3 (content quality)
+- **Dual Approach**: Different QA strategies for different task types
+
+### A/B Testing Approach
+- **Task-Specific Testing**: Test individual tasks with alternative configurations
+- **Baseline Preservation**: Use existing processed records as "A" baseline
+- **Manual Selection**: User selects subset of records for testing
+- **Configuration Optimization**: Compare alternative task configurations against defaults
+
+## Implementation Phases
+
+### Phase 1 (Foundation)
+- Shared data store with abstracted access layer
+- Manual Task 1 (user provides Sched.com URL)
+- Basic extraction scripts without AI assistance
+- Foundation for all subsequent phases
+
+### Phases 2-10 (Progressive Enhancement)
+- Phase 2: AI-powered conference discovery
+- Phases 3-6: Task 2 + QA/troubleshooting/GitHub integration
+- Phases 7-8: Task 3 + QA/troubleshooting/GitHub integration
+- Phase 9: Automated GitHub issue monitoring
+- Phase 10: A/B testing system
+
+### Kiro Spec-Driven Development Integration
+- Each phase follows complete requirements → design → tasks → implementation cycle
+- Requirements marked with phase indicators for focused design sessions
+- Avoid designing for requirements that may change in later phases
+- Build incrementally on validated foundations
 
 This context ensures future development phases have complete understanding of project goals, constraints, and validated technical approaches.

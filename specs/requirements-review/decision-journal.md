@@ -5,9 +5,9 @@
 
 ## Review Process Status
 
-**Current Phase:** Phase 3 - Systematic Review Process
+**Current Phase:** Phase 3 - Systematic Review Process  
 **Issues to Review:** 26 total
-**Decisions Made:** 2
+**Decisions Made:** 26 + 4 conflicts = 30
 **Skipped for Later:** 0
 **Actions Completed:** 0
 
@@ -28,312 +28,309 @@
 
 ---
 
-## DECISION INPUT SECTION
-*Fill in your decisions below, then I'll process them into the formal log*
+## Additional Decisions
 
-### Other decisions that should be added and addressed
+### NEW PHASES REQUIRED
+Based on decision feedback, the following new phases must be added:
 
-#### Need more phases
-As an update to the decision for A1, we should explicitly define in the phase list when we will be implementing the conference classifier (chosen as phase 7.2 below under decision A2), the transcript formatter (phase 7.4), the dense knowledge encoder (phase 7.8), and the summarizer (phase 7.6).
+#### Phase 7.2: Conference Classifier Implementation
+Implement the conference classifier agent that primes other AI agents with context-specific prompts to improve performance.
 
-#### Need phase for introducing nosql database
-We need a new phase, phase 11, where we migrate from a file-based to a nosql database for the shared state.  This is necessary to expose parallelism so we can have multiple tasks running at the same time.  Again, the orchestration and coordination of those tasks is outside of the scope of this project.  This phase may be done out of order, or never done at all.  It is only needed if we want to start running multiple tasks at once (for instance, we are performing task 2 on several conferenes at once, while a task 3 run is going on a totally different conference).
+#### Phase 7.4: Transcript Formatter Implementation  
+Implement the transcript formatter agent with speaker diarization consistency.
 
-#### Need phase for controlling task scope
-We need a new phase, phase 12, where we add optional arguments to task execution jobs that limit the scope of what they will work on.  The exact form of this will be determined when we do design for phase 12.  Some ideas are to filter by tags on talks, or to allow one run of task 2 or 3 to work on a single conference and ignore others.  This allows us to do a lot of high level capturing of conferences and conference talks, without then automatically doing follow-on processing.  This also allows us to take advantage of parallelism when we expose it with a nosql database.  This phase may be performed out of order - it can be done any time that I want to work on multiple conferences at the same time.  This may happen early in the process, it may happen never.
+#### Phase 7.6: Summarizer Implementation
+Implement the summarizer agent that creates presentation summaries.
 
+#### Phase 7.8: Dense Knowledge Encoder Implementation
+Implement the dense knowledge encoder agent for creating dense representations.
+
+#### Phase 11: NoSQL Database Migration
+Migrate from file-based to NoSQL database for shared state to expose parallelism. Allows multiple tasks running simultaneously on different conferences. May be done out of order or never, depending on parallelism needs.
+
+#### Phase 12: Task Scope Control
+Add optional arguments to task execution that limit scope (e.g., filter by tags, single conference processing). Enables high-level conference capture without automatic follow-on processing. Supports parallelism when combined with NoSQL database.
+
+---
+
+## Formal Decision Log
 
 ### R1. Missing Testability for Key Requirements (HIGH PRIORITY)
-**Your Decision (1-5):** ___
-both 1 and 2, for different recommendations.
-**Your Reasoning:** ___
-We should immediately update requirement 3.2 to remove the phrase "intelligent decisions".  We will instead say that troubleshooting is triggered when the information retrieved is either garbled (with criteria to be added during design time of phase 4), or zero length data is retrieved.  We should say this in a way that it is clear we will be more specific in design.  Requirement 11.4 should be clarified to say that we will require that conference classification is run so that models can be primed with prompts that may improve performance.  The testable attribute is that the summarizer, formatter, and deep context agents are never run without receiving a priming prompt from the classifier agent.  Remove anything related to justifying that further, we don't need to say why we are doing it beyond that it improves performance.  For requirement 12.4, be more specific by saying that checking frequency will be decreased every time an artifact is checked as ok, and that frequency increases whenever a artifact fails checks.  Capture somewhere that as part of the design process for phase 8 we will concretely specify this algorithm and the initial parameters for the algorithm.
+**Decision:** Accept & Resolve Now + Accept & Defer
+**Reasoning:** Update requirement 3.2 to remove "intelligent decisions" → troubleshooting triggered when information is garbled or zero-length (criteria defined in Phase 4 design). Update requirement 11.4 to clarify priming → classifier must run before summarizer/formatter/encoder agents. Update requirement 12.4 to specify frequency algorithm → decrease on success, increase on failure (algorithm details in Phase 8 design).
+**Target Documents:** Requirements document
+**Status:** ✅ Complete
 
 ### R4. No MVP Definition (HIGH PRIORITY)  
-**Your Decision (1-5):** ___
-3 reject
-**Your Reasoning:** ___
-The phased plan is explicitly designed to produce a system that provides value at the end of every phase.  That means that completing phase 1 results in a minimum viable product.  Since I am building this for myself primarily, I can decide when to stop because it meets my needs.  That might be after phase 1, or it might be after everything specified up to this point has been implemented and we still do more.
+**Decision:** Reject - Disagree
+**Reasoning:** The phased plan is explicitly designed to produce a system that provides value at the end of every phase. Completing phase 1 results in a minimum viable product. Since building for personal use, can decide when to stop based on needs.
+**Status:** ✅ Complete
 
 ### R5. Undefined Task Interfaces (HIGH PRIORITY)
-**Your Decision (1-5):** ___
-2 accept/defer
-**Your Reasoning:** ___
-This is a very valid comment.  The task interfaces will have to be defined as part of the design of phase 1.  CLI/IPC contracts are just as important as things like defining the data schema (which also has to be done as part of the design of phase 1).
+**Decision:** Accept & Defer
+**Reasoning:** Valid comment. Task interfaces (CLI/IPC contracts) must be defined as part of Phase 1 design, equally important as data schema definition.
+**Target Phase:** Phase 1 design
+**Status:** ✅ Complete
 
 ### D1. Shared Data Store Schema Evolution (HIGH PRIORITY)
-**Your Decision (1-5):** ___
-2
-**Your Reasoning:** ___
-It is true that some thought has to be done for the data model.  The idea though is that the data model will have enough information to do the tasks for the phase we are at during the implementation of that phase.  Additions  to the data model will be for new capabilities.  We need to do planning during phase 1 design to make sure that we take into consideration the needs for growth so that we don't have to make major changes during some phase.  If in a future phase we are forced to do a data migration, we can do a data migration at that time.  Because this is textual data the raw size is not as bad as if we were dealing with voice, image, or video data.
-
+**Decision:** Accept & Defer
+**Reasoning:** Data model planning needed during Phase 1 design to consider growth needs and avoid major changes later. Data migrations acceptable if needed since dealing with textual data.
+**Target Phase:** Phase 1 design
+**Status:** ✅ Complete
 
 ### D3. Under-specified for Durability and Analytics (HIGH PRIORITY)
-**Your Decision (1-5):** ___
-3
-**Your Reasoning:** ___
-This model is stupid.  We explicitly state (where?) that we are implementing an abstract data layer, that we know that yaml is not scalable, and that we plan to move to a nosql database in the future.  The level of parallelism will be low, and the abstract data layer will allow us to move to higher-performance back-ends if we ever need to.
+**Decision:** Reject - Disagree
+**Reasoning:** System explicitly implements abstract data layer, acknowledges YAML isn't scalable, plans NoSQL migration. Low parallelism level acceptable, abstract layer enables higher-performance backends when needed.
+**Status:** ✅ Complete
 
 ### T1. CSS Selector Brittleness (HIGH PRIORITY)
-**Your Decision (1-5):** ___
-2
-**Your Reasoning:** ___
-We will address this issue in its entirety during the design of phase 5, when we work on the troubleshooting agents.  We will have the option of pulling it forward to phase 1 or 3 if we find that the structure of the sched web pages differ for different conferences.
+**Decision:** Accept & Defer
+**Reasoning:** Address entirely during Phase 5 design (troubleshooting agents). Option to pull forward to Phase 1 or 3 if Sched page structures differ across conferences.
+**Target Phase:** Phase 5 design
+**Status:** ✅ Complete
 
 ### T3. Context Window Management (HIGH PRIORITY)
-**Your Decision (1-5):** ___
-4
-**Your Reasoning:** ___
-The context windows of the models we are likely to use for processing transcripts is far larger than the presentation transcripts (e.g., Claude Sonnet at 200K, GPT-4o 128K, GPT-5.2 400K, Gemini models at 1M).  We will use a fresh context for each processing action.
+**Decision:** Reject - Out of Scope
+**Reasoning:** Modern model context windows (Claude Sonnet 200K, GPT-4o 128K, GPT-5.2 400K, Gemini 1M) far exceed presentation transcript sizes. Fresh context used for each processing action.
+**Status:** ✅ Complete
 
 ### P3. QA/Metrics/Telemetry Storage Missing (HIGH PRIORITY)
-**Your Decision (1-5):** ___
-2
-**Your Reasoning:** ___
-Address design of metrics for QA agent in design for phase 8.  Note that the QA agent used during web data capture is run for every script execution.  The adaptive checking is just for the task 3 QA agent.  Consider the other recommendations as part of design for phase 8.  These are probably too specific for this point in the requirements/design process.
+**Decision:** Accept & Defer
+**Reasoning:** Address QA metrics design in Phase 8. Note: QA agent for web capture runs every execution; adaptive checking only for Task 3 QA agent. Recommendations too specific for current requirements/design level.
+**Target Phase:** Phase 8 design
+**Status:** ✅ Complete
 
 ### A2. Agent Proliferation (MEDIUM PRIORITY)
-**Your Decision (1-5):** ___
-2 future phase
-**Your Reasoning:** ___
-I think as we proceed through the phases we will learn what the proper level of abstraction is.  I don't want to make the decision to combine or simplify the design now, when some of these recommendations don't take effect for a long time.  We should add this as a question that has to be asked during the relevant phases.  We will move the decision on if we should combine the QA and troubleshooting agents to the design part of phase 5 where we implement the troubleshooting agents.  We will look at if the extraction QA agent should be deterministic code to the design of phase 4.  we will move the decision on classifier validation to a new phase we will call phase 7.2, which is where we implement the classifier (we don't have a phase for that right now).  We should update the documents that refer to phases and use the numbers to incorporate that phase 7.2 if where we implement the conference classifier.  Note that we define several other phases as well above in the extra decisions section.
+**Decision:** Accept & Defer
+**Reasoning:** Learn proper abstraction level through phases. Defer consolidation decisions: QA/troubleshooting agents → Phase 5 design, extraction QA deterministic → Phase 4 design, classifier validation → Phase 7.2 design.
+**Target Phases:** Phase 4, 5, 7.2 designs
+**Status:** ✅ Complete
 
 ### A3. Task Separation Creates Coordination Overhead (MEDIUM PRIORITY)
-**Your Decision (1-5):** ___
-3 reject.
-**Your Reasoning:** ___
-This is clearly a misunderstanding of the intent.  The intent is to have the tasks, when run, go try to find work to do, and if they find it, they do it.  This allows a gradual accumulation of increasingly detailed information.  For instance, just the conferences and talk titles is valuable information, even before we grab transcripts or do further processing.  I want the flexibility to go and grab a bunch of high level conferences, and do incremental work on those, while I'm chugging away at task 3.  A lot of the benefit will come from an orchestration layer that is out of scope for this project.  By the way, checkpoints completely miss the point - the tasks are constantly checkpointing themselves by saving the work they do.  If they are interrupted, they naturally go back to where they were and continue work, no need for an explicit checkpoint.
+**Decision:** Reject - Disagree
+**Reasoning:** Misunderstanding of intent. Tasks find and do available work, enabling gradual accumulation of detailed information. Provides flexibility for incremental processing while other tasks run. Tasks self-checkpoint by saving work.
+**Status:** ✅ Complete
 
 ### A4. Orchestration vs. Choreography Trade-offs (MEDIUM PRIORITY)
-**Your Decision (1-5):** ___
-3 reject
-**Your Reasoning:** ___
-Yes, it is orchestrator heavy.  But that's the point.  When we move to a nosql data layer we will expose arbitrary parallelism, which removes any bottlenecks.  We do need a way to prioritize work and/or break up work to expose parallelism.  I will add that above in the extra decisions section.
+**Decision:** Reject - Disagree
+**Reasoning:** Orchestrator-heavy by design. NoSQL data layer will expose arbitrary parallelism, removing bottlenecks. Need work prioritization/breakdown for parallelism (addressed in Phase 12).
+**Status:** ✅ Complete
 
 ### R2. Phase Dependencies Unclear (MEDIUM PRIORITY)
-**Your Decision (1-5):** ___
-3
-**Your Reasoning:** ___
-They interpreted the dependency incorrectly.  This is not necessary.
-
+**Decision:** Reject - Disagree
+**Reasoning:** Reviewer misinterpreted dependencies. Not necessary.
+**Status:** ✅ Complete
 
 ### D2. State Inference is Fragile (MEDIUM PRIORITY)
-**Your Decision (1-5):** ___
-1
-**Your Reasoning:** ___
-Clarify that missing means not processed, and null means processed but empty.  As of now, tasks are granular enough that we do not need to save partially completed work for a single field.  If there is an issue when we are half-done, then we leave the field missing.
+**Decision:** Accept & Resolve Now
+**Reasoning:** Clarify semantics: missing = not processed, null = processed but empty. Tasks granular enough to not need partial completion tracking.
+**Target Documents:** Data model documentation
+**Status:** ✅ Complete
 
 ### D4. Time/Track Data Not Normalized (MEDIUM PRIORITY)
-**Your Decision (1-5):** ___
-2
-**Your Reasoning:** ___
-We should capture local time.  At some point in the future we can add an enrichment job that just goes through each conference, figures out what the local time was in relation to GMT, and normalizes the time.  However, this doesn't need to be implemented until we are trying to do analytics or something.  So push this off to something that we should consider when we do the future analytics.  Do not add it to the requirements there, just put this in a file called todo.md or ideas.md or something in that spec folder so it doesn't get lost.  But this is super-low priority, as I don't anticipate ever having to correlate the exact time two presentations are happening relative to each other in different time zones.
+**Decision:** Accept & Defer
+**Reasoning:** Capture local time now. Future enrichment job can normalize to GMT when needed for analytics. Super-low priority since unlikely to correlate exact times across time zones.
+**Target Phase:** Future analytics ideas file
+**Status:** ✅ Complete
 
 ### D5. GitHub Issue Links Insufficient (MEDIUM PRIORITY)
-**Your Decision (1-5):** ___
-parially 2, mostly 3
-**Your Reasoning:** ___
-It makes sense to replace the link with a structured field.  However, I think they are taking this a little too far.  We will determine what needs to be in that structured field when we do design for phase 6.
+**Decision:** Accept & Defer (partial) + Reject - Disagree (partial)
+**Reasoning:** Structured field makes sense, but recommendation goes too far. Determine structure during Phase 6 design.
+**Target Phase:** Phase 6 design
+**Status:** ✅ Complete
 
 ### D6. Speaker Diarization Consistency (MEDIUM PRIORITY)
-**Your Decision (1-5):** ___
-2
-**Your Reasoning:** ___
-Defer this until we get to the design of the phase where we are implementing the formatter agent (I believe phase 7.4)
+**Decision:** Accept & Defer
+**Reasoning:** Defer to Phase 7.4 design (formatter agent implementation).
+**Target Phase:** Phase 7.4 design
+**Status:** ✅ Complete
 
 ### T2. yt_dlp Dependency Risk (MEDIUM PRIORITY)
-**Your Decision (1-5):** ___
-2
-**Your Reasoning:** ___
-Move to design of phase 3.  Record that we have a viable alternative in using the youtube API.
+**Decision:** Accept & Defer
+**Reasoning:** Address in Phase 3 design. Record YouTube API as viable alternative.
+**Target Phase:** Phase 3 design
+**Status:** ✅ Complete
 
 ### T4. Extraction Workflow Inefficiency (MEDIUM PRIORITY)
-**Your Decision (1-5):** ___
-3
-**Your Reasoning:** ___
-This is such a tiny optimization.  I actually think it totally misunderstood the flow.  There is no track filtering, we are just extracting which track a given presentation is in by looking at a URL.  The data is already fetched, as we get the full page for each presentation.  This is just silly.
+**Decision:** Reject - Disagree
+**Reasoning:** Tiny optimization, misunderstood flow. No track filtering - just extracting track from URL. Data already fetched with full page.
+**Status:** ✅ Complete
 
 ### T5. No Caching or Change Detection (MEDIUM PRIORITY)
-**Your Decision (1-5):** ___
-3
-**Your Reasoning:** ___
-Such small details.  This is an overoptimization of an implementation detail, not an architecture issue.  I guess I used the wrong model (Codex) from OpenAI.
+**Decision:** Reject - Disagree
+**Reasoning:** Over-optimization of implementation detail, not architecture issue.
+**Status:** ✅ Complete
 
 ### P1. Testing Strategy Gaps (MEDIUM PRIORITY)
-**Your Decision (1-5):** ___
-2
-**Your Reasoning:** ___
-This is a really good catch.  We should add in two notes.  For phase 2, where we first implement any type of AI agent, we should as part of design specify the testing strategy for just the one AI agent we are implementing.  Because it is simple, this will be low effort and we will learn a lot specifying something straightforward.  In phase 4 design we should specify how we test the QA confidence system and the more technical things like mock strategies and snapshot testing.  In phase 6 design we should address how to test the github issue integration.  Lets add contract testing for the shared data store as part of phase 3.  Any other part of this suggestion that I missed (read the original one from the source Claude Opus section 5.2) we should schedule in the design part of the appropriate phase.
+**Decision:** Accept & Defer
+**Reasoning:** Excellent catch. Phase 2: AI agent testing strategy, Phase 3: contract testing for data store, Phase 4: QA confidence system testing, Phase 6: GitHub integration testing. Schedule remaining recommendations in appropriate phase designs.
+**Target Phases:** Phase 2, 3, 4, 6 designs
+**Status:** ✅ Complete
 
 ### P2. No Agentic Error Correction (MEDIUM PRIORITY)
-**Your Decision (1-5):** ___
-3
-**Your Reasoning:** ___
-Again, a total misunderstanding by Gemini.  We get transcripts that have already been produced by youtube, we don't generate transcripts ourselves.  We only reformat, summarize, or create dense representations of what we get.
+**Decision:** Reject - Disagree
+**Reasoning:** Misunderstanding - system uses existing YouTube transcripts, doesn't generate them. Only reformats, summarizes, or creates dense representations.
+**Status:** ✅ Complete
 
 ### P4. Missing Operational Documentation (MEDIUM PRIORITY)
-**Your Decision (1-5):** ___
-1
-**Your Reasoning:** ___
-concur.  We need requirements that state that at all times there must be up-to-date documentation for how to deploy and run the system and how to update configuration.  This should generate testable requirements that are tested at the end of every phase.  Add requirements for monitoring and recovering from failures, and associate them with design of phase 5 (this is when we start implementing troubleshooting, so logically fits there).
+**Decision:** Accept & Resolve Now
+**Reasoning:** Need requirements for up-to-date deployment, configuration, monitoring, and recovery documentation. Must be testable at end of every phase. Associate monitoring/recovery with Phase 5 design (troubleshooting implementation).
+**Target Documents:** Requirements document + Phase 5 design
+**Status:** ✅ Complete
 
 ### DOC2. Agent Failure Protocols Missing (MEDIUM PRIORITY)
-**Your Decision (1-5):** ___
-3
-**Your Reasoning:** ___
-This is so low level.  I definitely used the wrong model.
+**Decision:** Reject - Disagree
+**Reasoning:** Too low level for this review stage.
+**Status:** ✅ Complete
 
 ### S2. Foundation Insufficient for Future Analytics (MEDIUM PRIORITY)
-**Your Decision (1-5):** ___
-3
-**Your Reasoning:** ___
-I will save all raw source data, so they can be re-analyzed at a later date.  I'm not going to add a bunch of stuff I may never use.
+**Decision:** Reject - Disagree
+**Reasoning:** Will save all raw source data for future re-analysis. Won't add unused features.
+**Status:** ✅ Complete
 
 ### R3. Conflicting Requirements (LOW PRIORITY)
-**Your Decision (1-5):** ___
-1
-**Your Reasoning:** ___
-Need to clarify that there is no user input during a run.  Any input by the user is to the shared data store.  We do not yet have functionality to automatically flag talks, all talks are processed in the same way right now.
+**Decision:** Accept & Resolve Now
+**Reasoning:** Clarify no user input during runs - all user input via shared data store. No automatic talk flagging currently, all talks processed identically.
+**Target Documents:** Requirements document
+**Status:** ✅ Complete
 
 ### T6. Cost Estimation Accuracy (LOW PRIORITY)
-**Your Decision (1-5):** ___
-3
-**Your Reasoning:** ___
-The reviewer misinterpreted an example of a format of a document for actual data.
+**Decision:** Reject - Disagree
+**Reasoning:** Reviewer misinterpreted document format example as actual data.
+**Status:** ✅ Complete
 
 ### DOC1. Redundant Documentation (LOW PRIORITY)
-**Your Decision (1-5):** ___
-1
-**Your Reasoning:** ___
-Need to somehow indicate in requirements that we will verify at the end of every phase that documentation is both up to date, self-consistent, and avoids redundancy.  This should probably be incorporated as one of the requirements we can test, and that we should test it at the end of every phase.
+**Decision:** Accept & Resolve Now
+**Reasoning:** Add requirements to verify documentation is up-to-date, self-consistent, and avoids redundancy at end of every phase. Must be testable.
+**Target Documents:** Requirements document
+**Status:** ✅ Complete
 
 ### DOC3. Prompt Engineering Gaps (LOW PRIORITY)
-**Your Decision (1-5):** ___
-3
-**Your Reasoning:** ___
-Ugh, so specific.  So low level.  So not an appropriate issue at this level of review.  Probably not even relevant for the work I'm doing.
+**Decision:** Reject - Disagree
+**Reasoning:** Too specific and low-level for this review stage. Not relevant for current work.
+**Status:** ✅ Complete
 
 ### S1. Future Analytics Scope Creep (LOW PRIORITY)
-**Your Decision (1-5):** ___
-3
-**Your Reasoning:** ___
-This is a misunderstanding of how the documents are organized.  Everything in spec/future-analytics is out of scope for the current release.  That's why they are in a different spec with the name "future" in it.
+**Decision:** Reject - Disagree
+**Reasoning:** Misunderstanding of document organization. Everything in specs/future-analytics is explicitly out of scope for current release.
+**Status:** ✅ Complete
 
 ---
 
-**DECISION KEY:**
-1. Accept & Resolve Now - Address in current specs
-2. Accept & Defer - Good idea, future phase  
-3. Reject - Disagree - Don't agree with assessment
-4. Reject - Out of Scope - Valid but outside boundaries
-5. Skip for Now - Come back to this later
-
----
-
-**CONFLICTS TO RESOLVE:**
+## Conflicts Resolved
 
 ### C1. Agent Architecture Complexity
-**Your Decision:** ___
-3
-**Your Reasoning:** ___
-The conflict was a misunderstanding - Gemini was suggesting QA agents for transcription, which is not even an action we are doing.
+**Decision:** Reject - Disagree
+**Reasoning:** Conflict was misunderstanding - Gemini suggested QA agents for transcription, which system doesn't do.
+**Status:** ✅ Complete
 
 ### C2. State Management Approach
-**Your Decision:** ___
-3
-**Your Reasoning:** ___
-I will work with the state management framework as designed.  If in the future there are issues, we will reasses.
+**Decision:** Reject - Disagree
+**Reasoning:** Will work with designed state management framework. Reassess if future issues arise.
+**Status:** ✅ Complete
 
 ### C3. Context Window Handling
-**Your Decision:** ___
-3
-**Your Reasoning:** ___
-None of our transcripts should be anywhere near the context windows of the agents we will be using.  Each transcript-processing agent will get a clean context window.  
+**Decision:** Reject - Disagree
+**Reasoning:** Transcripts won't approach model context windows. Each transcript-processing agent gets clean context.
+**Status:** ✅ Complete
 
 ### C4. MVP Definition
-**Your Decision:** ___
-3
-**Your Reasoning:** ___
-I have defined the phases to deliver a useful, functioning system at the end of the phase.  I do not need to specify an MVP, as it is just the first phase.
+**Decision:** Reject - Disagree
+**Reasoning:** Phases defined to deliver useful, functioning system at completion. MVP is simply first phase completion.
+**Status:** ✅ Complete
 
 ### High Priority Issues (10 total)
 - [x] A1. Complexity vs. Value Mismatch
 - [x] A5. Automation Goals Clash with Interactive Workflows  
-- [ ] R1. Missing Testability for Key Requirements
-- [ ] R4. No MVP Definition
-- [ ] R5. Undefined Task Interfaces
-- [ ] D1. Shared Data Store Schema Evolution
-- [ ] D3. Under-specified for Durability and Analytics
-- [ ] T1. CSS Selector Brittleness
-- [ ] T3. Context Window Management
-- [ ] P3. QA/Metrics/Telemetry Storage Missing
+- [x] R1. Missing Testability for Key Requirements
+- [x] R4. No MVP Definition
+- [x] R5. Undefined Task Interfaces
+- [x] D1. Shared Data Store Schema Evolution
+- [x] D3. Under-specified for Durability and Analytics
+- [x] T1. CSS Selector Brittleness
+- [x] T3. Context Window Management
+- [x] P3. QA/Metrics/Telemetry Storage Missing
 
-### Medium Priority Issues (12 total)
-- [ ] A2. Agent Proliferation
-- [ ] A3. Task Separation Creates Coordination Overhead
-- [ ] A4. Orchestration vs. Choreography Trade-offs
-- [ ] R2. Phase Dependencies Unclear
-- [ ] D2. State Inference is Fragile
-- [ ] D4. Time/Track Data Not Normalized
-- [ ] D5. GitHub Issue Links Insufficient
-- [ ] D6. Speaker Diarization Consistency
-- [ ] T2. yt_dlp Dependency Risk
-- [ ] T4. Extraction Workflow Inefficiency
-- [ ] T5. No Caching or Change Detection
-- [ ] P1. Testing Strategy Gaps
-- [ ] P2. No Agentic Error Correction
-- [ ] P4. Missing Operational Documentation
-- [ ] DOC2. Agent Failure Protocols Missing
-- [ ] S2. Foundation Insufficient for Future Analytics
+### Medium Priority Issues (16 total)
+- [x] A2. Agent Proliferation
+- [x] A3. Task Separation Creates Coordination Overhead
+- [x] A4. Orchestration vs. Choreography Trade-offs
+- [x] R2. Phase Dependencies Unclear
+- [x] D2. State Inference is Fragile
+- [x] D4. Time/Track Data Not Normalized
+- [x] D5. GitHub Issue Links Insufficient
+- [x] D6. Speaker Diarization Consistency
+- [x] T2. yt_dlp Dependency Risk
+- [x] T4. Extraction Workflow Inefficiency
+- [x] T5. No Caching or Change Detection
+- [x] P1. Testing Strategy Gaps
+- [x] P2. No Agentic Error Correction
+- [x] P4. Missing Operational Documentation
+- [x] DOC2. Agent Failure Protocols Missing
+- [x] S2. Foundation Insufficient for Future Analytics
 
-### Low Priority Issues (4 total)
-- [ ] R3. Conflicting Requirements
-- [ ] T6. Cost Estimation Accuracy
-- [ ] DOC1. Redundant Documentation
-- [ ] DOC3. Prompt Engineering Gaps
-- [ ] S1. Future Analytics Scope Creep
+### Low Priority Issues (5 total)
+- [x] R3. Conflicting Requirements
+- [x] T6. Cost Estimation Accuracy
+- [x] DOC1. Redundant Documentation
+- [x] DOC3. Prompt Engineering Gaps
+- [x] S1. Future Analytics Scope Creep
 
 ---
 
 ## Conflicts to Resolve
 
 ### C1. Agent Architecture Complexity
-**Status:** Pending
+**Status:** ✅ Resolved - Reject - Disagree
 **Reviewers:** Claude Opus (simplify), Gemini Pro (add QC agent)
-**Decision:** TBD
+**Decision:** Conflict was misunderstanding - Gemini suggested QA agents for transcription, which system doesn't do
 
 ### C2. State Management Approach  
-**Status:** Pending
+**Status:** ✅ Resolved - Reject - Disagree
 **Reviewers:** Claude Opus (status fields), GPT Codex (journaling), Gemini Pro (durable framework)
-**Decision:** TBD
+**Decision:** Will work with designed state management framework. Reassess if future issues arise
 
 ### C3. Context Window Handling
-**Status:** Pending
+**Status:** ✅ Resolved - Reject - Disagree
 **Reviewers:** Gemini Pro (hierarchical), GPT Codex (timestamps)
-**Decision:** TBD
+**Decision:** Transcripts won't approach model context windows. Each agent gets clean context
 
 ### C4. MVP Definition
-**Status:** Pending
+**Status:** ✅ Resolved - Reject - Disagree
 **Reviewers:** Claude Opus (Phase 3), GPT Codex (Phase 1 focus)
-**Decision:** TBD
+**Decision:** Phases defined to deliver useful system at completion. MVP is first phase completion
 
 ---
 
 ## Documents Requiring Updates
 
 ### Immediate Updates (Accept & Resolve Now)
-- **A5**: Update requirements and implementation context documents to clarify "user selectable" means configuration via shared data store, not interactive UI
+- **A5**: Update requirements and implementation context - clarify "user selectable" means data store configuration, not interactive UI
+- **R1**: Update requirement 3.2 (remove "intelligent decisions"), 11.4 (clarify priming), 12.4 (specify frequency algorithm)
+- **D2**: Clarify missing vs null field semantics in data model documentation
+- **P4**: Add operational documentation requirements (deployment, monitoring, recovery, configuration)
+- **R3**: Clarify no user input during runs, all input via shared data store
+- **DOC1**: Add documentation consistency requirements tested at end of each phase
 
 ### Future Phase Documentation (Accept & Defer)
-*Will be populated as decisions are made*
+- **Phase 1 Design**: Task interfaces (R5), Data model planning (D1)
+- **Phase 2 Design**: AI agent testing strategy (P1)
+- **Phase 3 Design**: yt_dlp fallback strategy (T2), Contract testing for data store (P1)
+- **Phase 4 Design**: Extraction QA deterministic validation (A2), QA confidence system testing (P1)
+- **Phase 5 Design**: CSS selector brittleness (T1), QA/troubleshooting agent consolidation (A2), Monitoring/recovery requirements (P4)
+- **Phase 6 Design**: GitHub issue structure (D5), GitHub integration testing (P1)
+- **Phase 7.2 Design**: Conference classifier validation (A2)
+- **Phase 7.4 Design**: Speaker diarization consistency (D6)
+- **Phase 8 Design**: QA metrics and telemetry storage (P3), Testing AI agents (P1)
+- **Future Analytics Ideas**: Time normalization enrichment job (D4)
 
 ---
 
 ## Summary Statistics
 
-- **Total Decisions Made:** 2/26
-- **Accept & Resolve Now:** 1
-- **Accept & Defer:** 0  
-- **Reject - Disagree:** 1
-- **Reject - Out of Scope:** 0
-- **Conflicts Resolved:** 0/4
+- **Total Decisions Made:** 30/30 (26 issues + 4 conflicts)
+- **Accept & Resolve Now:** 6
+- **Accept & Defer:** 12  
+- **Reject - Disagree:** 11
+- **Reject - Out of Scope:** 1
+- **Conflicts Resolved:** 4/4

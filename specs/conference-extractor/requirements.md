@@ -369,117 +369,90 @@ graph LR
 
 ## Task-Based Processing Flow
 
-### Task 1: Conference Discovery Flow
+### Unified Task Execution Flow
 ```mermaid
 graph TD
-    A[Shared Data Store] --> B{Records with Search Terms?}
-    B -->|Yes| C{GitHub Issue Link?}
-    B -->|No| Z[No Work - Exit]
-    C -->|Yes| D[Skip Record]
-    C -->|No| E[Conference Discovery Agent]
-    E --> F[Extraction QA Agent]
-    F --> G{Quality OK?}
-    G -->|Yes| H[Update Shared Data Store]
-    G -->|No| I[Troubleshooting Agent]
-    I --> J{Can Fix?}
-    J -->|Yes| E
-    J -->|No| K[GitHub Issue Reporter]
-    K --> L[Create Issue + Link to Record]
-    L --> H
-    D --> M[Check Next Record]
-    H --> M
-    M --> B
+    SDS[(Shared Data Store)]
     
-    style A fill:#f0f0f0
-    style E fill:#e1f5fe
-    style F fill:#fff3e0
-    style K fill:#ffebee
-```
-
-### Task 2: Raw Data Extraction Flow
-```mermaid
-graph TD
-    A[Shared Data Store] --> B{Records with Talk URLs?}
-    B -->|Yes| C{GitHub Issue Link?}
-    B -->|No| Z[No Work - Exit]
-    C -->|Yes| D[Skip Record]
-    C -->|No| E{Raw Data Missing?}
-    E -->|Yes| F[Extraction Scripts]
-    E -->|No| G[Check Next Record]
-    F --> H[YouTube Transcript Scripts]
-    H --> I[Extraction QA Agent]
-    I --> J{Quality OK?}
-    J -->|Yes| K[Update Shared Data Store]
-    J -->|No| L[Troubleshooting Agent]
-    L --> M{Can Fix?}
-    M -->|Yes| F
-    M -->|No| N[GitHub Issue Reporter]
-    N --> O[Create Issue + Link to Record]
-    O --> K
-    D --> G
-    K --> G
-    G --> B
+    subgraph "Task 1: Conference Discovery"
+        T1_START[Check for Search Terms] --> T1_GITHUB{GitHub Issue?}
+        T1_GITHUB -->|Yes| T1_SKIP[Skip Record]
+        T1_GITHUB -->|No| T1_AGENT[Conference Discovery Agent]
+        T1_AGENT --> T1_QA[Extraction QA Agent]
+        T1_QA --> T1_QUALITY{Quality OK?}
+        T1_QUALITY -->|Yes| T1_UPDATE[Update Data Store]
+        T1_QUALITY -->|No| T1_TROUBLE[Troubleshooting Agent]
+        T1_TROUBLE --> T1_FIX{Can Fix?}
+        T1_FIX -->|Yes| T1_AGENT
+        T1_FIX -->|No| T1_GITHUB_ISSUE[GitHub Issue Reporter]
+        T1_GITHUB_ISSUE --> T1_UPDATE
+    end
     
-    style A fill:#f0f0f0
-    style F fill:#e8f5e8
-    style H fill:#e8f5e8
-    style I fill:#fff3e0
-    style N fill:#ffebee
-```
-
-### Task 3: AI Processing Flow
-```mermaid
-graph TD
-    A[Shared Data Store] --> B{Records with Raw Data?}
-    B -->|Yes| C{GitHub Issue Link?}
-    B -->|No| Z[No Work - Exit]
-    C -->|Yes| D[Skip Record]
-    C -->|No| E{AI Processing Missing?}
-    E -->|Yes| F[Conference Classifier Agent]
-    E -->|No| G[Check Next Record]
-    F --> H[Transcript Formatter Agent]
-    H --> I[Dense Knowledge Encoder Agent]
-    I --> J[Summarizer Agent]
-    J --> K[Processing QA Agent]
-    K --> L{Quality OK?}
-    L -->|Yes| M[Update Shared Data Store]
-    L -->|No| N[GitHub Issue Reporter]
-    N --> O[Create Issue + Link to Record]
-    O --> M
-    D --> G
-    M --> G
-    G --> B
+    subgraph "Task 2: Raw Data Extraction"
+        T2_START[Check for Talk URLs] --> T2_GITHUB{GitHub Issue?}
+        T2_GITHUB -->|Yes| T2_SKIP[Skip Record]
+        T2_GITHUB -->|No| T2_MISSING{Raw Data Missing?}
+        T2_MISSING -->|Yes| T2_EXTRACT[Extraction Scripts]
+        T2_EXTRACT --> T2_YOUTUBE[YouTube Transcript Scripts]
+        T2_YOUTUBE --> T2_QA[Extraction QA Agent]
+        T2_QA --> T2_QUALITY{Quality OK?}
+        T2_QUALITY -->|Yes| T2_UPDATE[Update Data Store]
+        T2_QUALITY -->|No| T2_TROUBLE[Troubleshooting Agent]
+        T2_TROUBLE --> T2_FIX{Can Fix?}
+        T2_FIX -->|Yes| T2_EXTRACT
+        T2_FIX -->|No| T2_GITHUB_ISSUE[GitHub Issue Reporter]
+        T2_GITHUB_ISSUE --> T2_UPDATE
+    end
     
-    style A fill:#f0f0f0
-    style F fill:#e1f5fe
-    style H fill:#e8f5e8
-    style I fill:#e8f5e8
-    style J fill:#e8f5e8
-    style K fill:#f3e5f5
-    style N fill:#ffebee
-```
-
-### Task 4: GitHub Issue Resolution Flow
-```mermaid
-graph TD
-    A[Shared Data Store] --> B{Records with GitHub Links?}
-    B -->|Yes| C[GitHub Issue Monitor]
-    B -->|No| Z[No Work - Exit]
-    C --> D[Check Issue Status via API]
-    D --> E{Issue Closed/Resolved?}
-    E -->|Yes| F[Remove GitHub Link from Record]
-    E -->|No| G[Keep Link - Check Next]
-    F --> H[Update Shared Data Store]
-    H --> I[Log Resolution]
-    I --> G
-    G --> J{More Records?}
-    J -->|Yes| C
-    J -->|No| K[Complete - Exit]
+    subgraph "Task 3: AI Processing"
+        T3_START[Check for Raw Data] --> T3_GITHUB{GitHub Issue?}
+        T3_GITHUB -->|Yes| T3_SKIP[Skip Record]
+        T3_GITHUB -->|No| T3_MISSING{AI Processing Missing?}
+        T3_MISSING -->|Yes| T3_CLASSIFIER[Conference Classifier Agent]
+        T3_CLASSIFIER --> T3_FORMATTER[Transcript Formatter Agent]
+        T3_FORMATTER --> T3_ENCODER[Dense Knowledge Encoder Agent]
+        T3_ENCODER --> T3_SUMMARIZER[Summarizer Agent]
+        T3_SUMMARIZER --> T3_QA[Processing QA Agent]
+        T3_QA --> T3_QUALITY{Quality OK?}
+        T3_QUALITY -->|Yes| T3_UPDATE[Update Data Store]
+        T3_QUALITY -->|No| T3_GITHUB_ISSUE[GitHub Issue Reporter]
+        T3_GITHUB_ISSUE --> T3_UPDATE
+    end
     
-    style A fill:#f0f0f0
-    style C fill:#ffe0e0
-    style D fill:#ffe0e0
-    style F fill:#e8f5e8
+    subgraph "Task 4: GitHub Issue Resolution"
+        T4_START[Check for GitHub Links] --> T4_MONITOR[GitHub Issue Monitor]
+        T4_MONITOR --> T4_STATUS[Check Issue Status via API]
+        T4_STATUS --> T4_RESOLVED{Issue Closed/Resolved?}
+        T4_RESOLVED -->|Yes| T4_REMOVE[Remove GitHub Link]
+        T4_RESOLVED -->|No| T4_KEEP[Keep Link - Check Next]
+        T4_REMOVE --> T4_UPDATE[Update Data Store]
+        T4_UPDATE --> T4_LOG[Log Resolution]
+        T4_LOG --> T4_KEEP
+    end
+    
+    SDS --> T1_START
+    SDS --> T2_START
+    SDS --> T3_START
+    SDS --> T4_START
+    
+    T1_UPDATE --> SDS
+    T2_UPDATE --> SDS
+    T3_UPDATE --> SDS
+    T4_UPDATE --> SDS
+    
+    style SDS fill:#f0f0f0
+    style T1_AGENT fill:#e1f5fe
+    style T1_QA fill:#fff3e0
+    style T2_EXTRACT fill:#e8f5e8
+    style T2_YOUTUBE fill:#e8f5e8
+    style T2_QA fill:#fff3e0
+    style T3_CLASSIFIER fill:#e1f5fe
+    style T3_FORMATTER fill:#e8f5e8
+    style T3_ENCODER fill:#e8f5e8
+    style T3_SUMMARIZER fill:#e8f5e8
+    style T3_QA fill:#f3e5f5
+    style T4_MONITOR fill:#ffe0e0
+    style T4_STATUS fill:#ffe0e0
 ```
 
 ## Detailed Agent Interaction Flow

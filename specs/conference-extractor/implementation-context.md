@@ -97,34 +97,337 @@ extraction_qa_algorithmic_system:
     pass_continue_processing: "Continue to next stage"
 ```
 
-## Phased Implementation Strategy
+## Technology Choices and Rationale
 
-### Implementation Phases Overview
-The system will be implemented in **16 incremental phases** to deliver value early while building toward full sophistication:
+### Core Technology Decisions
 
-1. **Phase 1**: Foundation + Manual Task 1 (data store, basic extraction, manual URL input)
-2. **Phase 2**: AI-Powered Task 1 (Conference Discovery Agent)
-3. **Phase 3**: Basic Task 2 (raw data extraction scripts only)
-4. **Phase 4**: Task 1 + 2 QA Agents (extraction quality assurance)
-5. **Phase 5**: Troubleshooting Agents (for Tasks 1 + 2)
-6. **Phase 6**: GitHub Issue Integration (for Tasks 1 + 2)
-7. **Phase 7**: Basic Task 3 (AI processing without QA)
-8. **Phase 7.2**: Conference Classifier Implementation (priming agent for AI processing)
-9. **Phase 7.4**: Transcript Formatter Implementation (speaker diarization consistency)
-10. **Phase 7.6**: Summarizer Implementation (presentation summaries)
-11. **Phase 7.8**: Dense Knowledge Encoder Implementation (dense representations)
-12. **Phase 8**: Task 3 QA + Troubleshooting + GitHub
-13. **Phase 9**: Task 4 (GitHub issue monitoring)
-14. **Phase 10**: A/B Testing System
-15. **Phase 11**: NoSQL Database Migration (parallelism support)
-16. **Phase 12**: Task Scope Control (optional execution arguments)
+#### yt_dlp for Transcript Extraction
+**Decision**: Use yt_dlp instead of YouTube APIs
+**Rationale**:
+- **No API Quotas**: Eliminates rate limiting and quota management complexity
+- **Broader Platform Support**: Works with multiple video platforms beyond YouTube
+- **Reliable Extraction**: Proven transcript availability and extraction capabilities
+- **No Authentication**: Eliminates API key management and authentication complexity
+- **Cost Effective**: No API usage costs
 
-### Phase 1 Deliverables (Foundation)
-- **Shared Data Store**: File-based YAML storage with abstracted access layer
-- **Basic Task 1**: Manual URL input + conference metadata extraction
-- **Configuration System**: Shared YAML configuration across all tasks
+#### Multi-Engine Web Search
+**Decision**: Enhanced MCP server with DuckDuckGo, Bing, Google fallbacks
+**Rationale**:
+- **Reliability**: Reduces dependency on single search provider
+- **Anti-Bot Resilience**: Engine switching handles anti-bot measures
+- **Cost Effective**: Free approach without API key requirements
+- **Proven Success**: 100% success rate in conference URL discovery during testing
+
+#### YAML Data Format
+**Decision**: Store extracted data in YAML format initially
+**Rationale**:
+- **Human Readable**: Easy debugging and manual review of extracted data
+- **Structured Format**: Machine-readable while maintaining readability
+- **Unicode Support**: Handles emoji and special characters well
+- **Future Migration**: Easy conversion to JSON or database formats later
+- **Configuration Consistency**: Matches configuration file format
+
+#### File-Based Data Store with Abstraction Layer
+**Decision**: Start with file-based storage, design for NoSQL migration
+**Rationale**:
+- **Rapid Development**: File-based storage enables quick Phase 1 implementation
+- **Future Scalability**: Abstracted access layer enables seamless NoSQL migration
+- **Simplicity**: No database setup or management complexity in early phases
+- **Debugging**: Easy inspection of data store state during development
+- **Concurrency Strategy**: User ensures single process execution or provides concurrent-safe backend
+
+### Implementation Language and Framework Choices
+
+#### Python for Core Implementation
+**Rationale**:
+- **HTML Parsing**: Excellent libraries (BeautifulSoup, lxml) for web scraping
+- **HTTP Handling**: Robust requests library with retry and session management
+- **YAML Processing**: Native YAML support with PyYAML
+- **Error Handling**: Comprehensive exception handling and logging capabilities
+- **Cross-Platform**: Consistent behavior across development environments
+- **AI Integration**: Excellent libraries for AI model API integration
+
+#### Node.js for MCP Server
+**Rationale**:
+- **MCP Ecosystem**: Native support for Model Context Protocol
+- **Web Search Integration**: Excellent libraries for multi-engine web search
+- **JSON Handling**: Native JSON processing for API responses
+- **Async Operations**: Efficient handling of concurrent web requests
+- **Existing Codebase**: Builds on validated web search server implementation
+
+### Rate Limiting and Respectful Scraping
+
+#### 100ms Request Delays
+**Decision**: Minimum 100ms delay between HTTP requests
+**Validation**: Successfully tested with 542 presentations, no rate limiting issues
+**Rationale**:
+- **Server Courtesy**: Respectful to Sched.com infrastructure
+- **Sustainable Throughput**: ~6 requests per second maximum
+- **Proven Reliability**: No blocking or throttling encountered during testing
+- **Configurable**: Can be adjusted based on server response patterns
+
+## Phase Implementation Guide
+
+The system will be implemented in **16 incremental phases** to deliver value early while building toward full sophistication. Each phase includes implementation focus, deliverables, and deferred design decisions that must be resolved during the design phase.
+
+### Phase 1: Foundation + Manual Task 1
+**Focus**: Establish core infrastructure and basic extraction capabilities
+
+**Deliverables**:
+- **Shared Data Store**: File-based YAML storage with abstracted access layer for future NoSQL migration
+- **Manual URL Input**: User provides Sched.com URL directly, system validates accessibility
+- **Basic Extraction**: Conference metadata and presentation list extraction using validated CSS selectors
+- **Configuration System**: YAML-based configuration shared across all tasks
+- **Work Discovery**: Task scanning logic to identify incomplete work
 - **Basic Metrics**: Execution time, success rates, error logging
-- **Work Discovery**: Task scanning for incomplete work in shared data store
+- **No AI Components**: Pure script-based extraction to establish reliable foundation
+
+**Success Criteria**:
+- Working shared data store with YAML backend
+- Manual conference URL input and validation
+- Basic conference metadata extraction
+- Presentation list extraction with talk URLs
+- Foundation for all subsequent phases
+
+**Deferred Design Decisions**:
+- **Task Interface Specifications (R5)**: Define CLI/IPC contracts for task inputs/outputs, arguments, environment variables, exit codes, and telemetry topics
+  - **Context**: Task interfaces (CLI/IPC contracts) must be defined as part of Phase 1 design, equally important as data schema definition
+  - **Requirements**: Specify input/output formats, command-line arguments, environment variables, exit codes, and telemetry integration
+  - **Impact**: Foundation for all task execution and orchestration patterns
+
+- **Data Model Planning (D1)**: Plan data model evolution to consider growth needs and avoid major changes in later phases
+  - **Context**: Data model planning needed during Phase 1 design to consider growth needs and avoid major changes later
+  - **Requirements**: Design schema evolution strategy, migration patterns, and backward compatibility approach
+  - **Impact**: Prevents major data restructuring in later phases, enables smooth NoSQL migration
+
+### Phase 2: AI-Powered Task 1 (Conference Discovery Agent)
+**Focus**: Add Conference Discovery Agent for automated URL finding
+
+**Deliverables**:
+- **Web Search Integration**: Use enhanced MCP server for conference discovery
+- **AI Interpretation**: Conference Discovery Agent interprets unstructured conference information
+- **URL Validation**: Combine AI discovery with existing validation logic
+- **Fallback Strategy**: Manual URL input remains available when AI discovery fails
+
+**Deferred Design Decisions**:
+- **AI Agent Testing Strategy (P1)**: Specify testing strategy for the Conference Discovery Agent as the first AI component
+  - **Context**: First AI agent implementation requires establishing testing patterns for all subsequent AI agents
+  - **Requirements**: Mock strategies, snapshot testing, validation of non-deterministic behavior
+  - **Impact**: Testing framework foundation for all AI agents in later phases
+
+### Phase 3: Basic Task 2 (raw data extraction scripts only)
+**Focus**: Raw data extraction without AI assistance
+
+**Deliverables**:
+- **Presentation Detail Extraction**: Extract abstracts, speaker info, files from individual talk pages
+- **YouTube Transcript Extraction**: Use yt_dlp for transcript downloading
+- **Rate Limiting**: Implement 100ms delays between requests for respectful scraping
+- **Error Logging**: Comprehensive logging for troubleshooting without AI assistance
+
+**Deferred Design Decisions**:
+- **yt_dlp Fallback Strategy (T2)**: Document YouTube API as viable alternative for transcript extraction
+  - **Context**: Address yt_dlp dependency risk with documented fallback approach
+  - **Requirements**: YouTube API integration design, cost analysis, migration strategy
+  - **Impact**: Reduces single-point-of-failure risk for transcript extraction
+
+- **Contract Testing (P1)**: Add contract testing for shared data store interface
+  - **Context**: Validate data store interface contracts before adding complexity
+  - **Requirements**: Interface validation, schema compliance testing, error handling verification
+  - **Impact**: Ensures data store reliability before heavy usage in later phases
+
+### Phase 4: Task 1 + 2 QA Agents (extraction quality assurance)
+**Focus**: Add quality assurance and error handling for extraction tasks
+
+**Deliverables**:
+- **Extraction QA Agent**: Algorithmic criteria for Tasks 1-2 (file sizes, log analysis)
+- **Quality Assessment**: Lightweight pass/fail/warn assessment per presentation
+- **Error Pattern Recognition**: Identifies common extraction failure patterns
+
+**Deferred Design Decisions**:
+- **Extraction QA Deterministic Validation (A2)**: Evaluate whether Extraction QA Agent should use deterministic code instead of AI
+  - **Context**: Determine optimal approach for extraction quality assurance - algorithmic vs AI-based
+  - **Requirements**: Performance comparison, accuracy analysis, cost-benefit evaluation
+  - **Impact**: Establishes QA pattern for all extraction tasks
+
+- **QA Confidence System Testing (P1)**: Specify how to test the adaptive QA confidence system
+  - **Context**: Adaptive confidence scoring requires specialized testing approach
+  - **Requirements**: Confidence score validation, adaptation behavior testing, edge case handling
+  - **Impact**: Ensures reliable quality assurance system for AI processing phases
+
+### Phase 5: Troubleshooting Agents (for Tasks 1 + 2)
+**Focus**: Add quality assurance and error handling for extraction tasks
+
+**Deliverables**:
+- **Troubleshooting Agents**: Automatic issue resolution for extraction tasks
+- **CSS Selector Handling**: Alternative selector identification when failures occur
+- **Network Issue Management**: Retry strategies and timeout adjustments
+
+**Deferred Design Decisions**:
+- **CSS Selector Brittleness (T1)**: Address selector versioning, automatic failure detection, and multiple selector sets for different Sched.com versions
+  - **Context**: Handle Sched.com page structure changes across different conferences and time periods
+  - **Requirements**: Selector versioning system, automatic fallback mechanisms, failure detection patterns
+  - **Impact**: Improves extraction reliability across diverse conference websites
+
+- **QA/Troubleshooting Agent Consolidation (A2)**: Decide whether to merge Diagnostic Monitor and Troubleshooting agents into single error handling component
+  - **Context**: Evaluate agent consolidation to reduce complexity while maintaining functionality
+  - **Requirements**: Functionality analysis, performance comparison, maintenance complexity assessment
+  - **Impact**: Determines error handling architecture for all subsequent phases
+
+- **Monitoring and Recovery Requirements (P4)**: Associate monitoring and recovery documentation with troubleshooting implementation
+  - **Context**: Operational requirements must be integrated with troubleshooting agent design
+  - **Requirements**: Monitoring integration, recovery procedures, operational documentation standards
+  - **Impact**: Ensures production-ready error handling and recovery capabilities
+
+### Phase 6: GitHub Issue Integration (for Tasks 1 + 2)
+**Focus**: Add GitHub integration for unresolvable issues
+
+**Deliverables**:
+- **GitHub Issue Reporter**: Automatic issue creation with detailed context
+- **Processing Suspension**: Skip records with GitHub issue links
+- **Issue Context Preservation**: Include error logs, diagnostic information, and reproduction steps
+
+**Deferred Design Decisions**:
+- **GitHub Issue Structure (D5)**: Determine structured field requirements for GitHub issue links at conference, presentation, and processing levels
+  - **Context**: Define structured approach to GitHub issue integration beyond simple URL links
+  - **Requirements**: Issue categorization, metadata requirements, linking granularity
+  - **Impact**: Enables sophisticated issue tracking and resolution workflows
+
+- **GitHub Integration Testing (P1)**: Specify how to test GitHub issue integration without creating real issues
+  - **Context**: Test GitHub integration functionality without polluting real repositories
+  - **Requirements**: Mock GitHub API, test repository setup, integration validation
+  - **Impact**: Ensures reliable GitHub integration without development overhead
+
+### Phase 7: Basic Task 3 (AI processing without QA)
+**Focus**: Establish AI processing infrastructure without individual agents
+
+**Deliverables**:
+- **Basic Task 3 Framework**: Data flow setup for AI processing pipeline
+- **Foundation Infrastructure**: Prepare for individual AI agent implementation
+
+### Phase 7.2: Conference Classifier Implementation (priming agent for AI processing)
+**Focus**: Implement conference classifier that primes other AI agents
+
+**Deliverables**:
+- **Conference Classifier Agent**: Analyzes presentation titles and tracks to identify technology focus areas
+- **Domain-Specific Context**: Generation for all subsequent AI agents
+- **Technology Focus Identification**: Primary domains, terminology extraction, audience assessment
+- **Agent Priming**: Context-specific prompts that improve AI processing quality
+- **Critical Timing**: Must complete before all other Task 3 AI agents (non-negotiable)
+
+**Deferred Design Decisions**:
+- **Conference Classifier Validation (A2)**: Validate Conference Classifier value with A/B testing before making it a hard dependency
+  - **Context**: Ensure Conference Classifier provides measurable value before making it mandatory for all processing
+  - **Requirements**: A/B testing framework, quality metrics, performance comparison
+  - **Impact**: Validates critical dependency for all AI processing agents
+
+### Phase 7.4: Transcript Formatter Implementation (speaker diarization consistency)
+**Focus**: Implement transcript formatter with speaker diarization
+
+**Deliverables**:
+- **Transcript Formatter Agent**: Human-readable formatting with proper paragraphing
+- **Speaker Diarization**: Consistent speaker identification across transcripts
+- **Timestamp Preservation**: Enhanced timestamp information for major sections
+- **Structured Output**: Both full transcripts and section-based summaries
+
+**Deferred Design Decisions**:
+- **Speaker Diarization Consistency (D6)**: Implement structured JSON transcript format with speaker_id and timestamp for every block
+  - **Context**: Ensure consistent speaker identification across transcript formatting
+  - **Requirements**: JSON schema design, speaker identification algorithms, timestamp preservation
+  - **Impact**: Enables reliable speaker-aware transcript processing
+
+### Phase 7.6: Summarizer Implementation (presentation summaries)
+**Focus**: Implement summarizer agent for presentation summaries
+
+**Deliverables**:
+- **Summarizer Agent**: Tiered processing with light and deep summarization options
+- **Cost-Effective Processing**: Light summaries using cost-effective models for all presentations
+- **Deep Analysis**: Comprehensive summaries with sophisticated models for selected presentations
+- **Effort Tagging**: All outputs tagged with processing cost indicators
+
+**Deferred Design Decisions**:
+- **Summarizer Agent Implementation**: Design and implement presentation summarization capabilities
+  - **Context**: Create both light and deep summarization options with appropriate model selection
+  - **Requirements**: Summary quality criteria, length targets, cost optimization
+  - **Impact**: Core content processing capability for presentation analysis
+
+### Phase 7.8: Dense Knowledge Encoder Implementation (dense representations)
+**Focus**: Implement dense encoder for RAG-optimized representations
+
+**Deliverables**:
+- **Dense Knowledge Encoder Agent**: Compressed summaries optimized for semantic search
+- **RAG Optimization**: Vector-friendly text generation for knowledge databases
+- **Technical Concept Extraction**: Key methodologies and technology keywords
+- **Traceability**: Maintain links back to original transcript sections with timestamps
+
+**Deferred Design Decisions**:
+- **Dense Knowledge Encoder Implementation**: Design and implement dense representation creation
+  - **Context**: Create dense representations suitable for RAG and knowledge extraction
+  - **Requirements**: Encoding strategies, vector dimensions, retrieval optimization
+  - **Impact**: Enables advanced analytics and knowledge discovery capabilities
+
+### Phase 8: Task 3 QA + Troubleshooting + GitHub
+**Focus**: Add quality assurance for AI processing
+
+**Deliverables**:
+- **Processing QA Agent**: Adaptive confidence scoring for AI processing outputs
+- **Quality Assessment**: Evaluates consistency, accuracy, and completeness of AI-generated content
+- **Confidence Learning**: Scores evolve based on performance history
+
+**Deferred Design Decisions**:
+- **QA Metrics and Telemetry Storage (P3)**: Design metrics storage for QA agent confidence scores, verdicts, and A/B test results
+  - **Context**: Comprehensive metrics system for AI processing quality assurance
+  - **Requirements**: Metrics schema, storage backend, analysis capabilities
+  - **Impact**: Enables data-driven quality improvement and system optimization
+
+- **Testing AI Agents (P1)**: Specify mock strategies for AI agents, snapshot testing for outputs, and validation of non-deterministic behavior
+  - **Context**: Comprehensive testing strategy for all AI processing agents
+  - **Requirements**: Mock frameworks, output validation, regression testing
+  - **Impact**: Ensures reliable AI agent behavior across system updates
+
+### Phase 9: Task 4 (GitHub issue monitoring)
+**Focus**: Complete system automation and optimization
+
+**Deliverables**:
+- **Automated GitHub Issue Monitoring**: Task 4 implementation for issue status checking
+- **Automatic Link Removal**: When issues are resolved, remove links from records
+- **Processing Resumption**: Enable previously blocked records to resume processing
+
+### Phase 10: A/B Testing System
+**Focus**: Configuration optimization through systematic testing
+
+**Deliverables**:
+- **A/B Testing Framework**: Task-specific testing with alternative configurations
+- **Quality Evaluation**: High-effort evaluation agent for comparing results
+- **Impact Assessment**: Recommendations for configuration changes
+- **Configuration Optimization**: Data-driven approach to model and parameter selection
+
+### Phase 11: NoSQL Database Migration (parallelism support)
+**Focus**: Enable parallelism and fine-grained control
+
+**Deliverables**:
+- **NoSQL Migration**: Transition from file-based to NoSQL database
+- **Parallelism Support**: Multiple tasks running simultaneously on different conferences
+- **Server-Side Concurrency**: Management of concurrent access and data integrity
+
+**Deferred Design Decisions**:
+- **NoSQL Database Migration Strategy**: Plan migration from file-based to NoSQL database for parallelism support
+  - **Context**: Enable multiple tasks running simultaneously on different conferences
+  - **Requirements**: Database selection, migration procedures, concurrency management
+  - **Impact**: Unlocks parallel processing capabilities for large-scale operations
+
+### Phase 12: Task Scope Control (optional execution arguments)
+**Focus**: Fine-grained execution control
+
+**Deliverables**:
+- **Task Scope Control**: Optional arguments to limit task execution scope
+- **Selective Processing**: Filter by tags, single conference processing
+- **Parallel Processing Support**: Enable high-level conference capture without automatic follow-on processing
+
+**Deferred Design Decisions**:
+- **Task Scope Control Implementation**: Add optional arguments to limit task execution scope
+  - **Context**: Enable fine-grained control over task execution for specific use cases
+  - **Requirements**: Argument parsing, filtering logic, scope validation
+  - **Impact**: Supports parallelism and selective processing workflows
 
 ### Task Execution Model
 - **Manual Triggering**: All tasks are triggered manually, orchestration is out of scope
@@ -445,13 +748,7 @@ processing_metadata:
 - **Cost validation**: Actual vs. estimated processing costs
 - **Quality benchmarking**: Output quality across different model configurations
 
-### A/B Testing Implementation
-- **Task-Specific Testing**: Test individual tasks (1, 2, or 3) with alternative configurations
-- **Baseline Preservation**: Use existing processed records as "A" baseline
-- **Alternative Processing**: Reprocess selected records with "B" configuration
-- **Configuration-Based Selection**: User configures subset of records for testing via shared data store
-- **Configuration Comparison**: Compare alternative task configurations against current defaults
-- **Impact Assessment**: Determine whether alternative configurations should replace defaults
+
 
 ## Task Execution Patterns and Orchestration
 
@@ -524,7 +821,7 @@ scenario_5_issue_recovery:
 - **No Inter-Task Communication**: Tasks communicate only through shared data store
 - **Stateless Execution**: Each task execution is independent and stateless
 
-## A/B Testing Execution Patterns
+## A/B Testing Strategy
 
 ### A/B Testing Approach Rationale
 The A/B testing system focuses on **task-specific optimization** rather than full pipeline testing:
@@ -534,6 +831,14 @@ The A/B testing system focuses on **task-specific optimization** rather than ful
 - **Configuration-Based Selection**: User configures subset of records for testing specific scenarios via shared data store
 - **Configuration Comparison**: Compare alternative task configurations against current defaults
 - **Cost-Effective Testing**: Avoid reprocessing entire pipelines when testing specific components
+- **Impact Assessment**: Determine whether alternative configurations should replace defaults
+
+### A/B Testing Implementation
+- **Task-Specific Testing**: Test individual tasks (1, 2, or 3) with alternative configurations
+- **Baseline Preservation**: Use existing processed records as "A" baseline
+- **Alternative Processing**: Reprocess selected records with "B" configuration
+- **Configuration-Based Selection**: User configures subset of records for testing via shared data store
+- **Configuration Comparison**: Compare alternative task configurations against current defaults
 - **Impact Assessment**: Determine whether alternative configurations should replace defaults
 
 ### Task-Specific A/B Testing Scenarios
@@ -635,178 +940,7 @@ quality_evaluation_framework:
 - Presentation list extraction with talk URLs
 - Foundation for all subsequent phases
 
-### Phase-Specific Implementation Notes
 
-#### Phase 1 (Foundation + Manual Task 1)
-**Focus**: Establish core infrastructure and basic extraction capabilities
-- **Shared Data Store**: File-based YAML with abstracted access layer for future NoSQL migration
-- **Manual URL Input**: User provides Sched.com URL directly, system validates accessibility
-- **Basic Extraction**: Conference metadata and presentation list extraction using validated CSS selectors
-- **Configuration System**: YAML-based configuration shared across all tasks
-- **Work Discovery**: Task scanning logic to identify incomplete work
-- **No AI Components**: Pure script-based extraction to establish reliable foundation
-
-#### Phase 2 (AI-Powered Task 1)
-**Focus**: Add Conference Discovery Agent for automated URL finding
-- **Web Search Integration**: Use enhanced MCP server for conference discovery
-- **AI Interpretation**: Conference Discovery Agent interprets unstructured conference information
-- **URL Validation**: Combine AI discovery with existing validation logic
-- **Fallback Strategy**: Manual URL input remains available when AI discovery fails
-
-#### Phase 3 (Basic Task 2)
-**Focus**: Raw data extraction without AI assistance
-- **Presentation Detail Extraction**: Extract abstracts, speaker info, files from individual talk pages
-- **YouTube Transcript Extraction**: Use yt_dlp for transcript downloading
-- **Rate Limiting**: Implement 100ms delays between requests for respectful scraping
-- **Error Logging**: Comprehensive logging for troubleshooting without AI assistance
-
-#### Phases 4-6 (Task 1-2 QA and Error Handling)
-**Focus**: Add quality assurance and error handling for extraction tasks
-- **Phase 4**: Extraction QA Agent with algorithmic criteria
-- **Phase 5**: Troubleshooting Agents for automatic issue resolution
-- **Phase 6**: GitHub Issue Reporter and processing suspension
-
-#### Phase 7 (Basic Task 3 Setup)
-**Focus**: Establish AI processing infrastructure without individual agents
-- **Phase 7**: Basic Task 3 framework and data flow setup
-
-#### Phases 7.2-7.8 (Individual AI Agent Implementation)
-**Focus**: Implement specific AI processing agents incrementally
-- **Phase 7.2**: Conference Classifier Agent - primes other agents with context-specific prompts
-- **Phase 7.4**: Transcript Formatter Agent - handles speaker diarization consistency
-- **Phase 7.6**: Summarizer Agent - creates presentation summaries
-- **Phase 7.8**: Dense Knowledge Encoder Agent - creates dense representations
-
-#### Phase 8 (Task 3 QA and Error Handling)
-**Focus**: Add quality assurance for AI processing
-- **Phase 8**: Processing QA Agent with adaptive confidence scoring
-
-#### Phases 9-10 (Advanced Features)
-**Focus**: Complete system automation and optimization
-- **Phase 9**: Automated GitHub issue monitoring (Task 4)
-- **Phase 10**: A/B testing system for configuration optimization
-
-#### Phases 11-12 (Scalability and Control)
-**Focus**: Enable parallelism and fine-grained control
-- **Phase 11**: NoSQL Database Migration - migrate from file-based to NoSQL for parallelism support
-- **Phase 12**: Task Scope Control - add optional arguments to limit task execution scope
-
-### Deferred Design Decisions
-
-The following design decisions have been deferred to specific phases based on requirements review feedback. These decisions must be made **during the design phase** of each implementation phase, before implementation begins:
-
-#### Phase 1 Design Phase Decisions
-- **Task Interface Specifications (R5)**: Define CLI/IPC contracts for task inputs/outputs, arguments, environment variables, exit codes, and telemetry topics
-  - **Context**: Task interfaces (CLI/IPC contracts) must be defined as part of Phase 1 design, equally important as data schema definition
-  - **Requirements**: Specify input/output formats, command-line arguments, environment variables, exit codes, and telemetry integration
-  - **Impact**: Foundation for all task execution and orchestration patterns
-
-- **Data Model Planning (D1)**: Plan data model evolution to consider growth needs and avoid major changes in later phases
-  - **Context**: Data model planning needed during Phase 1 design to consider growth needs and avoid major changes later
-  - **Requirements**: Design schema evolution strategy, migration patterns, and backward compatibility approach
-  - **Impact**: Prevents major data restructuring in later phases, enables smooth NoSQL migration
-
-#### Phase 2 Design Phase Decisions  
-- **AI Agent Testing Strategy (P1)**: Specify testing strategy for the Conference Discovery Agent as the first AI component
-  - **Context**: First AI agent implementation requires establishing testing patterns for all subsequent AI agents
-  - **Requirements**: Mock strategies, snapshot testing, validation of non-deterministic behavior
-  - **Impact**: Testing framework foundation for all AI agents in later phases
-
-#### Phase 3 Design Phase Decisions
-- **yt_dlp Fallback Strategy (T2)**: Document YouTube API as viable alternative for transcript extraction
-  - **Context**: Address yt_dlp dependency risk with documented fallback approach
-  - **Requirements**: YouTube API integration design, cost analysis, migration strategy
-  - **Impact**: Reduces single-point-of-failure risk for transcript extraction
-
-- **Contract Testing (P1)**: Add contract testing for shared data store interface
-  - **Context**: Validate data store interface contracts before adding complexity
-  - **Requirements**: Interface validation, schema compliance testing, error handling verification
-  - **Impact**: Ensures data store reliability before heavy usage in later phases
-
-#### Phase 4 Design Phase Decisions
-- **Extraction QA Deterministic Validation (A2)**: Evaluate whether Extraction QA Agent should use deterministic code instead of AI
-  - **Context**: Determine optimal approach for extraction quality assurance - algorithmic vs AI-based
-  - **Requirements**: Performance comparison, accuracy analysis, cost-benefit evaluation
-  - **Impact**: Establishes QA pattern for all extraction tasks
-
-- **QA Confidence System Testing (P1)**: Specify how to test the adaptive QA confidence system
-  - **Context**: Adaptive confidence scoring requires specialized testing approach
-  - **Requirements**: Confidence score validation, adaptation behavior testing, edge case handling
-  - **Impact**: Ensures reliable quality assurance system for AI processing phases
-
-#### Phase 5 Design Phase Decisions
-- **CSS Selector Brittleness (T1)**: Address selector versioning, automatic failure detection, and multiple selector sets for different Sched.com versions
-  - **Context**: Handle Sched.com page structure changes across different conferences and time periods
-  - **Requirements**: Selector versioning system, automatic fallback mechanisms, failure detection patterns
-  - **Impact**: Improves extraction reliability across diverse conference websites
-
-- **QA/Troubleshooting Agent Consolidation (A2)**: Decide whether to merge Diagnostic Monitor and Troubleshooting agents into single error handling component
-  - **Context**: Evaluate agent consolidation to reduce complexity while maintaining functionality
-  - **Requirements**: Functionality analysis, performance comparison, maintenance complexity assessment
-  - **Impact**: Determines error handling architecture for all subsequent phases
-
-- **Monitoring and Recovery Requirements (P4)**: Associate monitoring and recovery documentation with troubleshooting implementation
-  - **Context**: Operational requirements must be integrated with troubleshooting agent design
-  - **Requirements**: Monitoring integration, recovery procedures, operational documentation standards
-  - **Impact**: Ensures production-ready error handling and recovery capabilities
-
-#### Phase 6 Design Phase Decisions
-- **GitHub Issue Structure (D5)**: Determine structured field requirements for GitHub issue links at conference, presentation, and processing levels
-  - **Context**: Define structured approach to GitHub issue integration beyond simple URL links
-  - **Requirements**: Issue categorization, metadata requirements, linking granularity
-  - **Impact**: Enables sophisticated issue tracking and resolution workflows
-
-- **GitHub Integration Testing (P1)**: Specify how to test GitHub issue integration without creating real issues
-  - **Context**: Test GitHub integration functionality without polluting real repositories
-  - **Requirements**: Mock GitHub API, test repository setup, integration validation
-  - **Impact**: Ensures reliable GitHub integration without development overhead
-
-#### Phase 7.2 Design Phase Decisions
-- **Conference Classifier Validation (A2)**: Validate Conference Classifier value with A/B testing before making it a hard dependency
-  - **Context**: Ensure Conference Classifier provides measurable value before making it mandatory for all processing
-  - **Requirements**: A/B testing framework, quality metrics, performance comparison
-  - **Impact**: Validates critical dependency for all AI processing agents
-
-#### Phase 7.4 Design Phase Decisions
-- **Speaker Diarization Consistency (D6)**: Implement structured JSON transcript format with speaker_id and timestamp for every block
-  - **Context**: Ensure consistent speaker identification across transcript formatting
-  - **Requirements**: JSON schema design, speaker identification algorithms, timestamp preservation
-  - **Impact**: Enables reliable speaker-aware transcript processing
-
-#### Phase 7.6 Design Phase Decisions
-- **Summarizer Agent Implementation**: Design and implement presentation summarization capabilities
-  - **Context**: Create both light and deep summarization options with appropriate model selection
-  - **Requirements**: Summary quality criteria, length targets, cost optimization
-  - **Impact**: Core content processing capability for presentation analysis
-
-#### Phase 7.8 Design Phase Decisions
-- **Dense Knowledge Encoder Implementation**: Design and implement dense representation creation
-  - **Context**: Create dense representations suitable for RAG and knowledge extraction
-  - **Requirements**: Encoding strategies, vector dimensions, retrieval optimization
-  - **Impact**: Enables advanced analytics and knowledge discovery capabilities
-
-#### Phase 8 Design Phase Decisions
-- **QA Metrics and Telemetry Storage (P3)**: Design metrics storage for QA agent confidence scores, verdicts, and A/B test results
-  - **Context**: Comprehensive metrics system for AI processing quality assurance
-  - **Requirements**: Metrics schema, storage backend, analysis capabilities
-  - **Impact**: Enables data-driven quality improvement and system optimization
-
-- **Testing AI Agents (P1)**: Specify mock strategies for AI agents, snapshot testing for outputs, and validation of non-deterministic behavior
-  - **Context**: Comprehensive testing strategy for all AI processing agents
-  - **Requirements**: Mock frameworks, output validation, regression testing
-  - **Impact**: Ensures reliable AI agent behavior across system updates
-
-#### Phase 11 Design Phase Decisions
-- **NoSQL Database Migration Strategy**: Plan migration from file-based to NoSQL database for parallelism support
-  - **Context**: Enable multiple tasks running simultaneously on different conferences
-  - **Requirements**: Database selection, migration procedures, concurrency management
-  - **Impact**: Unlocks parallel processing capabilities for large-scale operations
-
-#### Phase 12 Design Phase Decisions
-- **Task Scope Control Implementation**: Add optional arguments to limit task execution scope
-  - **Context**: Enable fine-grained control over task execution for specific use cases
-  - **Requirements**: Argument parsing, filtering logic, scope validation
-  - **Impact**: Supports parallelism and selective processing workflows
 
 ### Critical Implementation Dependencies
 
@@ -825,73 +959,3 @@ The following design decisions have been deferred to specific phases based on re
 - **Task 4 removes links when issues are resolved**
 - **Processing automatically resumes on subsequent task runs**
 
-## Technology Choices and Rationale
-
-### Core Technology Decisions
-
-#### yt_dlp for Transcript Extraction
-**Decision**: Use yt_dlp instead of YouTube APIs
-**Rationale**:
-- **No API Quotas**: Eliminates rate limiting and quota management complexity
-- **Broader Platform Support**: Works with multiple video platforms beyond YouTube
-- **Reliable Extraction**: Proven transcript availability and extraction capabilities
-- **No Authentication**: Eliminates API key management and authentication complexity
-- **Cost Effective**: No API usage costs
-
-#### Multi-Engine Web Search
-**Decision**: Enhanced MCP server with DuckDuckGo, Bing, Google fallbacks
-**Rationale**:
-- **Reliability**: Reduces dependency on single search provider
-- **Anti-Bot Resilience**: Engine switching handles anti-bot measures
-- **Cost Effective**: Free approach without API key requirements
-- **Proven Success**: 100% success rate in conference URL discovery during testing
-
-#### YAML Data Format
-**Decision**: Store extracted data in YAML format initially
-**Rationale**:
-- **Human Readable**: Easy debugging and manual review of extracted data
-- **Structured Format**: Machine-readable while maintaining readability
-- **Unicode Support**: Handles emoji and special characters well
-- **Future Migration**: Easy conversion to JSON or database formats later
-- **Configuration Consistency**: Matches configuration file format
-
-#### File-Based Data Store with Abstraction Layer
-**Decision**: Start with file-based storage, design for NoSQL migration
-**Rationale**:
-- **Rapid Development**: File-based storage enables quick Phase 1 implementation
-- **Future Scalability**: Abstracted access layer enables seamless NoSQL migration
-- **Simplicity**: No database setup or management complexity in early phases
-- **Debugging**: Easy inspection of data store state during development
-- **Concurrency Strategy**: User ensures single process execution or provides concurrent-safe backend
-
-### Implementation Language and Framework Choices
-
-#### Python for Core Implementation
-**Rationale**:
-- **HTML Parsing**: Excellent libraries (BeautifulSoup, lxml) for web scraping
-- **HTTP Handling**: Robust requests library with retry and session management
-- **YAML Processing**: Native YAML support with PyYAML
-- **Error Handling**: Comprehensive exception handling and logging capabilities
-- **Cross-Platform**: Consistent behavior across development environments
-- **AI Integration**: Excellent libraries for AI model API integration
-
-#### Node.js for MCP Server
-**Rationale**:
-- **MCP Ecosystem**: Native support for Model Context Protocol
-- **Web Search Integration**: Excellent libraries for multi-engine web search
-- **JSON Handling**: Native JSON processing for API responses
-- **Async Operations**: Efficient handling of concurrent web requests
-- **Existing Codebase**: Builds on validated web search server implementation
-
-### Rate Limiting and Respectful Scraping
-
-#### 100ms Request Delays
-**Decision**: Minimum 100ms delay between HTTP requests
-**Validation**: Successfully tested with 542 presentations, no rate limiting issues
-**Rationale**:
-- **Server Courtesy**: Respectful to Sched.com infrastructure
-- **Sustainable Throughput**: ~6 requests per second maximum
-- **Proven Reliability**: No blocking or throttling encountered during testing
-- **Configurable**: Can be adjusted based on server response patterns
-
-This context provides the detailed implementation guidance needed for the phased design and development approach.

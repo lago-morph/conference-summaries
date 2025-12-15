@@ -690,6 +690,43 @@ quality_evaluation_framework:
 - **Phase 11**: NoSQL Database Migration - migrate from file-based to NoSQL for parallelism support
 - **Phase 12**: Task Scope Control - add optional arguments to limit task execution scope
 
+### Deferred Design Decisions
+
+The following design decisions have been deferred to specific phases based on requirements review feedback:
+
+#### Phase 1 Design Decisions
+- **Task Interface Specifications (R5)**: Define CLI/IPC contracts for task inputs/outputs, arguments, environment variables, exit codes, and telemetry topics
+- **Data Model Planning (D1)**: Plan data model evolution to consider growth needs and avoid major changes in later phases
+
+#### Phase 2 Design Decisions  
+- **AI Agent Testing Strategy (P1)**: Specify testing strategy for the Conference Discovery Agent as the first AI component
+
+#### Phase 3 Design Decisions
+- **yt_dlp Fallback Strategy (T2)**: Document YouTube API as viable alternative for transcript extraction
+- **Contract Testing (P1)**: Add contract testing for shared data store interface
+
+#### Phase 4 Design Decisions
+- **Extraction QA Deterministic Validation (A2)**: Evaluate whether Extraction QA Agent should use deterministic code instead of AI
+- **QA Confidence System Testing (P1)**: Specify how to test the adaptive QA confidence system
+
+#### Phase 5 Design Decisions
+- **CSS Selector Brittleness (T1)**: Address selector versioning, automatic failure detection, and multiple selector sets for different Sched.com versions
+- **QA/Troubleshooting Agent Consolidation (A2)**: Decide whether to merge Diagnostic Monitor and Troubleshooting agents into single error handling component
+
+#### Phase 6 Design Decisions
+- **GitHub Issue Structure (D5)**: Determine structured field requirements for GitHub issue links at conference, presentation, and processing levels
+- **GitHub Integration Testing (P1)**: Specify how to test GitHub issue integration without creating real issues
+
+#### Phase 7.2 Design Decisions
+- **Conference Classifier Validation (A2)**: Validate Conference Classifier value with A/B testing before making it a hard dependency
+
+#### Phase 7.4 Design Decisions
+- **Speaker Diarization Consistency (D6)**: Implement structured JSON transcript format with speaker_id and timestamp for every block
+
+#### Phase 8 Design Decisions
+- **QA Metrics and Telemetry Storage (P3)**: Design metrics storage for QA agent confidence scores, verdicts, and A/B test results
+- **Testing AI Agents (P1)**: Specify mock strategies for AI agents, snapshot testing for outputs, and validation of non-deterministic behavior
+
 ### Critical Implementation Dependencies
 
 #### Within Task 3 (Non-Negotiable)

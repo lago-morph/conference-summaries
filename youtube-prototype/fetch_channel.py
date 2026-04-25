@@ -83,11 +83,28 @@ def _write_json(path: Path, data: dict | list, indent: int = 2) -> None:
 
 
 class ChannelFetcher:
-    def __init__(self, base_dir: Path, workers: int) -> None:
+    def __init__(
+        self,
+        base_dir: Path,
+        workers: int,
+        cookies_from_browser: str | None = None,
+        cookies_file: str | None = None,
+    ) -> None:
         self.base_dir = base_dir
         self.workers = workers
+        self._cookies_from_browser = cookies_from_browser
+        self._cookies_file = cookies_file
         self._lock = threading.Lock()
         self._stop = threading.Event()
+
+    def _auth_opts(self) -> dict:
+        """Return yt-dlp authentication options based on what the user provided."""
+        opts: dict = {}
+        if self._cookies_from_browser:
+            opts["cookiesfrombrowser"] = (self._cookies_from_browser,)
+        if self._cookies_file:
+            opts["cookiefile"] = self._cookies_file
+        return opts
 
     # ── central index ────────────────────────────────────────────────────────
 
@@ -151,6 +168,7 @@ class ChannelFetcher:
             "skip_download":       True,
             "ignoreerrors":        True,
             "nocheckcertificate":  True,
+            **self._auth_opts(),
         }
         try:
             with yt_dlp.YoutubeDL(opts) as ydl:
@@ -171,6 +189,7 @@ class ChannelFetcher:
             "no_warnings":        True,
             "skip_download":      True,
             "nocheckcertificate": True,
+            **self._auth_opts(),
         }
         try:
             with yt_dlp.YoutubeDL(opts) as ydl:
@@ -436,12 +455,29 @@ def main() -> None:
         default=None,
         help="Base output directory (default: directory containing this script)",
     )
+    parser.add_argument(
+        "--cookies-from-browser",
+        metavar="BROWSER",
+        default=None,
+        help="Extract cookies from this browser (chrome, firefox, safari, edge, brave, …)",
+    )
+    parser.add_argument(
+        "--cookies-file",
+        metavar="FILE",
+        default=None,
+        help="Path to a Netscape-format cookies file exported from your browser",
+    )
     args = parser.parse_args()
 
     base_dir: Path = args.output_dir or Path(__file__).parent
     base_dir.mkdir(parents=True, exist_ok=True)
 
-    ChannelFetcher(base_dir=base_dir, workers=args.workers).run(args.channel_url)
+    ChannelFetcher(
+        base_dir=base_dir,
+        workers=args.workers,
+        cookies_from_browser=args.cookies_from_browser,
+        cookies_file=args.cookies_file,
+    ).run(args.channel_url)
 
 
 if __name__ == "__main__":

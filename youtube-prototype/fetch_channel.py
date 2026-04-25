@@ -2,10 +2,10 @@
 """
 fetch_channel.py  –  YouTube channel metadata + transcript fetcher
 
-No official YouTube API required.  Uses yt-dlp and youtube-transcript-api.
+No official YouTube API required.
 
 Usage:
-  python fetch_channel.py <channel_url> [--workers N] [--output-dir DIR]
+  python fetch_channel.py <channel_url> [--scraper firecrawl|ytdlp] [--workers N] [--output-dir DIR]
 
 Restartable: videos already marked 'complete' are skipped on re-run.
 Rate limiting: state is saved and the process exits with code 2.
@@ -25,27 +25,14 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import re
 import sys
 import threading
 import concurrent.futures
+from abc import ABC, abstractmethod
 from datetime import datetime, timezone
 from pathlib import Path
-
-try:
-    import yt_dlp
-    from yt_dlp.utils import DownloadError
-except ImportError:
-    sys.exit("yt-dlp not installed. Run: pip install yt-dlp")
-
-try:
-    from youtube_transcript_api import (
-        YouTubeTranscriptApi,
-        TranscriptsDisabled,
-        NoTranscriptFound,
-        VideoUnavailable,
-    )
-except ImportError:
-    sys.exit("youtube-transcript-api not installed. Run: pip install youtube-transcript-api")
 
 
 RATE_LIMIT_MARKERS = [
@@ -55,6 +42,8 @@ RATE_LIMIT_MARKERS = [
     "please sign in to confirm",
     "sign in to confirm your age",
 ]
+
+_FIRECRAWL_CREDS = Path.home() / ".config" / "firecrawl-cli" / "credentials.json"
 
 
 class RateLimitError(Exception):
@@ -79,32 +68,280 @@ def _write_json(path: Path, data: dict | list, indent: int = 2) -> None:
     path.write_text(json.dumps(data, indent=indent, ensure_ascii=False), encoding="utf-8")
 
 
-# ─────────────────────────────────────────────────────────────────────────────
+def _load_firecrawl_api_key() -> str | None:
+    """Read API key saved by `firecrawl init`, or from the environment."""
+    if key := os.environ.get("FIRECRAWL_API_KEY"):
+        return key
+    if _FIRECRAWL_CREDS.exists():
+        try:
+            return json.loads(_FIRECRAWL_CREDS.read_text())["apiKey"]
+        except Exception:
+            pass
+    return None
 
 
-class ChannelFetcher:
+# ── Scraper abstraction ──────────────────────────────────────────────────────
+
+
+class BaseScraper(ABC):
+    """Pluggable scraping backend.  All methods must be thread-safe."""
+
+    @abstractmethod
+    def fetch_channel_listing(self, url: str) -> tuple[str, str, list[dict]]:
+        """Return (channel_id, channel_name, [{id, title}, ...])."""
+        ...
+
+    @abstractmethod
+    def fetch_video_info(self, video_id: str) -> dict:
+        """Return a dict with: title, description, keywords,
+        upload_date, duration_seconds, view_count."""
+        ...
+
+    @abstractmethod
+    def fetch_transcript(self, video_id: str) -> list | None:
+        """Return [{text, start, duration}, ...] or None if unavailable."""
+        ...
+
+
+# ── yt-dlp backend ───────────────────────────────────────────────────────────
+
+
+class YtDlpScraper(BaseScraper):
     def __init__(
         self,
-        base_dir: Path,
-        workers: int,
         cookies_from_browser: str | None = None,
         cookies_file: str | None = None,
     ) -> None:
-        self.base_dir = base_dir
-        self.workers = workers
+        try:
+            import yt_dlp
+            from yt_dlp.utils import DownloadError
+        except ImportError:
+            sys.exit("yt-dlp not installed. Run: pip install yt-dlp")
+        self._yt_dlp = yt_dlp
+        self._DownloadError = DownloadError
+
+        try:
+            from youtube_transcript_api import (
+                YouTubeTranscriptApi,
+                TranscriptsDisabled,
+                NoTranscriptFound,
+                VideoUnavailable,
+            )
+        except ImportError:
+            sys.exit("youtube-transcript-api not installed. Run: pip install youtube-transcript-api")
+        self._TranscriptApi = YouTubeTranscriptApi
+        self._TranscriptsDisabled = TranscriptsDisabled
+        self._NoTranscriptFound = NoTranscriptFound
+        self._VideoUnavailable = VideoUnavailable
+
         self._cookies_from_browser = cookies_from_browser
         self._cookies_file = cookies_file
-        self._lock = threading.Lock()
-        self._stop = threading.Event()
 
     def _auth_opts(self) -> dict:
-        """Return yt-dlp authentication options based on what the user provided."""
         opts: dict = {}
         if self._cookies_from_browser:
             opts["cookiesfrombrowser"] = (self._cookies_from_browser,)
         if self._cookies_file:
             opts["cookiefile"] = self._cookies_file
         return opts
+
+    @staticmethod
+    def _collect_entries(info: dict) -> list[dict]:
+        result: list[dict] = []
+        for e in info.get("entries") or []:
+            if e is None:
+                continue
+            if e.get("_type") == "playlist":
+                result.extend(YtDlpScraper._collect_entries(e))
+            elif e.get("id"):
+                result.append(e)
+        return result
+
+    def fetch_channel_listing(self, url: str) -> tuple[str, str, list[dict]]:
+        opts = {
+            "quiet":              True,
+            "no_warnings":        True,
+            "extract_flat":       "in_playlist",
+            "skip_download":      True,
+            "ignoreerrors":       True,
+            "nocheckcertificate": True,
+            **self._auth_opts(),
+        }
+        try:
+            with self._yt_dlp.YoutubeDL(opts) as ydl:
+                info = ydl.extract_info(url, download=False)
+        except self._DownloadError as e:
+            if _is_rate_limit(str(e)):
+                raise RateLimitError(str(e)) from e
+            raise
+        if info is None:
+            raise ValueError(f"yt-dlp returned nothing for {url!r}")
+
+        cid = (
+            info.get("channel_id")
+            or info.get("uploader_id")
+            or info.get("id")
+            or "unknown"
+        )
+        cname = (
+            info.get("channel")
+            or info.get("uploader")
+            or info.get("title")
+            or cid
+        )
+        entries = [
+            {"id": e["id"], "title": e.get("title", "")}
+            for e in self._collect_entries(info)
+        ]
+        return cid, cname, entries
+
+    def fetch_video_info(self, video_id: str) -> dict:
+        url = f"https://www.youtube.com/watch?v={video_id}"
+        opts = {
+            "quiet":              True,
+            "no_warnings":        True,
+            "skip_download":      True,
+            "nocheckcertificate": True,
+            **self._auth_opts(),
+        }
+        try:
+            with self._yt_dlp.YoutubeDL(opts) as ydl:
+                info = ydl.extract_info(url, download=False)
+        except self._DownloadError as e:
+            if _is_rate_limit(str(e)):
+                raise RateLimitError(str(e)) from e
+            raise
+        if info is None:
+            raise ValueError(f"yt-dlp returned nothing for video {video_id!r}")
+        return {
+            "title":            info.get("title", ""),
+            "description":      info.get("description", ""),
+            "keywords":         info.get("tags") or [],
+            "upload_date":      info.get("upload_date"),
+            "duration_seconds": info.get("duration"),
+            "view_count":       info.get("view_count"),
+        }
+
+    def fetch_transcript(self, video_id: str) -> list | None:
+        try:
+            return self._TranscriptApi.get_transcript(video_id)
+        except (self._TranscriptsDisabled, self._VideoUnavailable):
+            return None
+        except self._NoTranscriptFound:
+            try:
+                tl = self._TranscriptApi.list_transcripts(video_id)
+                return tl.find_generated_transcript(["en"]).fetch()
+            except Exception:
+                return None
+        except Exception as e:
+            if _is_rate_limit(str(e)):
+                raise RateLimitError(str(e)) from e
+            return None
+
+
+# ── Firecrawl backend ────────────────────────────────────────────────────────
+
+
+class FirecrawlScraper(BaseScraper):
+    def __init__(self, api_key: str) -> None:
+        try:
+            from firecrawl import V1FirecrawlApp
+        except ImportError:
+            sys.exit("firecrawl-py not installed. Run: pip install firecrawl-py")
+        self._app = V1FirecrawlApp(api_key=api_key)
+
+    def _guard_rate_limit(self, text: str) -> None:
+        if _is_rate_limit(text):
+            raise RateLimitError(text)
+
+    def fetch_channel_listing(self, url: str) -> tuple[str, str, list[dict]]:
+        videos_url = url.rstrip("/")
+        if not videos_url.endswith("/videos"):
+            videos_url += "/videos"
+
+        try:
+            map_result = self._app.map_url(videos_url, search="watch?v=", limit=500)
+        except Exception as e:
+            self._guard_rate_limit(str(e))
+            raise
+
+        seen: set[str] = set()
+        video_entries: list[dict] = []
+        for link in (map_result.links or []):
+            m = re.search(r"[?&]v=([a-zA-Z0-9_-]{11})", link)
+            if m and m.group(1) not in seen:
+                seen.add(m.group(1))
+                video_entries.append({"id": m.group(1), "title": ""})
+
+        channel_name = "unknown"
+        channel_id = "unknown"
+        try:
+            page = self._app.scrape_url(videos_url, formats=["markdown"])
+            if page.title:
+                channel_name = page.title.replace(" - YouTube", "").strip()
+            cid_match = re.search(r'"channelId"\s*:\s*"(UC[^"]+)"', page.markdown or "")
+            if cid_match:
+                channel_id = cid_match.group(1)
+            else:
+                channel_id = re.sub(r"[^a-zA-Z0-9_-]", "_", channel_name)
+        except Exception:
+            pass
+
+        return channel_id, channel_name, video_entries
+
+    def fetch_video_info(self, video_id: str) -> dict:
+        url = f"https://www.youtube.com/watch?v={video_id}"
+        try:
+            result = self._app.scrape_url(url, formats=["markdown"])
+        except Exception as e:
+            self._guard_rate_limit(str(e))
+            raise
+
+        markdown = result.markdown or ""
+        self._guard_rate_limit(markdown)
+
+        title = (result.title or "").replace(" - YouTube", "").strip()
+        description = result.description or ""
+
+        upload_date = None
+        date_match = re.search(
+            r"\b(20\d{2})([-/])(0[1-9]|1[0-2])\3(0[1-9]|[12]\d|3[01])\b", markdown
+        )
+        if date_match:
+            upload_date = date_match.group(0).replace("-", "").replace("/", "")
+
+        view_count = None
+        view_match = re.search(r"([\d,]+)\s+views", markdown)
+        if view_match:
+            try:
+                view_count = int(view_match.group(1).replace(",", ""))
+            except ValueError:
+                pass
+
+        return {
+            "title":            title,
+            "description":      description,
+            "keywords":         [],
+            "upload_date":      upload_date,
+            "duration_seconds": None,
+            "view_count":       view_count,
+        }
+
+    def fetch_transcript(self, video_id: str) -> list | None:
+        # Transcripts are dynamically loaded and not accessible via page scraping
+        return None
+
+
+# ── Channel fetcher (scraper-agnostic) ───────────────────────────────────────
+
+
+class ChannelFetcher:
+    def __init__(self, base_dir: Path, workers: int, scraper: BaseScraper) -> None:
+        self.base_dir = base_dir
+        self.workers = workers
+        self._scraper = scraper
+        self._lock = threading.Lock()
+        self._stop = threading.Event()
 
     # ── central index ────────────────────────────────────────────────────────
 
@@ -157,83 +394,6 @@ class ChannelFetcher:
             ]
             self._save_ch_index(cid, idx)
 
-    # ── yt-dlp helpers ───────────────────────────────────────────────────────
-
-    def _flat_channel(self, url: str) -> dict:
-        """Fetch the full video list for a channel without downloading anything."""
-        opts = {
-            "quiet":               True,
-            "no_warnings":         True,
-            "extract_flat":        "in_playlist",
-            "skip_download":       True,
-            "ignoreerrors":        True,
-            "nocheckcertificate":  True,
-            **self._auth_opts(),
-        }
-        try:
-            with yt_dlp.YoutubeDL(opts) as ydl:
-                info = ydl.extract_info(url, download=False)
-        except DownloadError as e:
-            if _is_rate_limit(str(e)):
-                raise RateLimitError(str(e)) from e
-            raise
-        if info is None:
-            raise ValueError(f"yt-dlp returned nothing for {url!r}")
-        return info
-
-    def _video_info(self, vid_id: str) -> dict:
-        """Fetch full metadata for a single video."""
-        url = f"https://www.youtube.com/watch?v={vid_id}"
-        opts = {
-            "quiet":              True,
-            "no_warnings":        True,
-            "skip_download":      True,
-            "nocheckcertificate": True,
-            **self._auth_opts(),
-        }
-        try:
-            with yt_dlp.YoutubeDL(opts) as ydl:
-                info = ydl.extract_info(url, download=False)
-        except DownloadError as e:
-            if _is_rate_limit(str(e)):
-                raise RateLimitError(str(e)) from e
-            raise
-        if info is None:
-            raise ValueError(f"yt-dlp returned nothing for video {vid_id!r}")
-        return info
-
-    def _get_transcript(self, vid_id: str) -> list | None:
-        """Return transcript segments or None if unavailable."""
-        try:
-            return YouTubeTranscriptApi.get_transcript(vid_id)
-        except (TranscriptsDisabled, VideoUnavailable):
-            return None
-        except NoTranscriptFound:
-            try:
-                tl = YouTubeTranscriptApi.list_transcripts(vid_id)
-                return tl.find_generated_transcript(["en"]).fetch()
-            except Exception:
-                return None
-        except Exception as e:
-            if _is_rate_limit(str(e)):
-                raise RateLimitError(str(e)) from e
-            return None
-
-    # ── entry collection ─────────────────────────────────────────────────────
-
-    @staticmethod
-    def _collect_entries(info: dict) -> list[dict]:
-        """Recursively flatten channel/playlist structure to individual video entries."""
-        result: list[dict] = []
-        for e in info.get("entries") or []:
-            if e is None:
-                continue
-            if e.get("_type") == "playlist":
-                result.extend(ChannelFetcher._collect_entries(e))
-            elif e.get("id"):
-                result.append(e)
-        return result
-
     # ── video processing ─────────────────────────────────────────────────────
 
     def _process_video(self, cid: str, video: dict) -> str:
@@ -245,7 +405,7 @@ class ChannelFetcher:
         print(f"  fetching {vid_id}  {video.get('title', '')[:60]}")
 
         try:
-            info = self._video_info(vid_id)
+            info = self._scraper.fetch_video_info(vid_id)
             vid_dir = self.base_dir / cid / "videos" / vid_id
             vid_dir.mkdir(parents=True, exist_ok=True)
 
@@ -253,7 +413,7 @@ class ChannelFetcher:
                 info.get("description") or "", encoding="utf-8"
             )
 
-            transcript = self._get_transcript(vid_id)
+            transcript = self._scraper.fetch_transcript(vid_id)
             tr_path = None
             tr_status = "none"
             if transcript:
@@ -266,9 +426,9 @@ class ChannelFetcher:
             self._patch_video(cid, {
                 **video,
                 "title":             info.get("title") or video.get("title", ""),
-                "keywords":          info.get("tags") or [],
+                "keywords":          info.get("keywords") or [],
                 "upload_date":       info.get("upload_date"),
-                "duration_seconds":  info.get("duration"),
+                "duration_seconds":  info.get("duration_seconds"),
                 "view_count":        info.get("view_count"),
                 "description_path":  f"{cid}/videos/{vid_id}/description.txt",
                 "transcript_path":   tr_path,
@@ -276,7 +436,6 @@ class ChannelFetcher:
                 "status":            "complete",
                 "error":             None,
                 "last_updated":      _now(),
-                # LLM-generated fields preserved if already populated
                 "summary":           video.get("summary"),
                 "summary_bullets":   video.get("summary_bullets"),
                 "ai_keywords":       video.get("ai_keywords"),
@@ -309,25 +468,12 @@ class ChannelFetcher:
         # Phase 1: fetch video list ───────────────────────────────────────────
         print("Phase 1: fetching channel video list …")
         try:
-            info = self._flat_channel(channel_url)
+            cid, cname, entries = self._scraper.fetch_channel_listing(channel_url)
         except RateLimitError as e:
             sys.exit(f"Rate limited while fetching channel list. Wait and restart.\n{e}")
 
-        cid = (
-            info.get("channel_id")
-            or info.get("uploader_id")
-            or info.get("id")
-            or "unknown"
-        )
-        cname = (
-            info.get("channel")
-            or info.get("uploader")
-            or info.get("title")
-            or cid
-        )
         print(f"Channel: {cname!r}  (id={cid})")
 
-        # Merge new videos into existing index (idempotent)
         ch_idx = self._load_ch_index(cid) or {
             "channel_id":   cid,
             "channel_name": cname,
@@ -337,7 +483,6 @@ class ChannelFetcher:
         }
         existing = {v["video_id"]: v for v in ch_idx.get("videos", [])}
 
-        entries = self._collect_entries(info)
         print(f"Found {len(entries)} videos in channel")
 
         new_count = 0
@@ -400,7 +545,6 @@ class ChannelFetcher:
         self._close_out(cid, cname, channel_url)
 
     def _close_out(self, cid: str, cname: str, url: str) -> None:
-        """Compute final status, persist it, and exit with code 2 if rate-limited."""
         ch_idx = self._load_ch_index(cid)
         statuses = {v["status"] for v in ch_idx["videos"]}
 
@@ -444,6 +588,12 @@ def main() -> None:
         ),
     )
     parser.add_argument(
+        "--scraper",
+        choices=["firecrawl", "ytdlp"],
+        default="firecrawl",
+        help="Scraping backend to use",
+    )
+    parser.add_argument(
         "--workers",
         type=int,
         default=1,
@@ -455,28 +605,55 @@ def main() -> None:
         default=None,
         help="Base output directory (default: directory containing this script)",
     )
+    # Firecrawl options
+    parser.add_argument(
+        "--firecrawl-api-key",
+        metavar="KEY",
+        default=None,
+        help=(
+            "Firecrawl API key (overrides FIRECRAWL_API_KEY env var and "
+            "~/.config/firecrawl-cli/credentials.json)"
+        ),
+    )
+    # yt-dlp options
     parser.add_argument(
         "--cookies-from-browser",
         metavar="BROWSER",
         default=None,
-        help="Extract cookies from this browser (chrome, firefox, safari, edge, brave, …)",
+        help="(ytdlp only) Extract cookies from this browser (chrome, firefox, safari, …)",
     )
     parser.add_argument(
         "--cookies-file",
         metavar="FILE",
         default=None,
-        help="Path to a Netscape-format cookies file exported from your browser",
+        help="(ytdlp only) Path to a Netscape-format cookies file",
     )
     args = parser.parse_args()
 
     base_dir: Path = args.output_dir or Path(__file__).parent
     base_dir.mkdir(parents=True, exist_ok=True)
 
+    if args.scraper == "firecrawl":
+        api_key = args.firecrawl_api_key or _load_firecrawl_api_key()
+        if not api_key:
+            sys.exit(
+                "No Firecrawl API key found. Provide one via --firecrawl-api-key, "
+                "the FIRECRAWL_API_KEY environment variable, or run: "
+                "npx -y firecrawl-cli@latest init -k YOUR_KEY"
+            )
+        scraper: BaseScraper = FirecrawlScraper(api_key=api_key)
+        print(f"Using scraper: firecrawl")
+    else:
+        scraper = YtDlpScraper(
+            cookies_from_browser=args.cookies_from_browser,
+            cookies_file=args.cookies_file,
+        )
+        print(f"Using scraper: ytdlp")
+
     ChannelFetcher(
         base_dir=base_dir,
         workers=args.workers,
-        cookies_from_browser=args.cookies_from_browser,
-        cookies_file=args.cookies_file,
+        scraper=scraper,
     ).run(args.channel_url)
 
 

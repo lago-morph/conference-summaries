@@ -145,11 +145,12 @@ class ChannelFetcher:
     def _flat_channel(self, url: str) -> dict:
         """Fetch the full video list for a channel without downloading anything."""
         opts = {
-            "quiet":        True,
-            "no_warnings":  True,
-            "extract_flat": "in_playlist",
-            "skip_download": True,
-            "ignoreerrors": True,
+            "quiet":               True,
+            "no_warnings":         True,
+            "extract_flat":        "in_playlist",
+            "skip_download":       True,
+            "ignoreerrors":        True,
+            "nocheckcertificate":  True,
         }
         try:
             with yt_dlp.YoutubeDL(opts) as ydl:
@@ -166,9 +167,10 @@ class ChannelFetcher:
         """Fetch full metadata for a single video."""
         url = f"https://www.youtube.com/watch?v={vid_id}"
         opts = {
-            "quiet":        True,
-            "no_warnings":  True,
-            "skip_download": True,
+            "quiet":              True,
+            "no_warnings":        True,
+            "skip_download":      True,
+            "nocheckcertificate": True,
         }
         try:
             with yt_dlp.YoutubeDL(opts) as ydl:

@@ -37,6 +37,11 @@ coverage/
 *.temp
 temp/
 
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
 # Debug files
 debug-*.html
 sched-*.html

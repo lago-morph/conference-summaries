@@ -1,9 +1,0 @@
-Don't miss out! Join us at our next KubeCon + CloudNativeCon events in Mumbai, India (18-19 June, 2026), Yokohama, Japan (29-30 July, 2026), and Shanghai, China (8-9 September, 2026). Connect with our current graduated, incubating, and sandbox projects as the community gathers to further the education and advancement of cloud native computing. Learn more at https://kubecon.io
-
-Advancing Machine to Machine Workflows with the SPIFFE Identity Provider - Andrew Block, Red Hat & Maia Iyer, IBM Research
-
-Most Keycloak users start by configuring realms, clients, and roles by hand—but that doesn’t scale. As organizations adopt multi-tenant and cloud-native applications, manual configuration becomes a bottleneck and a source of security drift.
-
-This session shows an approach for making Keycloak configuration declarative and repeatable. We’ll explore how to represent Keycloak realms and clients as code, how to bootstrap client credentials automatically, and how to connect Keycloak with trusted workload identities using SPIFFE/SPIRE so you'll never worry about copying a client secret ever again.
-
-You’ll see real-world patterns for automating Keycloak setup across environments, including how to reconcile configuration drift, enforce consistent RBAC policies, and safely manage client registration at scale. By the end, you’ll know how to make Keycloak management as easy—and as reliable—as any modern DevOps workflow.

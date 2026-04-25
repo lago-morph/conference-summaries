@@ -1,8 +1,0 @@
-Don't miss out! Join us at our next KubeCon + CloudNativeCon events in Mumbai, India (18-19 June, 2026), Yokohama, Japan (29-30 July, 2026), and Shanghai, China (8-9 September, 2026). Connect with our current graduated, incubating, and sandbox projects as the community gathers to further the education and advancement of cloud native computing. Learn more at https://kubecon.io
-
-Lightning Talk: Airgap-native Identity Management: Lessons From Keycloak in DoD Deployments - Sebastian Łaskawiec & Michał Szynkiewicz, Defense Unicorns
-
-In a world of constant connectivity, air-gapped systems may feel like relics - yet they remain critical in defense, national labs, and high-assurance zones.
-In this talk, we invert the usual paradigm: focusing on the identity management problem space in a disconnected world. Starting with Zarf, we’ll demonstrate how to construct sealed, self-contained delivery bundles. We then dive deep into how we transformed Keycloak - from custom authentication and authorization flows with CAC, to custom client policies, and up to Client Authenticators for Kubernetes. Next, we will explore how our platform meets DoD-level requirements, such as securing the supply chain, providing SBOMs, and enabling full network lockdown with the help of Istio and Authservice.
-
-By the end of the session, you’ll have a tactical plan to deploy Keycloak in environments where “always online” is forbidden - and a hardened reference architecture you can apply to your next mission-critical deployment.
